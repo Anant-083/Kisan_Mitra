@@ -29,7 +29,7 @@ def index():
 
 @app.route("/chat")
 def chat():
-    lang = request.args.get("lang", "Hindi")
+    lang = request.args.get("lang", "English")
     crop = request.args.get("crop", "Rice")
     problem = request.args.get("problem", "Fertilizer")
     return render_template("chat.html", lang=lang, crop=crop, problem=problem)
@@ -46,7 +46,7 @@ def market():
 def alerts():
     return render_template("alerts.html")
 
-# ─── WEATHER API ──────────────────────────────────────
+# ─── WEATHER ──────────────────────────────────────────
 
 @app.route("/get_weather", methods=["POST"])
 def get_weather():
@@ -56,13 +56,11 @@ def get_weather():
     api_key = os.getenv("OPENWEATHER_API_KEY")
 
     try:
-        # Current weather
         current_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
-        current = requests.get(current_url).json()
+        current = requests.get(current_url, timeout=10).json()
 
-        # 7 day forecast
         forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key}&units=metric"
-        forecast = requests.get(forecast_url).json()
+        forecast = requests.get(forecast_url, timeout=10).json()
 
         return jsonify({
             "current": {
@@ -84,6 +82,7 @@ def get_weather():
             ]
         })
     except Exception as e:
+        print(f"Weather API error: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 # ─── CROP ADVISORY ────────────────────────────────────
@@ -91,7 +90,7 @@ def get_weather():
 @app.route("/get_advice", methods=["POST"])
 def get_advice():
     data = request.json
-    lang = data.get("lang", "Hindi")
+    lang = data.get("lang", "English")
     crop = data.get("crop", "Rice")
     problem = data.get("problem", "Fertilizer")
     question = data.get("question", "")
@@ -102,12 +101,15 @@ def get_advice():
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[
-                {"role": "system", "content": f"""You are KisanMitra, an expert Indian agricultural advisor.
+                {
+                    "role": "system",
+                    "content": f"""You are FasalMitra, an expert Indian agricultural advisor.
 A farmer is asking about their {crop} crop regarding {problem}.
-Reply ONLY in {language} language.
+Reply ONLY in {lang} language.
 Give practical simple advice a rural farmer can follow immediately.
 Use simple words. Keep response under 100 words.
-Mention specific quantities (kg, liters) where relevant.""".replace("{language}", lang)},
+Mention specific quantities (kg, liters) where relevant."""
+                },
                 {"role": "user", "content": user_message}
             ],
             max_tokens=300
@@ -126,6 +128,7 @@ Mention specific quantities (kg, liters) where relevant.""".replace("{language}"
         })
 
     except Exception as e:
+        print(f"Advice error: {str(e)}")
         return jsonify({"advice": f"Error: {str(e)}", "audio_url": None}), 500
 
 # ─── CROP RECOMMENDATION ──────────────────────────────
@@ -139,7 +142,7 @@ def get_recommendation():
     lang = data.get("lang", "English")
 
     try:
-        prompt = f"""You are an expert Indian agricultural advisor.
+        prompt = f"""You are FasalMitra, an expert Indian agricultural advisor.
 Based on this weather data:
 - Temperature: {weather.get('temp')}°C
 - Humidity: {weather.get('humidity')}%
@@ -151,16 +154,18 @@ Recommend:
 1. Top 3 crops to grow now
 2. Brief advisory for each crop
 3. Pesticide schedule for each crop
-Keep it simple and practical for a rural farmer."""
+Keep it simple and practical for a rural farmer.
+Keep response under 150 words."""
 
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=500
+            max_tokens=400
         )
         return jsonify({"recommendation": response.choices[0].message.content})
 
     except Exception as e:
+        print(f"Recommendation error: {str(e)}")
         return jsonify({"recommendation": f"Error: {str(e)}"}), 500
 
 # ─── MARKET PRICES ────────────────────────────────────
@@ -173,40 +178,46 @@ def get_market():
     api_key = os.getenv("DATAGOV_API_KEY")
 
     try:
-        url = f"https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"
+        url = "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"
         params = {
             "api-key": api_key,
             "format": "json",
-            "limit": 50
+            "limit": 50,
+            "offset": 0
         }
         if state:
             params["filters[state]"] = state
         if commodity:
             params["filters[commodity]"] = commodity
 
-        response = requests.get(url, params=params, timeout=10)
+        response = requests.get(url, params=params, timeout=15)
         result = response.json()
+        print(f"Market API response: {result}")
 
-        if "records" in result:
-            return jsonify({"data": result["records"]})
+        if "records" in result and len(result["records"]) > 0:
+            return jsonify({"data": result["records"], "source": "live"})
         else:
-            return jsonify({"data": get_fallback_market_data()})
+            print("No records found, using fallback")
+            return jsonify({"data": get_fallback_market_data(), "source": "fallback"})
 
     except Exception as e:
-        return jsonify({"data": get_fallback_market_data()})
+        print(f"Market API error: {str(e)}")
+        return jsonify({"data": get_fallback_market_data(), "source": "fallback"})
 
 def get_fallback_market_data():
     return [
-        {"state": "Maharashtra", "district": "Pune", "market": "Pune", "commodity": "Tomato", "min_price": "800", "max_price": "1200", "modal_price": "1000", "arrival_date": "03/06/2026"},
-        {"state": "Punjab", "district": "Ludhiana", "market": "Ludhiana", "commodity": "Wheat", "min_price": "2000", "max_price": "2200", "modal_price": "2100", "arrival_date": "03/06/2026"},
-        {"state": "West Bengal", "district": "Kolkata", "market": "Kolkata", "commodity": "Rice", "min_price": "1800", "max_price": "2200", "modal_price": "2000", "arrival_date": "03/06/2026"},
-        {"state": "Uttar Pradesh", "district": "Lucknow", "market": "Lucknow", "commodity": "Potato", "min_price": "600", "max_price": "900", "modal_price": "750", "arrival_date": "03/06/2026"},
-        {"state": "Gujarat", "district": "Ahmedabad", "market": "Ahmedabad", "commodity": "Cotton", "min_price": "5500", "max_price": "6500", "modal_price": "6000", "arrival_date": "03/06/2026"},
-        {"state": "Karnataka", "district": "Bangalore", "market": "Bangalore", "commodity": "Onion", "min_price": "1200", "max_price": "1800", "modal_price": "1500", "arrival_date": "03/06/2026"},
-        {"state": "Rajasthan", "district": "Jaipur", "market": "Jaipur", "commodity": "Mustard", "min_price": "4500", "max_price": "5200", "modal_price": "4800", "arrival_date": "03/06/2026"},
-        {"state": "Madhya Pradesh", "district": "Indore", "market": "Indore", "commodity": "Soybean", "min_price": "3800", "max_price": "4500", "modal_price": "4200", "arrival_date": "03/06/2026"},
-        {"state": "Andhra Pradesh", "district": "Guntur", "market": "Guntur", "commodity": "Chilli", "min_price": "8000", "max_price": "12000", "modal_price": "10000", "arrival_date": "03/06/2026"},
-        {"state": "Tamil Nadu", "district": "Chennai", "market": "Chennai", "commodity": "Maize", "min_price": "1600", "max_price": "2000", "modal_price": "1800", "arrival_date": "03/06/2026"},
+        {"state": "Maharashtra", "district": "Pune", "market": "Pune", "commodity": "Tomato", "min_price": "800", "max_price": "1200", "modal_price": "1000", "arrival_date": "04/06/2026"},
+        {"state": "Punjab", "district": "Ludhiana", "market": "Ludhiana", "commodity": "Wheat", "min_price": "2000", "max_price": "2200", "modal_price": "2100", "arrival_date": "04/06/2026"},
+        {"state": "West Bengal", "district": "Kolkata", "market": "Kolkata", "commodity": "Rice", "min_price": "1800", "max_price": "2200", "modal_price": "2000", "arrival_date": "04/06/2026"},
+        {"state": "Uttar Pradesh", "district": "Lucknow", "market": "Lucknow", "commodity": "Potato", "min_price": "600", "max_price": "900", "modal_price": "750", "arrival_date": "04/06/2026"},
+        {"state": "Gujarat", "district": "Ahmedabad", "market": "Ahmedabad", "commodity": "Cotton", "min_price": "5500", "max_price": "6500", "modal_price": "6000", "arrival_date": "04/06/2026"},
+        {"state": "Karnataka", "district": "Bangalore", "market": "Bangalore", "commodity": "Onion", "min_price": "1200", "max_price": "1800", "modal_price": "1500", "arrival_date": "04/06/2026"},
+        {"state": "Rajasthan", "district": "Jaipur", "market": "Jaipur", "commodity": "Mustard", "min_price": "4500", "max_price": "5200", "modal_price": "4800", "arrival_date": "04/06/2026"},
+        {"state": "Madhya Pradesh", "district": "Indore", "market": "Indore", "commodity": "Soybean", "min_price": "3800", "max_price": "4500", "modal_price": "4200", "arrival_date": "04/06/2026"},
+        {"state": "Andhra Pradesh", "district": "Guntur", "market": "Guntur", "commodity": "Chilli", "min_price": "8000", "max_price": "12000", "modal_price": "10000", "arrival_date": "04/06/2026"},
+        {"state": "Tamil Nadu", "district": "Chennai", "market": "Chennai", "commodity": "Maize", "min_price": "1600", "max_price": "2000", "modal_price": "1800", "arrival_date": "04/06/2026"},
+        {"state": "Bihar", "district": "Patna", "market": "Patna", "commodity": "Wheat", "min_price": "1900", "max_price": "2100", "modal_price": "2000", "arrival_date": "04/06/2026"},
+        {"state": "Haryana", "district": "Karnal", "market": "Karnal", "commodity": "Rice", "min_price": "2000", "max_price": "2400", "modal_price": "2200", "arrival_date": "04/06/2026"},
     ]
 
 # ─── ALERTS ───────────────────────────────────────────
@@ -218,19 +229,20 @@ def get_alerts():
     lang = data.get("lang", "English")
 
     try:
-        prompt = f"""You are an expert Indian agricultural advisor.
+        prompt = f"""You are FasalMitra, an expert Indian agricultural advisor.
 Based on this weather:
 - Temperature: {weather.get('temp')}°C
 - Humidity: {weather.get('humidity')}%
 - Condition: {weather.get('description')}
 
 Reply in {lang} language.
-Give alerts about:
-1. Which crops are risky to grow now
-2. Pest warnings based on current weather
-3. Pesticide usage warnings
-4. Weather safety tips for farmers
-Keep it concise and practical."""
+Give exactly 5 alerts as numbered list:
+1. Weather safety tip for farmers
+2. Which crop is risky to grow now
+3. Pest warning based on current weather
+4. Pesticide usage warning
+5. Best practice for today's weather
+Keep each point under 30 words. Simple language."""
 
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
@@ -240,6 +252,7 @@ Keep it concise and practical."""
         return jsonify({"alerts": response.choices[0].message.content})
 
     except Exception as e:
+        print(f"Alerts error: {str(e)}")
         return jsonify({"alerts": f"Error: {str(e)}"}), 500
 
 # ─── TRANSLATE ────────────────────────────────────────
@@ -268,8 +281,6 @@ def translate():
 
 @app.route("/diagnose_crop", methods=["POST"])
 def diagnose_crop():
-    # ML person will integrate their model here
-    # For now Groq gives eco-friendly remedy
     data = request.json
     description = data.get("description", "")
     lang = data.get("lang", "English")
@@ -287,13 +298,15 @@ Give:
 2. Eco-friendly remedy solution
 3. Organic treatment steps
 4. Prevention tips
-Keep it simple for a rural farmer."""
+Keep it simple for a rural farmer.
+Keep under 150 words."""
             }],
             max_tokens=400
         )
         return jsonify({"diagnosis": response.choices[0].message.content})
 
     except Exception as e:
+        print(f"Diagnose error: {str(e)}")
         return jsonify({"diagnosis": f"Error: {str(e)}"}), 500
 
 # ─── RUN ──────────────────────────────────────────────
