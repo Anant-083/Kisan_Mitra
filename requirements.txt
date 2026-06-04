@@ -2,4 +2,5 @@ flask
 groq
 gtts
 python-dotenv
-requests 
+requests
+gunicorn
