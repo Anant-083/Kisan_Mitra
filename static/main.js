@@ -2,6 +2,17 @@ let selectedLang = 'English';
 let selectedCrop = '';
 let selectedProblem = '';
 
+// Auto highlight English on page load
+window.addEventListener('load', () => {
+  const langBtns = document.querySelectorAll('.lang-btn');
+  langBtns.forEach(btn => {
+    if (btn.getAttribute('onclick').includes('English')) {
+      btn.classList.add('selected');
+    }
+  });
+  checkReady();
+});
+
 function selectLang(el, lang) {
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
@@ -25,7 +36,9 @@ function selectProblem(el, problem) {
 
 function checkReady() {
   const btn = document.getElementById('go-btn');
-  btn.disabled = !(selectedLang && selectedCrop && selectedProblem);
+  if (btn) {
+    btn.disabled = !(selectedLang && selectedCrop && selectedProblem);
+  }
 }
 
 function goToChat() {
@@ -34,13 +47,9 @@ function goToChat() {
 
 function changeLanguage(lang) {
   selectedLang = lang;
-  fetch("/translate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text: document.body.innerText, lang })
-  })
-  .then(r => r.json())
-  .then(data => {
-    console.log("Language changed to:", lang);
-  });
-} 
+}
+
+function toggleMenu() {
+  const menu = document.getElementById('mobile-menu');
+  if (menu) menu.classList.toggle('open');
+}
