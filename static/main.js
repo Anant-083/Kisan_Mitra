@@ -47,6 +47,9 @@ function goToChat() {
 
 function changeLanguage(lang) {
   selectedLang = lang;
+  localStorage.setItem('selectedLanguage', lang);
+  // Reload page with language parameter
+  window.location.href = '/?lang=' + lang;
 }
 
 function toggleMenu() {
