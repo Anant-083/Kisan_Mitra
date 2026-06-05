@@ -120,20 +120,21 @@
     <div class="problem-btn" onclick="selectProblem(this,'Irrigation')">💧<span>Irrigation</span><small>सिंचाई / সেচ</small></div>
     <div class="problem-btn" onclick="selectProblem(this,'Pest Control')">🐛<span>Pest Control</span><small>कीट नियंत्रण</small></div>
     <div class="problem-btn" onclick="selectProblem(this,'Weather Tips')">🌦️<span>Weather Tips</span><small>मौसम / আবহাওয়া</small></div>
-  </div>
-
-  <button class="go-btn mt-4" id="go-btn" disabled onclick="goToChat()">
-    Get Advice 🌾
-  </button>
-
 </div>
 
-<script src="/static/weather.js"></script>
-<script src="/static/main.js"></script>
-<script>
-function toggleMenu() {
-  document.getElementById('mobile-menu').classList.toggle('open');
-}
-</script>
-</body>
-</html>
+      <button class="go-btn mt-4" id="go-btn" disabled onclick="goToChat()">
+        Get Advice 🌾
+      </button>
+
+    </div>
+
+    <script>window.appLang = "{{ lang }}";</script>
+    <script src="/static/weather.js"></script>
+    <script src="/static/main.js"></script>
+    <script>
+    function toggleMenu() {
+      document.getElementById('mobile-menu').classList.toggle('open');
+    }
+    </script>
+    </body>
+    </html>
