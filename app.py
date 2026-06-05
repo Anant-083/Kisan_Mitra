@@ -284,110 +284,90 @@ def translate():
 @app.route("/diagnose_crop", methods=["POST"])
 def diagnose_crop():
     if not KINDWISE_API_KEY:
-        return jsonify({'success': False, 'error': 'Server environment missing API credentials.'}), 500
+        return jsonify({'success': False, 'error': 'API key missing'}), 500
 
     if 'image' not in request.files:
-        return jsonify({'success': False, 'error': 'No image file uploaded'}), 400
-        
-    file = request.files['image']
-    if file.filename == '':
-        return jsonify({'success': False, 'error': 'No selected file'}), 400
+        return jsonify({'success': False, 'error': 'No image uploaded'}), 400
 
+    file = request.files['image']
     description = request.form.get("description", "")
     lang = request.form.get("lang", "English")
 
     try:
-        # Convert binary data to dynamic Base64 Data URI matching v3 specifications
         file_bytes = file.read()
-        base64_image = base64.b64encode(file_bytes).decode('utf-8')
-        mime_type = file.content_type if file.content_type else "image/jpeg"
-        image_data_uri = f"data:{mime_type};base64,{base64_image}"
-        
-        # Correct URL target for the Kindwise V3 Identification engine
+        base64_image = base64.b64encode(file_bytes).decode('ascii')
+
         url = "https://crop.kindwise.com/api/v1/identification"
-        
         headers = {
             "Api-Key": KINDWISE_API_KEY,
-            "Content-Type": "application/json",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+            "Content-Type": "application/json"
         }
-        
-        # Proper Kindwise v3 JSON structural payload format
         payload = {
-            "images": [image_data_uri],
-            "health": "all",
-            "similar_images": True
+            "images": [base64_image],
+            "details": "treatment,cause,symptoms"
         }
 
-        # Send JSON payload across persistent pooled connection session
         response = http_session.post(url, headers=headers, json=payload, timeout=30)
-        
+        print(f"Kindwise status: {response.status_code}")
+        print(f"Kindwise response: {response.text[:500]}")
+
         if response.status_code not in [200, 201]:
-            print(f"Server Target Log Trace: Status {response.status_code} - Text: {response.text}")
-            return jsonify({'success': False, 'error': f"API Authentication Error (Status: {response.status_code})"}), 500
+            return jsonify({'success': False, 'error': f"API Error (Status: {response.status_code})"}), 500
 
         data = response.json()
-        
-        # Safely parse the crop health diagnostics object from v3 response structure
-        health_assessment = data.get('result', {}).get('health', {})
-        suggestions = health_assessment.get('suggestions', [])
-        
-        # Fallbacks to cover alternative endpoint formatting shapes
-        if not suggestions:
-            suggestions = data.get('result', {}).get('disease', {}).get('suggestions', [])
-        if not suggestions:
-            suggestions = data.get('result', {}).get('classification', {}).get('suggestions', [])
 
-        disease_name = "Unknown Crop Condition / Environmental Issue"
-        probability = 100
-        raw_treatment = "Monitor local irrigation patterns, check visual insect activity, and evaluate soil Nitrogen balance."
+        # Parse disease suggestions
+        disease_suggestions = data.get('result', {}).get('disease', {}).get('suggestions', [])
+        crop_suggestions = data.get('result', {}).get('crop', {}).get('suggestions', [])
 
-        if suggestions:
-            top_match = suggestions[0]
-            disease_name = top_match.get('name', 'Crop Malady')
-            probability = round(top_match.get('probability', 0) * 100, 1)
-            
-            details = top_match.get('details', {}) or {}
-            treatment_dict = details.get('treatment', {}) or {}
-            
-            treatment_steps = []
-            for treat_type, steps in treatment_dict.items():
-                if steps:
-                    steps_str = ", ".join(steps) if isinstance(steps, list) else steps
-                    treatment_steps.append(f"{treat_type.capitalize()}: {steps_str}")
-            
-            if treatment_steps:
-                raw_treatment = " | ".join(treatment_steps)
+        disease_name = "Unknown condition"
+        probability = 0
+        raw_treatment = "Monitor crop closely and consult local agricultural officer."
 
-        prompt = f"""You are FasalMitra, an expert plant pathologist advisor.
-The agricultural vision system processed an asset image and flagged this profile:
-- Condition/Disease: {disease_name}
-- Extracted Treatment Data: {raw_treatment}
-- Farmer's observation text: {description}
+        if disease_suggestions:
+            top = disease_suggestions[0]
+            disease_name = top.get('name', 'Unknown')
+            probability = round(top.get('probability', 0) * 100, 1)
+            details = top.get('details', {}) or {}
+            treatment = details.get('treatment', {}) or {}
+            steps = []
+            for k, v in treatment.items():
+                if v:
+                    steps.append(f"{k.capitalize()}: {', '.join(v) if isinstance(v, list) else v}")
+            if steps:
+                raw_treatment = " | ".join(steps)
 
-Reply strictly in {lang} language.
-Format your response beautifully with explicit sections:
-🎯 Diagnosis: [Translated Disease Name] ({probability}% Confidence)
-🛠️ Eco-friendly Treatment Steps: [Provide clear, simple practical steps an Indian farmer can manage under 100 words]
-🛡️ Prevention Tips: [Provide 1-2 points]
+        crop_name = ""
+        if crop_suggestions:
+            crop_name = crop_suggestions[0].get('name', '')
 
-Keep language simple, accessible and under 150 words total."""
+        prompt = f"""You are FasalMitra, an expert plant pathologist.
+Crop identified: {crop_name}
+Disease detected: {disease_name} ({probability}% confidence)
+Treatment data: {raw_treatment}
+Farmer observation: {description}
+
+Reply in {lang} language.
+Format response with these sections:
+🎯 Diagnosis: [disease name] ({probability}% confidence)
+🌿 Crop: [crop name]
+🛠️ Eco-friendly Treatment: [simple practical steps]
+🛡️ Prevention Tips: [1-2 points]
+Keep under 150 words. Simple language for rural farmer."""
 
         groq_response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
             max_tokens=400
         )
-        
-        final_diagnosis_text = groq_response.choices[0].message.content
 
         return jsonify({
             'success': True,
-            'diagnosis': final_diagnosis_text
+            'diagnosis': groq_response.choices[0].message.content
         })
 
     except Exception as e:
-        print(f"Diagnose processing error trace: {str(e)}")
+        print(f"Diagnose error: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 # ─── COMPILER SYSTEM RUNTIME ──────────────────────────
