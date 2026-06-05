@@ -13,7 +13,8 @@ app = Flask(__name__)
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 # Kindwise API Configuration
-KINDWISE_API_KEY = os.getenv("KINDWISE_API_KEY", "t0ZVJLA3Ytf6PRnYK4z0iI9DpfzkR6K7LS49N6QoKBxqtYPHQ0")
+# Pull securely from the environment variables only
+KINDWISE_API_KEY = os.getenv("KINDWISE_API_KEY")
 
 AUDIO_DIR = "static/audio"
 os.makedirs(AUDIO_DIR, exist_ok=True)
