@@ -17,20 +17,20 @@
     <a href="/diagnose">🔍 Diagnose</a>
     <a href="/market">📈 Market</a>
     <a href="/alerts">🔔 Alerts</a>
-    <select id="lang-select" onchange="changeLanguage(this.value)">
-      <option value="English">🌐 English</option>
-      <option value="Hindi">हिन्दी</option>
-      <option value="Bengali">বাংলা</option>
-      <option value="Telugu">తెలుగు</option>
-      <option value="Marathi">मराठी</option>
-      <option value="Tamil">தமிழ்</option>
-      <option value="Gujarati">ગુજરાતી</option>
-      <option value="Kannada">ಕನ್ನಡ</option>
-      <option value="Punjabi">ਪੰਜਾਬੀ</option>
-      <option value="Odia">ଓଡ଼ିଆ</option>
-      <option value="Malayalam">മലയാളം</option>
-      <option value="Urdu">اردو</option>
-    </select>
+  <select id="lang-select" onchange="changeLanguage(this.value)">
+  <option value="English" {% if lang == 'English' %}selected{% endif %}>🌐 English</option>
+  <option value="Hindi" {% if lang == 'Hindi' %}selected{% endif %}>हिन्दी</option>
+  <option value="Bengali" {% if lang == 'Bengali' %}selected{% endif %}>বাংলা</option>
+  <option value="Telugu" {% if lang == 'Telugu' %}selected{% endif %}>తెలుగు</option>
+  <option value="Marathi" {% if lang == 'Marathi' %}selected{% endif %}>मराठी</option>
+  <option value="Tamil" {% if lang == 'Tamil' %}selected{% endif %}>தமிழ்</option>
+  <option value="Gujarati" {% if lang == 'Gujarati' %}selected{% endif %}>ગુજરાતી</option>
+  <option value="Kannada" {% if lang == 'Kannada' %}selected{% endif %}>ಕನ್ನಡ</option>
+  <option value="Punjabi" {% if lang == 'Punjabi' %}selected{% endif %}>ਪੰਜਾਬੀ</option>
+  <option value="Odia" {% if lang == 'Odia' %}selected{% endif %}>ଓଡ଼ିଆ</option>
+  <option value="Malayalam" {% if lang == 'Malayalam' %}selected{% endif %}>മലയാളം</option>
+  <option value="Urdu" {% if lang == 'Urdu' %}selected{% endif %}>اردو</option>
+</select>
   </div>
   <div class="hamburger" onclick="toggleMenu()">
     <span></span><span></span><span></span>
