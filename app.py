@@ -5,11 +5,15 @@ from dotenv import load_dotenv
 import os
 import uuid
 import requests
+import base64
 
 load_dotenv()
 
 app = Flask(__name__)
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+# Kindwise API Configuration
+KINDWISE_API_KEY = os.getenv("KINDWISE_API_KEY", "t0ZVJLA3Ytf6PRnYK4z0iI9DpfzkR6K7LS49N6QoKBxqtYPHQ0")
 
 AUDIO_DIR = "static/audio"
 os.makedirs(AUDIO_DIR, exist_ok=True)
@@ -277,37 +281,100 @@ def translate():
     except Exception as e:
         return jsonify({"translated": text}), 500
 
-# ─── DIAGNOSE ─────────────────────────────────────────
+# ─── DIAGNOSE (INTEGRATED WITH KINDWISE) ──────────────────
 
 @app.route("/diagnose_crop", methods=["POST"])
 def diagnose_crop():
-    data = request.json
-    description = data.get("description", "")
-    lang = data.get("lang", "English")
+    if 'image' not in request.files:
+        return jsonify({'success': False, 'error': 'No image file uploaded'}), 400
+        
+    file = request.files['image']
+    if file.filename == '':
+        return jsonify({'success': False, 'error': 'No selected file'}), 400
+
+    description = request.form.get("description", "")
+    lang = request.form.get("lang", "English")
 
     try:
-        response = client.chat.completions.create(
+        # Convert multipart image file stream to Base64 URI string
+        image_bytes = file.read()
+        base64_image = base64.b64encode(image_bytes).decode('utf-8')
+        mime_type = file.content_type if file.content_type else "image/jpeg"
+        image_data_uri = f"data:{mime_type};base64,{base64_image}"
+
+        # Setup Kindwise Plant.id v3 Request
+        url = "https://plant.id/api/v3/identification"
+        headers = {
+            "Api-Key": KINDWISE_API_KEY,
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "images": [image_data_uri],
+            "health": "all"
+        }
+
+        response = requests.post(url, json=payload, headers=headers, timeout=15)
+        
+        if response.status_code != 201:
+            return jsonify({'success': False, 'error': f"Kindwise API issue (Status: {response.status_code})"}), 500
+
+        data = response.json()
+        suggestions = data.get('result', {}).get('disease', {}).get('suggestions', [])
+
+        # Setup defaults if plant is completely clean
+        disease_name = "Healthy Plant / Unknown Issue"
+        probability = 100
+        raw_treatment = "No severe disease pattern recognized. Monitor regular water, shade, and soil health parameters."
+
+        if suggestions:
+            top_match = suggestions[0]
+            disease_name = top_match.get('name', 'Crop Malady')
+            probability = round(top_match.get('probability', 0) * 100, 1)
+            
+            # Extract structured treatment suggestions from metadata
+            details = top_match.get('details', {}) or {}
+            treatment_dict = details.get('treatment', {}) or {}
+            
+            treatment_steps = []
+            for treat_type, steps in treatment_dict.items():
+                if steps:
+                    steps_str = ", ".join(steps) if isinstance(steps, list) else steps
+                    treatment_steps.append(f"{treat_type.capitalize()}: {steps_str}")
+            
+            if treatment_steps:
+                raw_treatment = " | ".join(treatment_steps)
+
+        # Prompt Groq to structure and translate information elegantly for a local rural farmer
+        prompt = f"""You are FasalMitra, an expert plant pathologist advisor.
+The image processing system detected this condition:
+- Disease: {disease_name}
+- Initial Treatment Info: {raw_treatment}
+- Extra context from farmer: {description}
+
+Reply strictly in {lang} language.
+Format your response nicely with clear sections:
+🎯 Diagnosis: [Translated Disease Name] ({probability}% Confidence)
+🛠️ Eco-friendly Treatment Steps: [Provide clear, simple practical steps a rural farmer can manage under 100 words]
+🛡️ Prevention Tips: [Provide 1-2 points]
+
+Keep language simple, accessible and under 150 words total."""
+
+        groq_response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
-            messages=[{
-                "role": "user",
-                "content": f"""You are an expert plant pathologist.
-A farmer described this crop problem: {description}
-Reply in {lang} language.
-Give:
-1. Most likely disease/pest name
-2. Eco-friendly remedy solution
-3. Organic treatment steps
-4. Prevention tips
-Keep it simple for a rural farmer.
-Keep under 150 words."""
-            }],
+            messages=[{"role": "user", "content": prompt}],
             max_tokens=400
         )
-        return jsonify({"diagnosis": response.choices[0].message.content})
+        
+        final_diagnosis_text = groq_response.choices[0].message.content
+
+        return jsonify({
+            'success': True,
+            'diagnosis': final_diagnosis_text
+        })
 
     except Exception as e:
-        print(f"Diagnose error: {str(e)}")
-        return jsonify({"diagnosis": f"Error: {str(e)}"}), 500
+        print(f"Diagnose processing error: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 # ─── RUN ──────────────────────────────────────────────
 
