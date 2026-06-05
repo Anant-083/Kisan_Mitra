@@ -12,9 +12,14 @@ load_dotenv()
 app = Flask(__name__)
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-# Kindwise API Configuration
-# Pull securely from the environment variables only
+# ─── SECURE API CONFIGURATION ─────────────────────────
+# Pulls strictly from the host system environment parameters
 KINDWISE_API_KEY = os.getenv("KINDWISE_API_KEY")
+
+if KINDWISE_API_KEY:
+    KINDWISE_API_KEY = KINDWISE_API_KEY.strip()
+else:
+    print("⚠️ CRITICAL PROMPT: KINDWISE_API_KEY environment variable is currently missing or unreadable.")
 
 AUDIO_DIR = "static/audio"
 os.makedirs(AUDIO_DIR, exist_ok=True)
@@ -26,7 +31,7 @@ LANGUAGE_CODES = {
     "Malayalam": "ml", "Urdu": "ur", "English": "en"
 }
 
-# ─── ROUTES ───────────────────────────────────────────
+# ─── APPLICATION ROUTES ────────────────────────────────
 
 @app.route("/")
 def index():
@@ -51,7 +56,7 @@ def market():
 def alerts():
     return render_template("alerts.html")
 
-# ─── WEATHER ──────────────────────────────────────────
+# ─── REALTIME WEATHER ENGINE ──────────────────────────
 
 @app.route("/get_weather", methods=["POST"])
 def get_weather():
@@ -90,7 +95,7 @@ def get_weather():
         print(f"Weather API error: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
-# ─── CROP ADVISORY ────────────────────────────────────
+# ─── CROP ADVISORY INTERACTION ────────────────────────
 
 @app.route("/get_advice", methods=["POST"])
 def get_advice():
@@ -136,7 +141,7 @@ Mention specific quantities (kg, liters) where relevant."""
         print(f"Advice error: {str(e)}")
         return jsonify({"advice": f"Error: {str(e)}", "audio_url": None}), 500
 
-# ─── CROP RECOMMENDATION ──────────────────────────────
+# ─── SEASONAL CROP RECOMMENDATION ────────────────────
 
 @app.route("/get_recommendation", methods=["POST"])
 def get_recommendation():
@@ -173,7 +178,7 @@ Keep response under 150 words."""
         print(f"Recommendation error: {str(e)}")
         return jsonify({"recommendation": f"Error: {str(e)}"}), 500
 
-# ─── MARKET PRICES ────────────────────────────────────
+# ─── AGRICULTURAL MARKET MONITOR ──────────────────────
 
 @app.route("/get_market", methods=["POST"])
 def get_market():
@@ -197,12 +202,10 @@ def get_market():
 
         response = requests.get(url, params=params, timeout=15)
         result = response.json()
-        print(f"Market API response: {result}")
 
         if "records" in result and len(result["records"]) > 0:
             return jsonify({"data": result["records"], "source": "live"})
         else:
-            print("No records found, using fallback")
             return jsonify({"data": get_fallback_market_data(), "source": "fallback"})
 
     except Exception as e:
@@ -215,17 +218,9 @@ def get_fallback_market_data():
         {"state": "Punjab", "district": "Ludhiana", "market": "Ludhiana", "commodity": "Wheat", "min_price": "2000", "max_price": "2200", "modal_price": "2100", "arrival_date": "04/06/2026"},
         {"state": "West Bengal", "district": "Kolkata", "market": "Kolkata", "commodity": "Rice", "min_price": "1800", "max_price": "2200", "modal_price": "2000", "arrival_date": "04/06/2026"},
         {"state": "Uttar Pradesh", "district": "Lucknow", "market": "Lucknow", "commodity": "Potato", "min_price": "600", "max_price": "900", "modal_price": "750", "arrival_date": "04/06/2026"},
-        {"state": "Gujarat", "district": "Ahmedabad", "market": "Ahmedabad", "commodity": "Cotton", "min_price": "5500", "max_price": "6500", "modal_price": "6000", "arrival_date": "04/06/2026"},
-        {"state": "Karnataka", "district": "Bangalore", "market": "Bangalore", "commodity": "Onion", "min_price": "1200", "max_price": "1800", "modal_price": "1500", "arrival_date": "04/06/2026"},
-        {"state": "Rajasthan", "district": "Jaipur", "market": "Jaipur", "commodity": "Mustard", "min_price": "4500", "max_price": "5200", "modal_price": "4800", "arrival_date": "04/06/2026"},
-        {"state": "Madhya Pradesh", "district": "Indore", "market": "Indore", "commodity": "Soybean", "min_price": "3800", "max_price": "4500", "modal_price": "4200", "arrival_date": "04/06/2026"},
-        {"state": "Andhra Pradesh", "district": "Guntur", "market": "Guntur", "commodity": "Chilli", "min_price": "8000", "max_price": "12000", "modal_price": "10000", "arrival_date": "04/06/2026"},
-        {"state": "Tamil Nadu", "district": "Chennai", "market": "Chennai", "commodity": "Maize", "min_price": "1600", "max_price": "2000", "modal_price": "1800", "arrival_date": "04/06/2026"},
-        {"state": "Bihar", "district": "Patna", "market": "Patna", "commodity": "Wheat", "min_price": "1900", "max_price": "2100", "modal_price": "2000", "arrival_date": "04/06/2026"},
-        {"state": "Haryana", "district": "Karnal", "market": "Karnal", "commodity": "Rice", "min_price": "2000", "max_price": "2400", "modal_price": "2200", "arrival_date": "04/06/2026"},
     ]
 
-# ─── ALERTS ───────────────────────────────────────────
+# ─── WEATHER WARNING ALERTS ───────────────────────────
 
 @app.route("/get_alerts", methods=["POST"])
 def get_alerts():
@@ -260,7 +255,7 @@ Keep each point under 30 words. Simple language."""
         print(f"Alerts error: {str(e)}")
         return jsonify({"alerts": f"Error: {str(e)}"}), 500
 
-# ─── TRANSLATE ────────────────────────────────────────
+# ─── TRANSLATION ENGINE ───────────────────────────────
 
 @app.route("/translate", methods=["POST"])
 def translate():
@@ -282,10 +277,13 @@ def translate():
     except Exception as e:
         return jsonify({"translated": text}), 500
 
-# ─── DIAGNOSE (INTEGRATED WITH KINDWISE) ──────────────────
+# ─── CORE IMAGE DIAGNOSTICS (KINDWISE INTERACTION) ─────
 
 @app.route("/diagnose_crop", methods=["POST"])
 def diagnose_crop():
+    if not KINDWISE_API_KEY:
+        return jsonify({'success': False, 'error': 'Server environment missing API credentials.'}), 500
+
     if 'image' not in request.files:
         return jsonify({'success': False, 'error': 'No image file uploaded'}), 400
         
@@ -297,13 +295,13 @@ def diagnose_crop():
     lang = request.form.get("lang", "English")
 
     try:
-        # Convert multipart image file stream to Base64 URI string
+        # Buffer and parse multi-part payload into base64 Data URI format
         image_bytes = file.read()
         base64_image = base64.b64encode(image_bytes).decode('utf-8')
         mime_type = file.content_type if file.content_type else "image/jpeg"
         image_data_uri = f"data:{mime_type};base64,{base64_image}"
 
-        # Setup Kindwise Plant.id v3 Request
+        # Setup Plant.id Endpoint Configuration
         url = "https://plant.id/api/v3/identification"
         headers = {
             "Api-Key": KINDWISE_API_KEY,
@@ -317,13 +315,13 @@ def diagnose_crop():
         response = requests.post(url, json=payload, headers=headers, timeout=15)
         
         if response.status_code != 201:
-            return jsonify({'success': False, 'error': f"Kindwise API issue (Status: {response.status_code})"}), 500
+            print(f"Server Target Log Trace: Status {response.status_code} - Text: {response.text}")
+            return jsonify({'success': False, 'error': f"Kindwise verification problem (Status: {response.status_code})"}), 500
 
         data = response.json()
         suggestions = data.get('result', {}).get('disease', {}).get('suggestions', [])
 
-        # Setup defaults if plant is completely clean
-        disease_name = "Healthy Plant / Unknown Issue"
+        disease_name = "Healthy Plant / Unknown Pattern"
         probability = 100
         raw_treatment = "No severe disease pattern recognized. Monitor regular water, shade, and soil health parameters."
 
@@ -332,7 +330,6 @@ def diagnose_crop():
             disease_name = top_match.get('name', 'Crop Malady')
             probability = round(top_match.get('probability', 0) * 100, 1)
             
-            # Extract structured treatment suggestions from metadata
             details = top_match.get('details', {}) or {}
             treatment_dict = details.get('treatment', {}) or {}
             
@@ -345,7 +342,7 @@ def diagnose_crop():
             if treatment_steps:
                 raw_treatment = " | ".join(treatment_steps)
 
-        # Prompt Groq to structure and translate information elegantly for a local rural farmer
+        # Build dynamic prompt pipeline mapping to Groq model structure
         prompt = f"""You are FasalMitra, an expert plant pathologist advisor.
 The image processing system detected this condition:
 - Disease: {disease_name}
@@ -374,10 +371,10 @@ Keep language simple, accessible and under 150 words total."""
         })
 
     except Exception as e:
-        print(f"Diagnose processing error: {str(e)}")
+        print(f"Diagnose processing error trace: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-# ─── RUN ──────────────────────────────────────────────
+# ─── COMPILER SYSTEM RUNTIME ──────────────────────────
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
