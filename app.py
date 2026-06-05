@@ -34,10 +34,10 @@ LANGUAGE_CODES = {
 http_session = requests.Session()
 
 # ─── APPLICATION ROUTES ────────────────────────────────
-
 @app.route("/")
 def index():
-    return render_template("index.html")
+    lang = request.args.get("lang", "English")
+    return render_template("index.html", lang=lang)
 
 @app.route("/chat")
 def chat():
