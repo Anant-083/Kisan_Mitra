@@ -304,7 +304,7 @@ def diagnose_crop():
         image_data_uri = f"data:{mime_type};base64,{base64_image}"
         
         # Correct URL target for the Kindwise V3 Identification engine
-        url = "https://api.plant.id/v3/identification"
+        url = "https://crop.kindwise.com/api/v1/identification"
         
         headers = {
             "Api-Key": KINDWISE_API_KEY,
