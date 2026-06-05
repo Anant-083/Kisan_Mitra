@@ -298,7 +298,7 @@ def diagnose_crop():
         base64_image = base64.b64encode(file_bytes).decode('ascii')
 
         url = "https://crop.kindwise.com/api/v1/identification"
-       headers = {
+        headers = {
             "Api-Key": KINDWISE_API_KEY,
             "Content-Type": "application/json"
         }
@@ -316,7 +316,6 @@ def diagnose_crop():
 
         data = response.json()
 
-        # Parse disease suggestions
         disease_suggestions = data.get('result', {}).get('disease', {}).get('suggestions', [])
         crop_suggestions = data.get('result', {}).get('crop', {}).get('suggestions', [])
 
