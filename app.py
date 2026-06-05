@@ -298,14 +298,14 @@ def diagnose_crop():
         base64_image = base64.b64encode(file_bytes).decode('ascii')
 
         url = "https://crop.kindwise.com/api/v1/identification"
-        headers = {
+       headers = {
             "Api-Key": KINDWISE_API_KEY,
             "Content-Type": "application/json"
         }
-       payload = {
-           "images": [base64_image],
-           "similar_images": True
-       }
+        payload = {
+            "images": [base64_image],
+            "similar_images": True
+        }
 
         response = http_session.post(url, headers=headers, json=payload, timeout=30)
         print(f"Kindwise status: {response.status_code}")
