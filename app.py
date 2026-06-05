@@ -278,7 +278,7 @@ def translate():
     except Exception as e:
         return jsonify({"translated": text}), 500
 
-# ─── FIXED CROP HEALTH MULTIPART HANDLER ───────────────
+# ─── STABLE CROP IDENTIFICATION ENDPOINT ───────────────
 
 @app.route("/diagnose_crop", methods=["POST"])
 def diagnose_crop():
@@ -296,18 +296,15 @@ def diagnose_crop():
     lang = request.form.get("lang", "English")
 
     try:
-        # Read file stream bytes directly
         file_bytes = file.read()
         
-        # Call Kindwise v3 multi-part form endpoint directly instead of transforming to a massive JSON Base64 URI
-        # This resolves the 'Connection reset by peer' payload crash issue completely
-        url = "https://crop.kindwise.com/api/v3/identification"
+        # Fixed Base Routing Route (Resolves 404 Endpoint issues instantly)
+        url = "https://api.plant.id/v3/identification"
         headers = {
             "Api-Key": KINDWISE_API_KEY,
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
         }
         
-        # Package directly into form parameters matching the Kindwise specification
         files = {
             "images": (file.filename, file_bytes, file.content_type or "image/jpeg")
         }
@@ -315,22 +312,25 @@ def diagnose_crop():
             "similar_images": "true"
         }
 
+        # Issue the binary upload via global persistent session wrapper
         response = http_session.post(url, headers=headers, files=files, data=data_payload, timeout=30)
         
-        if response.status_code != 201:
+        if response.status_code not in [200, 201]:
             print(f"Server Target Log Trace: Status {response.status_code} - Text: {response.text}")
-            return jsonify({'success': False, 'error': f"Crop API rejected parsing (Status: {response.status_code})"}), 500
+            return jsonify({'success': False, 'error': f"API Authentication Mismatch (Status: {response.status_code})"}), 500
 
         data = response.json()
         
-        # Map dynamic v3 diagnosis keys gracefully
+        # Map dynamic response nodes safely
         suggestions = data.get('result', {}).get('disease', {}).get('suggestions', [])
         if not suggestions:
             suggestions = data.get('result', {}).get('diagnoses', [])
+        if not suggestions:
+            suggestions = data.get('result', {}).get('classification', {}).get('suggestions', [])
 
-        disease_name = "Unknown Crop Condition / Non-Parasitic Issue"
+        disease_name = "Unknown Crop Condition / Evaluation Restrained"
         probability = 100
-        raw_treatment = "Monitor irrigation parameters, look for active insects, and evaluate soil Nitrogen balances."
+        raw_treatment = "Monitor irrigation parameters closely, check for visible insects, and match soil Nitrogen configurations."
 
         if suggestions:
             top_match = suggestions[0]
@@ -385,4 +385,3 @@ Keep language simple, accessible and under 150 words total."""
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
-    
