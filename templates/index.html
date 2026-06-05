@@ -10,41 +10,38 @@
 </head>
 <body>
 
-<!-- NAVBAR -->
 <nav class="navbar">
   <a href="/" class="nav-brand">🌾 FasalMitra</a>
   <div class="nav-links">
     <a href="/diagnose">🔍 Diagnose</a>
     <a href="/market">📈 Market</a>
     <a href="/alerts">🔔 Alerts</a>
-  <select id="lang-select" onchange="changeLanguage(this.value)">
-  <option value="English" {% if lang == 'English' %}selected{% endif %}>🌐 English</option>
-  <option value="Hindi" {% if lang == 'Hindi' %}selected{% endif %}>हिन्दी</option>
-  <option value="Bengali" {% if lang == 'Bengali' %}selected{% endif %}>বাংলা</option>
-  <option value="Telugu" {% if lang == 'Telugu' %}selected{% endif %}>తెలుగు</option>
-  <option value="Marathi" {% if lang == 'Marathi' %}selected{% endif %}>मराठी</option>
-  <option value="Tamil" {% if lang == 'Tamil' %}selected{% endif %}>தமிழ்</option>
-  <option value="Gujarati" {% if lang == 'Gujarati' %}selected{% endif %}>ગુજરાતી</option>
-  <option value="Kannada" {% if lang == 'Kannada' %}selected{% endif %}>ಕನ್ನಡ</option>
-  <option value="Punjabi" {% if lang == 'Punjabi' %}selected{% endif %}>ਪੰਜਾਬੀ</option>
-  <option value="Odia" {% if lang == 'Odia' %}selected{% endif %}>ଓଡ଼ିଆ</option>
-  <option value="Malayalam" {% if lang == 'Malayalam' %}selected{% endif %}>മലയാളം</option>
-  <option value="Urdu" {% if lang == 'Urdu' %}selected{% endif %}>اردو</option>
-</select>
+    <select id="lang-select" onchange="changeLanguage(this.value)">
+      <option value="English" {% if lang == 'English' %}selected{% endif %}>🌐 English</option>
+      <option value="Hindi" {% if lang == 'Hindi' %}selected{% endif %}>हिन्दी</option>
+      <option value="Bengali" {% if lang == 'Bengali' %}selected{% endif %}>বাংলা</option>
+      <option value="Telugu" {% if lang == 'Telugu' %}selected{% endif %}>తెలుగు</option>
+      <option value="Marathi" {% if lang == 'Marathi' %}selected{% endif %}>मराठी</option>
+      <option value="Tamil" {% if lang == 'Tamil' %}selected{% endif %}>தமிழ்</option>
+      <option value="Gujarati" {% if lang == 'Gujarati' %}selected{% endif %}>ગુજરાતી</option>
+      <option value="Kannada" {% if lang == 'Kannada' %}selected{% endif %}>ಕನ್ನಡ</option>
+      <option value="Punjabi" {% if lang == 'Punjabi' %}selected{% endif %}>ਪੰਜਾਬੀ</option>
+      <option value="Odia" {% if lang == 'Odia' %}selected{% endif %}>ଓଡ଼ିଆ</option>
+      <option value="Malayalam" {% if lang == 'Malayalam' %}selected{% endif %}>മലയാളം</option>
+      <option value="Urdu" {% if lang == 'Urdu' %}selected{% endif %}>اردو</option>
+    </select>
   </div>
   <div class="hamburger" onclick="toggleMenu()">
     <span></span><span></span><span></span>
   </div>
 </nav>
 
-<!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobile-menu">
   <a href="/diagnose">🔍 Diagnose Crop</a>
   <a href="/market">📈 Market Prices</a>
   <a href="/alerts">🔔 Farm Alerts</a>
 </div>
 
-<!-- HERO -->
 <div class="hero">
   <div class="hero-icon">🌾</div>
   <h1>FasalMitra</h1>
@@ -57,7 +54,6 @@
 
 <div class="main-container">
 
-  <!-- WEATHER -->
   <div class="section-title" style="margin-top:0">
     <h2>🌤️ Current Weather</h2>
   </div>
@@ -65,28 +61,25 @@
     <div class="weather-loading">🌤️ Loading weather...</div>
   </div>
 
-  <!-- FORECAST -->
   <div class="section-title">
     <h2>📅 7 Day Forecast</h2>
   </div>
   <div class="forecast-grid" id="forecast-grid">
-    <div style="text-align:center;color:var(--muted);font-size:0.85rem;grid-column:1/-1">Loading forecast...</div>
+    <div style="text-align:center;color:var(--muted);font-size:0.85rem;grid-column:1/-1;padding:20px">Loading forecast...</div>
   </div>
 
-  <!-- RECOMMENDATION -->
   <div class="section-title">
     <h2>🌱 Crop Recommendations</h2>
-    <p>Based on your local weather & location</p>
+    <p>Based on your local weather</p>
   </div>
   <div class="recommendation-card" id="recommendation-card">
     <div class="typing"><span></span><span></span><span></span></div>
-    <span style="font-size:0.85rem;color:var(--muted)">Analyzing weather for recommendations...</span>
+    <span style="font-size:0.85rem;color:var(--muted);margin-left:8px">Analyzing weather...</span>
   </div>
 
-  <!-- ADVISORY -->
   <div class="section-title">
-    <h2>💬 Crop Advisory Chat</h2>
-    <p>Get personalized advice in your language</p>
+    <h2>💬 Crop Advisory</h2>
+    <p>Select crop and problem for AI advice</p>
   </div>
 
   <div class="step-badge">Step 1 · Choose Language</div>
@@ -110,7 +103,7 @@
     <div class="crop-btn" onclick="selectCrop(this,'Rice')">🌾<br><small>Rice</small></div>
     <div class="crop-btn" onclick="selectCrop(this,'Wheat')">🌿<br><small>Wheat</small></div>
     <div class="crop-btn" onclick="selectCrop(this,'Maize')">🌽<br><small>Maize</small></div>
-    <div class="crop-btn" onclick="selectCrop(this,'Cotton')">🤍<br><small>Cotton</small></div>
+    <div class="crop-btn" onclick="selectCrop(this,'Cotton')">🪴<br><small>Cotton</small></div>
     <div class="crop-btn" onclick="selectCrop(this,'Tomato')">🍅<br><small>Tomato</small></div>
   </div>
 
@@ -120,21 +113,16 @@
     <div class="problem-btn" onclick="selectProblem(this,'Irrigation')">💧<span>Irrigation</span><small>सिंचाई / সেচ</small></div>
     <div class="problem-btn" onclick="selectProblem(this,'Pest Control')">🐛<span>Pest Control</span><small>कीट नियंत्रण</small></div>
     <div class="problem-btn" onclick="selectProblem(this,'Weather Tips')">🌦️<span>Weather Tips</span><small>मौसम / আবহাওয়া</small></div>
+  </div>
+
+  <button class="go-btn mt-4" id="go-btn" disabled onclick="goToChat()">
+    Get Advice 🌾
+  </button>
+
 </div>
 
-      <button class="go-btn mt-4" id="go-btn" disabled onclick="goToChat()">
-        Get Advice 🌾
-      </button>
-
-    </div>
-
-    <script>window.appLang = "{{ lang }}";</script>
-    <script src="/static/weather.js"></script>
-    <script src="/static/main.js"></script>
-    <script>
-    function toggleMenu() {
-      document.getElementById('mobile-menu').classList.toggle('open');
-    }
-    </script>
-    </body>
-    </html>
+<script>window.appLang = "{{ lang }}";</script>
+<script src="/static/weather.js"></script>
+<script src="/static/main.js"></script>
+</body>
+</html>
