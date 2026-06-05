@@ -13,11 +13,10 @@ app = Flask(__name__)
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 # ─── SECURE API CONFIGURATION ─────────────────────────
-# Pulls strictly from the host system environment parameters
 KINDWISE_API_KEY = os.getenv("KINDWISE_API_KEY")
 
 if KINDWISE_API_KEY:
-    KINDWISE_API_KEY = KINDWISE_API_KEY.strip()
+    KINDWISE_API_KEY = KINDWISE_API_KEY.strip().replace('"', '').replace("'", "")
 else:
     print("⚠️ CRITICAL PROMPT: KINDWISE_API_KEY environment variable is currently missing or unreadable.")
 
@@ -277,7 +276,7 @@ def translate():
     except Exception as e:
         return jsonify({"translated": text}), 500
 
-# ─── CORE IMAGE DIAGNOSTICS (KINDWISE INTERACTION) ─────
+# ─── FIXED FARM CROP DIAGNOSTICS (CROP HEALTH API) ─────
 
 @app.route("/diagnose_crop", methods=["POST"])
 def diagnose_crop():
@@ -295,39 +294,42 @@ def diagnose_crop():
     lang = request.form.get("lang", "English")
 
     try:
-        # Buffer and parse multi-part payload into base64 Data URI format
         image_bytes = file.read()
         base64_image = base64.b64encode(image_bytes).decode('utf-8')
         mime_type = file.content_type if file.content_type else "image/jpeg"
         image_data_uri = f"data:{mime_type};base64,{base64_image}"
 
-        # Setup Plant.id Endpoint Configuration
-        url = "https://plant.id/api/v3/identification"
+        # UPDATED: Targets the dedicated Crop Health API Endpoint
+        url = "https://crop.id/api/v3/diagnosis"
         headers = {
             "Api-Key": KINDWISE_API_KEY,
             "Content-Type": "application/json"
         }
         payload = {
             "images": [image_data_uri],
-            "health": "all"
+            "similar_images": True
         }
 
         response = requests.post(url, json=payload, headers=headers, timeout=15)
         
         if response.status_code != 201:
             print(f"Server Target Log Trace: Status {response.status_code} - Text: {response.text}")
-            return jsonify({'success': False, 'error': f"Kindwise verification problem (Status: {response.status_code})"}), 500
+            return jsonify({'success': False, 'error': f"Crop API validation issue (Status: {response.status_code})"}), 500
 
         data = response.json()
+        
+        # UPDATED: Crop API returns values in the 'diagnoses' array
         suggestions = data.get('result', {}).get('disease', {}).get('suggestions', [])
+        if not suggestions:
+            suggestions = data.get('result', {}).get('diagnoses', [])
 
-        disease_name = "Healthy Plant / Unknown Pattern"
+        disease_name = "Unknown Crop Malady / Non-Parasitic Issue"
         probability = 100
-        raw_treatment = "No severe disease pattern recognized. Monitor regular water, shade, and soil health parameters."
+        raw_treatment = "Monitor regular irrigation parameters, visual insect signs, and soil Nitrogen-Phosphorus-Potassium balances."
 
         if suggestions:
             top_match = suggestions[0]
-            disease_name = top_match.get('name', 'Crop Malady')
+            disease_name = top_match.get('name', 'Crop Condition')
             probability = round(top_match.get('probability', 0) * 100, 1)
             
             details = top_match.get('details', {}) or {}
@@ -342,17 +344,16 @@ def diagnose_crop():
             if treatment_steps:
                 raw_treatment = " | ".join(treatment_steps)
 
-        # Build dynamic prompt pipeline mapping to Groq model structure
         prompt = f"""You are FasalMitra, an expert plant pathologist advisor.
-The image processing system detected this condition:
-- Disease: {disease_name}
-- Initial Treatment Info: {raw_treatment}
-- Extra context from farmer: {description}
+The agricultural vision system processed an asset image and flagged this profile:
+- Condition/Disease: {disease_name}
+- Extracted Treatment Data: {raw_treatment}
+- Farmer's observation text: {description}
 
 Reply strictly in {lang} language.
-Format your response nicely with clear sections:
+Format your response beautifully with explicit sections:
 🎯 Diagnosis: [Translated Disease Name] ({probability}% Confidence)
-🛠️ Eco-friendly Treatment Steps: [Provide clear, simple practical steps a rural farmer can manage under 100 words]
+🛠️ Eco-friendly Treatment Steps: [Provide clear, simple practical steps an Indian farmer can manage under 100 words]
 🛡️ Prevention Tips: [Provide 1-2 points]
 
 Keep language simple, accessible and under 150 words total."""
