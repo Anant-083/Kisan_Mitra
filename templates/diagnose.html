@@ -47,12 +47,76 @@
     <div class="typing" id="diag-typing">
       <span></span><span></span><span></span>
     </div>
-    <div id="diagnosis-result"></div>
+    <div id="diagnosis-result" style="white-space: pre-wrap; line-height: 1.6; font-size: 0.95rem;"></div>
   </div>
 
   <a href="/" class="back-link">← Back to Home</a>
 </div>
 
-<script src="/static/diagnose.js"></script>
+<!-- Kindwise & Groq API Integration Script -->
+<script>
+function previewImage(input) {
+    const preview = document.getElementById('preview');
+    const uploadArea = document.getElementById('upload-area');
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            uploadArea.style.display = 'none'; // Hides the upload box for a clean UI preview
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+async function diagnoseImage() {
+    const fileInput = document.getElementById('crop-image');
+    const description = document.getElementById('description').value;
+    const resultCard = document.getElementById('result-card');
+    const typingIndicator = document.getElementById('diag-typing');
+    const resultContainer = document.getElementById('diagnosis-result');
+
+    // Validation: Ensure an image is chosen before hitting the servers
+    if (!fileInput.files[0]) {
+        alert("Please select or capture an image first!");
+        return;
+    }
+
+    // Unveil the results area and animate the loading dots
+    resultCard.style.display = 'block';
+    typingIndicator.style.display = 'block';
+    resultContainer.innerHTML = '';
+
+    // Fetch language preference from homepage selections, fallback to English
+    const chosenLang = localStorage.getItem("selectedLanguage") || "English";
+
+    // Packing parameters into multipart form data (required for file streams)
+    const formData = new FormData();
+    formData.append('image', fileInput.files[0]);
+    formData.append('description', description);
+    formData.append('lang', chosenLang);
+
+    try {
+        const response = await fetch('/diagnose_crop', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        typingIndicator.style.display = 'none'; // Kill the loading dots
+
+        if (data.success) {
+            // Render the formatted, localized diagnosis response string smoothly
+            resultContainer.innerHTML = `<div>${data.diagnosis.replace(/\n/g, '<br>')}</div>`;
+        } else {
+            resultContainer.innerHTML = `<p style="color:#d32f2f; font-weight:600;">❌ Error: ${data.error}</p>`;
+        }
+    } catch (error) {
+        typingIndicator.style.display = 'none';
+        resultContainer.innerHTML = `<p style="color:#d32f2f; font-weight:600;">❌ Request failed. Please check your network connection.</p>`;
+    }
+}
+</script>
 </body>
-</html>  
+</html>
