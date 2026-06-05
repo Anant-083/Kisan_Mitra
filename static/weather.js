@@ -122,7 +122,12 @@ function fetchRecommendation(weather) {
   fetch("/get_recommendation", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ lat: userLat, lon: userLon, weather, lang: selectedLang })
+    body: JSON.stringify({ 
+      lat: userLat, 
+      lon: userLon, 
+      weather, 
+      lang: selectedLang  // ✅ this should already be Bengali
+    })
   })
   .then(r => r.json())
   .then(data => {
