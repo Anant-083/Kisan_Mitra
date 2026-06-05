@@ -1,8 +1,7 @@
 let userLat = null;
 let userLon = null;
 let currentWeather = {};
-let selectedLang = 'English';
-
+let selectedLang = new URLSearchParams(window.location.search).get('lang') || localStorage.getItem('selectedLanguage') || 'English';
 window.onload = () => {
   getLocation();
 };
