@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 import os
 import uuid
 import requests
-import base64
 
 load_dotenv()
 
@@ -29,6 +28,9 @@ LANGUAGE_CODES = {
     "Kannada": "kn", "Punjabi": "pa", "Odia": "or",
     "Malayalam": "ml", "Urdu": "ur", "English": "en"
 }
+
+# Setup an HTTP session pool globally to keep sockets open and prevent Connection Reset errors
+http_session = requests.Session()
 
 # ─── APPLICATION ROUTES ────────────────────────────────
 
@@ -66,10 +68,10 @@ def get_weather():
 
     try:
         current_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
-        current = requests.get(current_url, timeout=10).json()
+        current = http_session.get(current_url, timeout=10).json()
 
         forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key}&units=metric"
-        forecast = requests.get(forecast_url, timeout=10).json()
+        forecast = http_session.get(forecast_url, timeout=10).json()
 
         return jsonify({
             "current": {
@@ -199,7 +201,7 @@ def get_market():
         if commodity:
             params["filters[commodity]"] = commodity
 
-        response = requests.get(url, params=params, timeout=15)
+        response = http_session.get(url, params=params, timeout=15)
         result = response.json()
 
         if "records" in result and len(result["records"]) > 0:
@@ -276,7 +278,7 @@ def translate():
     except Exception as e:
         return jsonify({"translated": text}), 500
 
-# ─── FIXED FARM CROP DIAGNOSTICS (CROP HEALTH API) ─────
+# ─── FIXED CROP HEALTH MULTIPART HANDLER ───────────────
 
 @app.route("/diagnose_crop", methods=["POST"])
 def diagnose_crop():
@@ -294,42 +296,45 @@ def diagnose_crop():
     lang = request.form.get("lang", "English")
 
     try:
-        image_bytes = file.read()
-        base64_image = base64.b64encode(image_bytes).decode('utf-8')
-        mime_type = file.content_type if file.content_type else "image/jpeg"
-        image_data_uri = f"data:{mime_type};base64,{base64_image}"
-
-        # UPDATED: Targets the dedicated Crop Health API Endpoint
-        url = "https://crop.id/api/v3/diagnosis"
+        # Read file stream bytes directly
+        file_bytes = file.read()
+        
+        # Call Kindwise v3 multi-part form endpoint directly instead of transforming to a massive JSON Base64 URI
+        # This resolves the 'Connection reset by peer' payload crash issue completely
+        url = "https://crop.kindwise.com/api/v3/identification"
         headers = {
             "Api-Key": KINDWISE_API_KEY,
-            "Content-Type": "application/json"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
         }
-        payload = {
-            "images": [image_data_uri],
-            "similar_images": True
+        
+        # Package directly into form parameters matching the Kindwise specification
+        files = {
+            "images": (file.filename, file_bytes, file.content_type or "image/jpeg")
+        }
+        data_payload = {
+            "similar_images": "true"
         }
 
-        response = requests.post(url, json=payload, headers=headers, timeout=15)
+        response = http_session.post(url, headers=headers, files=files, data=data_payload, timeout=30)
         
         if response.status_code != 201:
             print(f"Server Target Log Trace: Status {response.status_code} - Text: {response.text}")
-            return jsonify({'success': False, 'error': f"Crop API validation issue (Status: {response.status_code})"}), 500
+            return jsonify({'success': False, 'error': f"Crop API rejected parsing (Status: {response.status_code})"}), 500
 
         data = response.json()
         
-        # UPDATED: Crop API returns values in the 'diagnoses' array
+        # Map dynamic v3 diagnosis keys gracefully
         suggestions = data.get('result', {}).get('disease', {}).get('suggestions', [])
         if not suggestions:
             suggestions = data.get('result', {}).get('diagnoses', [])
 
-        disease_name = "Unknown Crop Malady / Non-Parasitic Issue"
+        disease_name = "Unknown Crop Condition / Non-Parasitic Issue"
         probability = 100
-        raw_treatment = "Monitor regular irrigation parameters, visual insect signs, and soil Nitrogen-Phosphorus-Potassium balances."
+        raw_treatment = "Monitor irrigation parameters, look for active insects, and evaluate soil Nitrogen balances."
 
         if suggestions:
             top_match = suggestions[0]
-            disease_name = top_match.get('name', 'Crop Condition')
+            disease_name = top_match.get('name', 'Crop Malady')
             probability = round(top_match.get('probability', 0) * 100, 1)
             
             details = top_match.get('details', {}) or {}
@@ -380,3 +385,4 @@ Keep language simple, accessible and under 150 words total."""
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
+    
