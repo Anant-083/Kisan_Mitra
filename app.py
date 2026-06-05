@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 import uuid
 import requests
+import base64
 
 load_dotenv()
 
@@ -29,7 +30,7 @@ LANGUAGE_CODES = {
     "Malayalam": "ml", "Urdu": "ur", "English": "en"
 }
 
-# Setup an HTTP session pool globally to keep sockets open and prevent Connection Reset errors
+# Establish a global persistent connection pool to stop 'Connection Reset' error drops
 http_session = requests.Session()
 
 # ─── APPLICATION ROUTES ────────────────────────────────
@@ -278,7 +279,7 @@ def translate():
     except Exception as e:
         return jsonify({"translated": text}), 500
 
-# ─── STABLE CROP IDENTIFICATION ENDPOINT ───────────────
+# ─── CORRECT KINDWISE V3 DIAGNOSTICS ROUTE ─────────────
 
 @app.route("/diagnose_crop", methods=["POST"])
 def diagnose_crop():
@@ -296,41 +297,50 @@ def diagnose_crop():
     lang = request.form.get("lang", "English")
 
     try:
+        # Convert binary data to dynamic Base64 Data URI matching v3 specifications
         file_bytes = file.read()
+        base64_image = base64.b64encode(file_bytes).decode('utf-8')
+        mime_type = file.content_type if file.content_type else "image/jpeg"
+        image_data_uri = f"data:{mime_type};base64,{base64_image}"
         
-        # Fixed Base Routing Route (Resolves 404 Endpoint issues instantly)
+        # Correct URL target for the Kindwise V3 Identification engine
         url = "https://api.plant.id/v3/identification"
+        
         headers = {
             "Api-Key": KINDWISE_API_KEY,
+            "Content-Type": "application/json",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
         }
         
-        files = {
-            "images": (file.filename, file_bytes, file.content_type or "image/jpeg")
-        }
-        data_payload = {
-            "similar_images": "true"
+        # Proper Kindwise v3 JSON structural payload format
+        payload = {
+            "images": [image_data_uri],
+            "health": "all",
+            "similar_images": True
         }
 
-        # Issue the binary upload via global persistent session wrapper
-        response = http_session.post(url, headers=headers, files=files, data=data_payload, timeout=30)
+        # Send JSON payload across persistent pooled connection session
+        response = http_session.post(url, headers=headers, json=payload, timeout=30)
         
         if response.status_code not in [200, 201]:
             print(f"Server Target Log Trace: Status {response.status_code} - Text: {response.text}")
-            return jsonify({'success': False, 'error': f"API Authentication Mismatch (Status: {response.status_code})"}), 500
+            return jsonify({'success': False, 'error': f"API Authentication Error (Status: {response.status_code})"}), 500
 
         data = response.json()
         
-        # Map dynamic response nodes safely
-        suggestions = data.get('result', {}).get('disease', {}).get('suggestions', [])
+        # Safely parse the crop health diagnostics object from v3 response structure
+        health_assessment = data.get('result', {}).get('health', {})
+        suggestions = health_assessment.get('suggestions', [])
+        
+        # Fallbacks to cover alternative endpoint formatting shapes
         if not suggestions:
-            suggestions = data.get('result', {}).get('diagnoses', [])
+            suggestions = data.get('result', {}).get('disease', {}).get('suggestions', [])
         if not suggestions:
             suggestions = data.get('result', {}).get('classification', {}).get('suggestions', [])
 
-        disease_name = "Unknown Crop Condition / Evaluation Restrained"
+        disease_name = "Unknown Crop Condition / Environmental Issue"
         probability = 100
-        raw_treatment = "Monitor irrigation parameters closely, check for visible insects, and match soil Nitrogen configurations."
+        raw_treatment = "Monitor local irrigation patterns, check visual insect activity, and evaluate soil Nitrogen balance."
 
         if suggestions:
             top_match = suggestions[0]
@@ -385,3 +395,4 @@ Keep language simple, accessible and under 150 words total."""
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
+
