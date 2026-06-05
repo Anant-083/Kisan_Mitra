@@ -302,10 +302,10 @@ def diagnose_crop():
             "Api-Key": KINDWISE_API_KEY,
             "Content-Type": "application/json"
         }
-        payload = {
-            "images": [base64_image],
-            "details": "treatment,cause,symptoms"
-        }
+       payload = {
+    "images": [base64_image],
+    "similar_images": True
+}
 
         response = http_session.post(url, headers=headers, json=payload, timeout=30)
         print(f"Kindwise status: {response.status_code}")
