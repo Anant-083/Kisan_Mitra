@@ -3,50 +3,45 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FasalMitra · Alerts</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <title>FasalMitra · Farm Alerts</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="/static/style.css"/>
 </head>
 <body>
-
 <nav class="navbar">
-  <a href="/" class="nav-brand">🌾 FasalMitra</a>
+  <a href="/" class="nav-brand"><span>🌾</span> FasalMitra</a>
   <div class="nav-links">
     <a href="/">🏠 Home</a>
     <a href="/diagnose">🔍 Diagnose</a>
     <a href="/market">📈 Market</a>
   </div>
-  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
-    <span></span><span></span><span></span>
-  </div>
+  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
 </nav>
-
 <div class="mobile-menu" id="mobile-menu">
-  <a href="/">🏠 Home</a>
-  <a href="/diagnose">🔍 Diagnose</a>
-  <a href="/market">📈 Market</a>
+  <button class="menu-close" onclick="toggleMenu()">✕</button>
+  <a href="/" onclick="toggleMenu()">🏠 Home</a>
+  <a href="/diagnose" onclick="toggleMenu()">🔍 Diagnose</a>
+  <a href="/market" onclick="toggleMenu()">📈 Market</a>
 </div>
 <div class="mobile-overlay" id="mobile-overlay" onclick="toggleMenu()"></div>
 
-<div class="page-title">
+<div class="page-hero">
   <h2>🔔 Farm Alerts</h2>
-  <p>Real-time weather, pest & crop warnings</p>
+  <p>Real-time weather, pest & crop warnings for your area</p>
 </div>
 
-<div class="main-container" style="margin-top:0">
-  <div class="alerts-grid" id="alerts-grid">
+<div class="container" style="padding-top:20px">
+  <div class="gap-grid" id="alerts-grid">
     <div class="alert-item">
-      <div class="alert-icon">⏳</div>
-      <div class="alert-body">
-        <p>Detecting your location and loading alerts...</p>
-      </div>
+      <div class="alert-icon-wrap">⏳</div>
+      <div class="alert-body"><p>Detecting your location and loading alerts...</p></div>
     </div>
   </div>
-  <a href="/" class="back-link">← Back to Home</a>
+  <a href="/" class="back-link mt-4">← Back to Home</a>
 </div>
 
 <footer class="footer">
-  <strong>FasalMitra</strong> · AI-Powered Crop Advisory · Built for Indian Farmers 🌾
+  <strong>FasalMitra</strong> · AI-Powered Farm Alerts 🌾
 </footer>
 
 <script src="/static/alerts.js"></script>
