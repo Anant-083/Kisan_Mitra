@@ -16,7 +16,7 @@
     <a href="/diagnose">🔍 Diagnose</a>
     <a href="/market">📈 Market</a>
   </div>
-  <div class="hamburger" onclick="toggleMenu()">
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
     <span></span><span></span><span></span>
   </div>
 </nav>
@@ -26,6 +26,7 @@
   <a href="/diagnose">🔍 Diagnose</a>
   <a href="/market">📈 Market</a>
 </div>
+<div class="mobile-overlay" id="mobile-overlay" onclick="toggleMenu()"></div>
 
 <div class="page-title">
   <h2>🔔 Farm Alerts</h2>
@@ -37,17 +38,22 @@
     <div class="alert-item">
       <div class="alert-icon">⏳</div>
       <div class="alert-body">
-        <p>Loading alerts based on your location...</p>
+        <p>Detecting your location and loading alerts...</p>
       </div>
     </div>
   </div>
   <a href="/" class="back-link">← Back to Home</a>
 </div>
 
+<footer class="footer">
+  <strong>FasalMitra</strong> · AI-Powered Crop Advisory · Built for Indian Farmers 🌾
+</footer>
+
 <script src="/static/alerts.js"></script>
 <script>
 function toggleMenu() {
   document.getElementById('mobile-menu').classList.toggle('open');
+  document.getElementById('mobile-overlay').classList.toggle('open');
 }
 </script>
 </body>
