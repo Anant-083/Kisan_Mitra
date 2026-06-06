@@ -3,13 +3,31 @@ let selectedCrop = '';
 let selectedProblem = '';
 
 window.addEventListener('load', () => {
-  // Auto highlight current language button
+  // Auto highlight current language
   document.querySelectorAll('.lang-btn').forEach(btn => {
-    const onclick = btn.getAttribute('onclick') || '';
-    if (onclick.includes(`'${selectedLang}'`)) {
+    btn.addEventListener('click', function() {
+      const lang = this.getAttribute('data-lang');
+      selectLang(this, lang);
+    });
+    if (btn.getAttribute('data-lang') === selectedLang) {
       btn.classList.add('selected');
     }
   });
+
+  document.querySelectorAll('.crop-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const crop = this.getAttribute('data-crop');
+      selectCrop(this, crop);
+    });
+  });
+
+  document.querySelectorAll('.problem-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const problem = this.getAttribute('data-problem');
+      selectProblem(this, problem);
+    });
+  });
+
   checkReady();
 });
 
