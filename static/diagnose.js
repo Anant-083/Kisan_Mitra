@@ -60,3 +60,12 @@ function diagnoseImage() {
     resultEl.innerHTML = "❌ Could not diagnose. Please check your connection and try again.";
   });
 }
+function openCamera() {
+  const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+  if (isMobile) {
+    document.getElementById('camera-capture').click();
+  } else {
+    // Desktop — open file dialog instead
+    document.getElementById('file-upload').click();
+  }
+}
