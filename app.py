@@ -83,7 +83,7 @@ def get_weather():
                     "description": item["weather"][0]["description"],
                     "icon": item["weather"][0]["icon"]
                 }
-                for item in forecast["list"][::4][:7]
+                for item in forecast["list"][::8][:7]
             ]
         })
     except Exception as e:
