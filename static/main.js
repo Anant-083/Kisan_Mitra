@@ -3,52 +3,54 @@ let selectedCrop = '';
 let selectedProblem = '';
 
 window.addEventListener('load', () => {
-  // Auto highlight current language
+  // Auto select current language button
   document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const lang = this.getAttribute('data-lang');
-      selectLang(this, lang);
-    });
-    if (btn.getAttribute('data-lang') === selectedLang) {
+    if (btn.innerText.trim() === selectedLang || 
+        btn.getAttribute('data-lang') === selectedLang) {
       btn.classList.add('selected');
     }
   });
-
-  document.querySelectorAll('.crop-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const crop = this.getAttribute('data-crop');
-      selectCrop(this, crop);
-    });
-  });
-
-  document.querySelectorAll('.problem-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const problem = this.getAttribute('data-problem');
-      selectProblem(this, problem);
-    });
-  });
-
   checkReady();
 });
 
 function selectLang(el, lang) {
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.remove('selected');
+    b.style.background = '';
+    b.style.borderColor = '';
+    b.style.color = '';
+  });
   el.classList.add('selected');
+  el.style.background = 'linear-gradient(135deg, #d8f3dc, #b7e4c7)';
+  el.style.borderColor = '#2d6a4f';
+  el.style.color = '#2d6a4f';
   selectedLang = lang;
   localStorage.setItem('selectedLanguage', lang);
   checkReady();
 }
 
 function selectCrop(el, crop) {
-  document.querySelectorAll('.crop-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.crop-btn').forEach(b => {
+    b.classList.remove('selected');
+    b.style.background = '';
+    b.style.borderColor = '';
+  });
   el.classList.add('selected');
+  el.style.background = 'linear-gradient(135deg, #d8f3dc, #b7e4c7)';
+  el.style.borderColor = '#2d6a4f';
   selectedCrop = crop;
   checkReady();
 }
 
 function selectProblem(el, problem) {
-  document.querySelectorAll('.problem-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.problem-btn').forEach(b => {
+    b.classList.remove('selected');
+    b.style.background = '';
+    b.style.borderColor = '';
+  });
   el.classList.add('selected');
+  el.style.background = 'linear-gradient(135deg, #fff8ec, #fde8b0)';
+  el.style.borderColor = '#f4a716';
   selectedProblem = problem;
   checkReady();
 }
