@@ -3,60 +3,58 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FasalMitra · Advisory</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <title>FasalMitra · Advisory Chat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="/static/style.css"/>
 </head>
 <body>
-
 <nav class="navbar">
-  <a href="/" class="nav-brand">🌾 FasalMitra</a>
+  <a href="/" class="nav-brand"><span>🌾</span> FasalMitra</a>
   <div class="nav-links">
     <a href="/">🏠 Home</a>
     <a href="/diagnose">🔍 Diagnose</a>
     <a href="/market">📈 Market</a>
     <a href="/alerts">🔔 Alerts</a>
   </div>
-  <div class="hamburger" onclick="toggleMenu()">
-    <span></span><span></span><span></span>
-  </div>
+  <div class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
 </nav>
-
 <div class="mobile-menu" id="mobile-menu">
-  <a href="/">🏠 Home</a>
-  <a href="/diagnose">🔍 Diagnose</a>
-  <a href="/market">📈 Market</a>
-  <a href="/alerts">🔔 Alerts</a>
+  <button class="menu-close" onclick="toggleMenu()">✕</button>
+  <a href="/" onclick="toggleMenu()">🏠 Home</a>
+  <a href="/diagnose" onclick="toggleMenu()">🔍 Diagnose</a>
+  <a href="/market" onclick="toggleMenu()">📈 Market</a>
+  <a href="/alerts" onclick="toggleMenu()">🔔 Alerts</a>
 </div>
+<div class="mobile-overlay" id="mobile-overlay" onclick="toggleMenu()"></div>
 
-<div class="main-container">
+<div class="container" style="padding-top:20px">
   <div class="chat-header">
-    <div class="crop-icon">🌾</div>
+    <div class="chat-crop-icon" id="chat-crop-icon">🌾</div>
     <div>
-      <h3>{{ crop }} · {{ problem }}</h3>
-      <p>Language: {{ lang }}</p>
+      <h3 id="chat-title">{{ crop }} · {{ problem }}</h3>
+      <p id="chat-subtitle">Language: {{ lang }}</p>
     </div>
   </div>
 
-  <div class="chat-box" id="chat-box">
-    <div class="typing" id="typing">
-      <span></span><span></span><span></span>
-    </div>
-  </div>
+  <div class="chat-box" id="chat-box"></div>
 
-  <div class="audio-bar" id="audio-bar" style="display:none">
-    <button onclick="playAudio()">🔊</button>
-    <span>Tap to hear advice in {{ lang }}</span>
+  <div class="audio-strip" id="audio-bar" style="display:none">
+    <button class="audio-play-btn" onclick="playAudio()" title="Play audio">🔊</button>
+    <span id="audio-label">Tap to hear advice in {{ lang }}</span>
   </div>
 
   <div class="input-row mt-3">
-    <input type="text" id="user-input" placeholder="Ask more..."
-           onkeydown="if(event.key==='Enter') sendMessage()"/>
-    <button onclick="sendMessage()">➤</button>
+    <input type="text" id="user-input" placeholder="Ask a follow-up question..."
+           onkeydown="if(event.key==='Enter')sendMessage()"/>
+    <button class="send-btn" onclick="sendMessage()">➤</button>
   </div>
 
-  <a href="/" class="back-link">← Back to Home</a>
+  <a href="/" class="back-link mt-4">← Back to Home</a>
 </div>
+
+<footer class="footer">
+  <strong>FasalMitra</strong> · AI-Powered Crop Advisory 🌾
+</footer>
 
 <script>
 const lang = "{{ lang }}";
@@ -64,56 +62,90 @@ const crop = "{{ crop }}";
 const problem = "{{ problem }}";
 let currentAudio = null;
 
-window.onload = () => fetchAdvice("");
+const cropIcons = {Rice:'🌾',Wheat:'🌿',Maize:'🌽',Cotton:'☁️',Tomato:'🍅',Potato:'🥔',Onion:'🧅',Mustard:'🌻',Sugarcane:'🎋',Soybean:'🫘'};
+document.getElementById('chat-crop-icon').textContent = cropIcons[crop] || '🌾';
 
-function fetchAdvice(question) {
-  document.getElementById("typing").style.display = "flex";
-  document.getElementById("audio-bar").style.display = "none";
-  fetch("/get_advice", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({lang, crop, problem, question})
-  })
-  .then(r => r.json())
-  .then(data => {
-    document.getElementById("typing").style.display = "none";
-    addMessage("FasalMitra 🌾", data.advice, "bot");
-    if (data.audio_url) {
-      currentAudio = new Audio(data.audio_url);
-      document.getElementById("audio-bar").style.display = "flex";
-    }
-  })
-  .catch(() => {
-    document.getElementById("typing").style.display = "none";
-    addMessage("FasalMitra 🌾", "Something went wrong. Please try again.", "bot");
-  });
-}
-
-function sendMessage() {
-  const input = document.getElementById("user-input");
-  const text = input.value.trim();
-  if (!text) return;
-  addMessage("You", text, "user");
-  input.value = "";
-  fetchAdvice(text);
+function toggleMenu() {
+  document.getElementById('mobile-menu').classList.toggle('open');
+  document.getElementById('mobile-overlay').classList.toggle('open');
 }
 
 function addMessage(sender, text, type) {
-  const box = document.getElementById("chat-box");
-  const div = document.createElement("div");
-  div.className = `msg ${type}`;
-  div.innerHTML = `<div class="sender">${sender}</div><div class="bubble">${text}</div>`;
+  const box = document.getElementById('chat-box');
+  const div = document.createElement('div');
+  div.className = type === 'bot' ? 'msg-bot fade-in' : 'msg-user fade-in';
+  const now = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  if (type === 'bot') {
+    div.innerHTML = `
+      <div class="msg-avatar bot">🌾</div>
+      <div>
+        <div class="msg-bubble bot">${text.replace(/\n/g,'<br>')}</div>
+        <div class="msg-time">${now}</div>
+      </div>`;
+  } else {
+    div.innerHTML = `
+      <div>
+        <div class="msg-bubble user">${text}</div>
+        <div class="msg-time">${now}</div>
+      </div>
+      <div class="msg-avatar user">You</div>`;
+  }
   box.appendChild(div);
   box.scrollTop = box.scrollHeight;
 }
 
-function playAudio() {
-  if (currentAudio) currentAudio.play();
+function showTyping() {
+  const box = document.getElementById('chat-box');
+  const div = document.createElement('div');
+  div.className = 'msg-bot fade-in';
+  div.id = 'typing-msg';
+  div.innerHTML = `<div class="msg-avatar bot">🌾</div><div class="typing-indicator"><span></span><span></span><span></span></div>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
 }
 
-function toggleMenu() {
-  document.getElementById('mobile-menu').classList.toggle('open');
+function removeTyping() {
+  const t = document.getElementById('typing-msg');
+  if (t) t.remove();
 }
+
+function fetchAdvice(question) {
+  showTyping();
+  document.getElementById('audio-bar').style.display = 'none';
+  fetch('/get_advice', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({lang, crop, problem, question})
+  })
+  .then(r => r.json())
+  .then(data => {
+    removeTyping();
+    addMessage('bot', data.advice, 'bot');
+    if (data.audio_url) {
+      currentAudio = new Audio(data.audio_url);
+      document.getElementById('audio-bar').style.display = 'flex';
+    }
+  })
+  .catch(() => {
+    removeTyping();
+    addMessage('bot', '❌ Something went wrong. Please try again.', 'bot');
+  });
+}
+
+function sendMessage() {
+  const input = document.getElementById('user-input');
+  const text = input.value.trim();
+  if (!text) return;
+  addMessage('You', text, 'user');
+  input.value = '';
+  fetchAdvice(text);
+}
+
+function playAudio() {
+  if (currentAudio) { currentAudio.currentTime = 0; currentAudio.play(); }
+}
+
+window.onload = () => fetchAdvice('');
 </script>
 </body>
 </html>
