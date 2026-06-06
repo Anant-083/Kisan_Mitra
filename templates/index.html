@@ -127,38 +127,38 @@
     <p>Get personalized advice in your language</p>
   </div>
 
-  <div class="step-badge">Step 1 · Choose Language</div>
-  <div class="lang-grid" id="lang-grid">
-    <div class="lang-btn" onclick="selectLang(this,'English')">English</div>
-    <div class="lang-btn" onclick="selectLang(this,'Hindi')">हिन्दी</div>
-    <div class="lang-btn" onclick="selectLang(this,'Bengali')">বাংলা</div>
-    <div class="lang-btn" onclick="selectLang(this,'Telugu')">తెలుగు</div>
-    <div class="lang-btn" onclick="selectLang(this,'Marathi')">मराठी</div>
-    <div class="lang-btn" onclick="selectLang(this,'Tamil')">தமிழ்</div>
-    <div class="lang-btn" onclick="selectLang(this,'Gujarati')">ગુજરાતી</div>
-    <div class="lang-btn" onclick="selectLang(this,'Kannada')">ಕನ್ನಡ</div>
-    <div class="lang-btn" onclick="selectLang(this,'Punjabi')">ਪੰਜਾਬੀ</div>
-    <div class="lang-btn" onclick="selectLang(this,'Odia')">ଓଡ଼ିଆ</div>
-    <div class="lang-btn" onclick="selectLang(this,'Malayalam')">മലയാളം</div>
-    <div class="lang-btn" onclick="selectLang(this,'Urdu')">اردو</div>
-  </div>
+<!-- Language buttons -->
+<div class="lang-grid" id="lang-grid">
+  <div class="lang-btn" data-lang="English">English</div>
+  <div class="lang-btn" data-lang="Hindi">हिन्दी</div>
+  <div class="lang-btn" data-lang="Bengali">বাংলা</div>
+  <div class="lang-btn" data-lang="Telugu">తెలుగు</div>
+  <div class="lang-btn" data-lang="Marathi">मराठी</div>
+  <div class="lang-btn" data-lang="Tamil">தமிழ்</div>
+  <div class="lang-btn" data-lang="Gujarati">ગુજરાતી</div>
+  <div class="lang-btn" data-lang="Kannada">ಕನ್ನಡ</div>
+  <div class="lang-btn" data-lang="Punjabi">ਪੰਜਾਬੀ</div>
+  <div class="lang-btn" data-lang="Odia">ଓଡ଼ିଆ</div>
+  <div class="lang-btn" data-lang="Malayalam">മലയാളം</div>
+  <div class="lang-btn" data-lang="Urdu">اردو</div>
+</div>
 
-  <div class="step-badge mt-3">Step 2 · Select Crop</div>
-  <div class="crop-grid">
-    <div class="crop-btn" onclick="selectCrop(this,'Rice')">🌾<br><small>Rice</small></div>
-    <div class="crop-btn" onclick="selectCrop(this,'Wheat')">🌿<br><small>Wheat</small></div>
-    <div class="crop-btn" onclick="selectCrop(this,'Maize')">🌽<br><small>Maize</small></div>
-    <div class="crop-btn" onclick="selectCrop(this,'Cotton')">🪴<br><small>Cotton</small></div>
-    <div class="crop-btn" onclick="selectCrop(this,'Tomato')">🍅<br><small>Tomato</small></div>
-  </div>
+<!-- Crop buttons -->
+<div class="crop-grid">
+  <div class="crop-btn" data-crop="Rice">🌾<br><small>Rice</small></div>
+  <div class="crop-btn" data-crop="Wheat">🌿<br><small>Wheat</small></div>
+  <div class="crop-btn" data-crop="Maize">🌽<br><small>Maize</small></div>
+  <div class="crop-btn" data-crop="Cotton">☁️<br><small>Cotton</small></div>
+  <div class="crop-btn" data-crop="Tomato">🍅<br><small>Tomato</small></div>
+</div>
 
-  <div class="step-badge mt-3">Step 3 · Select Problem</div>
-  <div class="problem-grid">
-    <div class="problem-btn" onclick="selectProblem(this,'Fertilizer')">🌱<span>Fertilizer</span><small>खाद / সার</small></div>
-    <div class="problem-btn" onclick="selectProblem(this,'Irrigation')">💧<span>Irrigation</span><small>सिंचाई / সেচ</small></div>
-    <div class="problem-btn" onclick="selectProblem(this,'Pest Control')">🐛<span>Pest Control</span><small>कीट नियंत्रण</small></div>
-    <div class="problem-btn" onclick="selectProblem(this,'Weather Tips')">🌦️<span>Weather Tips</span><small>मौसम / আবহাওয়া</small></div>
-  </div>
+<!-- Problem buttons -->
+<div class="problem-grid">
+  <div class="problem-btn" data-problem="Fertilizer">🌱<span>Fertilizer</span><small>खाद / সার</small></div>
+  <div class="problem-btn" data-problem="Irrigation">💧<span>Irrigation</span><small>सिंचाई / সেচ</small></div>
+  <div class="problem-btn" data-problem="Pest Control">🐛<span>Pest Control</span><small>कीट नियंत्रण</small></div>
+  <div class="problem-btn" data-problem="Weather Tips">🌦️<span>Weather Tips</span><small>मौसम / আবহাওয়া</small></div>
+</div>
 
   <button class="go-btn mt-4" id="go-btn" disabled onclick="goToChat()">
     Get Advice 🌾
