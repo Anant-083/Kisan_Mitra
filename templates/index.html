@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero">
+    <div class="hero-content">
+        <div class="hero-icon">🏥</div>
+        <h1>AarogyaBot</h1>
+        <p class="hero-sub">Your AI Health Assistant for Rural India</p>
+        <p class="hero-sub2">स्वास्थ्य सहायक | স্বাস্থ্য সহায়ক</p>
+        <div class="hero-badges">
+            <span class="badge">🇮🇳 Hindi</span>
+            <span class="badge">বাংলা</span>
+            <span class="badge">English</span>
+        </div>
+    </div>
+</div>
+
+<div class="cards-grid">
+    <a href="/chat" class="feature-card chat-card">
+        <div class="card-icon">💬</div>
+        <h3>Symptom Checker</h3>
+        <p>Describe your symptoms in Hindi, Bengali or English. Get instant AI guidance.</p>
+        <span class="card-btn">Start Chat →</span>
+    </a>
+
+    <a href="/hospitals" class="feature-card hospital-card">
+        <div class="card-icon">🏨</div>
+        <h3>Find Hospital</h3>
+        <p>Locate nearest government hospitals in your state and district.</p>
+        <span class="card-btn">Find Now →</span>
+    </a>
+
+    <a href="/medicines" class="feature-card medicine-card">
+        <div class="card-icon">💊</div>
+        <h3>Medicine Info</h3>
+        <p>Know about any medicine — uses, dosage, side effects and affordable alternatives.</p>
+        <span class="card-btn">Search →</span>
+    </a>
+
+    <a href="/emergency" class="feature-card emergency-card">
+        <div class="card-icon">🚨</div>
+        <h3>Emergency Numbers</h3>
+        <p>Quick access to all national health helplines and emergency contacts.</p>
+        <span class="card-btn">View →</span>
+    </a>
+</div>
+
+<div class="disclaimer">
+    <p>⚠️ This app provides general health information only. It is not a substitute for professional medical advice.</p>
+</div>
+{% endblock %}
