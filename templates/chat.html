@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header chat-header">
+    <h2>💬 Symptom Checker</h2>
+    <p>Type in Hindi, Bengali or English — AarogyaBot understands all</p>
+</div>
+
+<div class="chat-container">
+    <div class="chat-box" id="chatBox">
+        <div class="message bot-message">
+            <span class="msg-icon">🤖</span>
+            <div class="msg-text">
+                Namaste! 🙏 I am AarogyaBot. Please describe your symptoms and I will help you.<br><br>
+                <b>नमस्ते!</b> अपने लक्षण बताएं, मैं मदद करूंगा।<br>
+                <b>নমস্কার!</b> আপনার উপসর্গ বলুন।
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-input-area">
+        <div class="lang-indicator" id="langIndicator">🌐 Auto-detect</div>
+        <div class="input-row">
+            <textarea id="userInput" placeholder="Type symptoms... / लक्षण लिखें... / উপসর্গ লিখুন..." rows="2"></textarea>
+            <button class="send-btn" onclick="sendMessage()">➤</button>
+        </div>
+        <div class="quick-symptoms">
+            <span onclick="quickSend('fever and headache')">🌡️ Fever</span>
+            <span onclick="quickSend('stomach pain and vomiting')">🤢 Stomach Pain</span>
+            <span onclick="quickSend('cough and cold')">🤧 Cough</span>
+            <span onclick="quickSend('chest pain')">❤️ Chest Pain</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let history = [];
+
+async function sendMessage() {
+    const input = document.getElementById("userInput");
+    const text = input.value.trim();
+    if (!text) return;
+
+    appendMessage(text, "user");
+    input.value = "";
+    showTyping();
+
+    try {
+        const res = await fetch("/api/chat", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({message: text, history: history})
+        });
+        const data = await res.json();
+        removeTyping();
+        appendMessage(data.reply, "bot", data.lang);
+        history.push({role: "user", content: text});
+        history.push({role: "assistant", content: data.reply});
+
+        const langMap = {"hi": "🇮🇳 Hindi", "bn": "🇧🇩 Bengali", "en": "🌐 English"};
+        document.getElementById("langIndicator").textContent = langMap[data.lang] || "🌐 Auto";
+    } catch(e) {
+        removeTyping();
+        appendMessage("Sorry, something went wrong. Please try again.", "bot");
+    }
+}
+
+function appendMessage(text, role, lang) {
+    const box = document.getElementById("chatBox");
+    const div = document.createElement("div");
+    div.className = `message ${role}-message`;
+
+    let ttsBtn = "";
+    if (role === "bot") {
+        ttsBtn = `<button class="tts-btn" onclick="playTTS(this, '${encodeURIComponent(text)}', '${lang || 'en'}')">🔊</button>`;
+    }
+
+    div.innerHTML = `
+        <span class="msg-icon">${role === "bot" ? "🤖" : "👤"}</span>
+        <div class="msg-text">${text.replace(/\n/g, "<br>")}${ttsBtn}</div>
+    `;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+}
+
+function showTyping() {
+    const box = document.getElementById("chatBox");
+    const div = document.createElement("div");
+    div.className = "message bot-message typing-indicator";
+    div.id = "typingIndicator";
+    div.innerHTML = `<span class="msg-icon">🤖</span><div class="msg-text"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+}
+
+function removeTyping() {
+    const t = document.getElementById("typingIndicator");
+    if (t) t.remove();
+}
+
+function quickSend(text) {
+    document.getElementById("userInput").value = text;
+    sendMessage();
+}
+
+async function playTTS(btn, encodedText, lang) {
+    const text = decodeURIComponent(encodedText);
+    btn.textContent = "⏳";
+    try {
+        const res = await fetch("/api/tts", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({text, lang})
+        });
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.play();
+        btn.textContent = "🔊";
+    } catch(e) {
+        btn.textContent = "🔊";
+    }
+}
+
+document.getElementById("userInput").addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+</script>
+{% endblock %}
