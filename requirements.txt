@@ -1,6 +1,5 @@
 flask
 groq
+langdetect
 gtts
-python-dotenv
-requests
 gunicorn
