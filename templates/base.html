@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AarogyaBot 🏥</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#1a6b3c">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="nav-icon">🏥</span>
+            <span>AarogyaBot</span>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">🏠 Home</a>
+            <a href="/chat" class="nav-link {% if request.path == '/chat' %}active{% endif %}">💬 Chat</a>
+            <a href="/hospitals" class="nav-link {% if request.path == '/hospitals' %}active{% endif %}">🏨 Hospitals</a>
+            <a href="/medicines" class="nav-link {% if request.path == '/medicines' %}active{% endif %}">💊 Medicines</a>
+            <a href="/emergency" class="nav-link {% if request.path == '/emergency' %}active{% endif %}">🚨 Emergency</a>
+        </div>
+        <div class="nav-toggle" onclick="toggleNav()">☰</div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="/" onclick="toggleNav()">🏠 Home</a>
+        <a href="/chat" onclick="toggleNav()">💬 Symptom Check</a>
+        <a href="/hospitals" onclick="toggleNav()">🏨 Hospitals</a>
+        <a href="/medicines" onclick="toggleNav()">💊 Medicines</a>
+        <a href="/emergency" onclick="toggleNav()">🚨 Emergency</a>
+    </div>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>⚠️ AarogyaBot provides general health guidance only. Always consult a qualified doctor.</p>
+        <p>© 2025 AarogyaBot | Built for Rural India 🇮🇳</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
