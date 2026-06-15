@@ -1,281 +1,189 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 from groq import Groq
+from langdetect import detect
 from gtts import gTTS
-from dotenv import load_dotenv
 import os
-import uuid
-import requests
-import base64
-
-load_dotenv()
+import io
+import json
 
 app = Flask(__name__)
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-KINDWISE_API_KEY = os.getenv("KINDWISE_API_KEY")
-if KINDWISE_API_KEY:
-    KINDWISE_API_KEY = KINDWISE_API_KEY.strip().replace('"', '').replace("'", "")
-
-AUDIO_DIR = "static/audio"
-os.makedirs(AUDIO_DIR, exist_ok=True)
-
-LANGUAGE_CODES = {
-    "Hindi": "hi", "Bengali": "bn", "Telugu": "te",
-    "Marathi": "mr", "Tamil": "ta", "Gujarati": "gu",
-    "Kannada": "kn", "Punjabi": "pa", "Odia": "or",
-    "Malayalam": "ml", "Urdu": "ur", "English": "en"
+# ---------- Hardcoded Hospital Data ----------
+HOSPITALS = {
+    "Bihar": {
+        "Patna": [
+            {"name": "Patna Medical College & Hospital", "address": "Ashok Rajpath, Patna", "phone": "0612-2300440", "type": "Government"},
+            {"name": "NMCH Patna", "address": "Agamkuan, Patna", "phone": "0612-2631467", "type": "Government"},
+            {"name": "IGIMS Patna", "address": "Sheikhpura, Patna", "phone": "0612-2297631", "type": "Government"},
+        ],
+        "Gaya": [
+            {"name": "Anugrah Narayan Magadh Medical College", "address": "Gaya", "phone": "0631-2220323", "type": "Government"},
+        ],
+        "Muzaffarpur": [
+            {"name": "Sri Krishna Medical College", "address": "Umanagar, Muzaffarpur", "phone": "0621-2214580", "type": "Government"},
+        ],
+    },
+    "West Bengal": {
+        "Kolkata": [
+            {"name": "SSKM Hospital", "address": "244 AJC Bose Road, Kolkata", "phone": "033-22044440", "type": "Government"},
+            {"name": "RG Kar Medical College", "address": "1 Khudiram Bose Sarani, Kolkata", "phone": "033-25551234", "type": "Government"},
+        ],
+        "Howrah": [
+            {"name": "Howrah District Hospital", "address": "Howrah", "phone": "033-26382000", "type": "Government"},
+        ],
+    },
+    "Uttar Pradesh": {
+        "Lucknow": [
+            {"name": "King George's Medical University", "address": "Shah Mina Road, Lucknow", "phone": "0522-2257450", "type": "Government"},
+            {"name": "Ram Manohar Lohia Hospital", "address": "Vibhuti Khand, Lucknow", "phone": "0522-2235973", "type": "Government"},
+        ],
+        "Varanasi": [
+            {"name": "BHU Sir Sunderlal Hospital", "address": "BHU Campus, Varanasi", "phone": "0542-2309289", "type": "Government"},
+        ],
+        "Agra": [
+            {"name": "SN Medical College", "address": "MG Road, Agra", "phone": "0562-2520077", "type": "Government"},
+        ],
+    },
+    "Rajasthan": {
+        "Jaipur": [
+            {"name": "SMS Hospital", "address": "JLN Marg, Jaipur", "phone": "0141-2518888", "type": "Government"},
+            {"name": "Sawai Man Singh Hospital", "address": "Jaipur", "phone": "0141-2560291", "type": "Government"},
+        ],
+        "Jodhpur": [
+            {"name": "MDM Hospital", "address": "Residency Road, Jodhpur", "phone": "0291-2434374", "type": "Government"},
+        ],
+    },
+    "Maharashtra": {
+        "Mumbai": [
+            {"name": "KEM Hospital", "address": "Acharya Donde Marg, Parel, Mumbai", "phone": "022-24107000", "type": "Government"},
+            {"name": "Nair Hospital", "address": "Dr. A.L. Nair Road, Mumbai", "phone": "022-23027600", "type": "Government"},
+        ],
+        "Pune": [
+            {"name": "Sassoon General Hospital", "address": "Pune Station, Pune", "phone": "020-26128000", "type": "Government"},
+        ],
+    },
 }
 
-http_session = requests.Session()
+# ---------- Language Helper ----------
+def detect_language(text):
+    try:
+        lang = detect(text)
+        return lang
+    except:
+        return "en"
 
+def get_system_prompt(lang):
+    if lang == "hi":
+        return """आप AarogyaBot हैं, एक सहायक AI स्वास्थ्य सहायक। आप ग्रामीण भारत के लोगों की मदद करते हैं।
+        लक्षणों के बारे में सरल हिंदी में जवाब दें। हमेशा डॉक्टर से मिलने की सलाह दें।
+        यह चिकित्सा निदान नहीं है, केवल प्रारंभिक मार्गदर्शन है।"""
+    elif lang == "bn":
+        return """আপনি AarogyaBot, একটি AI স্বাস্থ্য সহায়ক। গ্রামীণ ভারতের মানুষদের সাহায্য করুন।
+        সহজ বাংলায় উপসর্গের উত্তর দিন। সর্বদা ডাক্তার দেখানোর পরামর্শ দিন।"""
+    else:
+        return """You are AarogyaBot, a helpful AI health assistant for rural India.
+        Give simple, clear advice about symptoms. Always recommend seeing a doctor.
+        This is not medical diagnosis, only preliminary guidance. Be empathetic and supportive."""
+
+# ---------- Routes ----------
 @app.route("/")
 def index():
-    lang = request.args.get("lang", "English")
-    return render_template("index.html", lang=lang)
+    return render_template("index.html")
 
 @app.route("/chat")
 def chat():
-    lang = request.args.get("lang", "English")
-    crop = request.args.get("crop", "Rice")
-    problem = request.args.get("problem", "Fertilizer")
-    return render_template("chat.html", lang=lang, crop=crop, problem=problem)
+    return render_template("chat.html")
 
-@app.route("/diagnose")
-def diagnose():
-    return render_template("diagnose.html")
+@app.route("/hospitals")
+def hospitals():
+    states = list(HOSPITALS.keys())
+    return render_template("hospitals.html", states=states)
 
-@app.route("/market")
-def market():
-    return render_template("market.html")
+@app.route("/medicines")
+def medicines():
+    return render_template("medicines.html")
 
-@app.route("/alerts")
-def alerts():
-    return render_template("alerts.html")
+@app.route("/emergency")
+def emergency():
+    return render_template("emergency.html")
 
-@app.route("/get_weather", methods=["POST"])
-def get_weather():
+# ---------- API Routes ----------
+@app.route("/api/chat", methods=["POST"])
+def api_chat():
     data = request.json
-    lat = data.get("lat")
-    lon = data.get("lon")
-    api_key = os.getenv("OPENWEATHER_API_KEY")
-    try:
-        current = http_session.get(
-            f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric",
-            timeout=10).json()
-        forecast = http_session.get(
-            f"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={api_key}&units=metric",
-            timeout=10).json()
-        return jsonify({
-            "current": {
-                "city": current["name"],
-                "temp": current["main"]["temp"],
-                "feels_like": current["main"]["feels_like"],
-                "humidity": current["main"]["humidity"],
-                "description": current["weather"][0]["description"],
-                "icon": current["weather"][0]["icon"],
-                "wind": current["wind"]["speed"],
-                "pressure": current["main"]["pressure"]
-            },
-            "forecast": [
-                {
-                    "date": item["dt_txt"],
-                    "temp": item["main"]["temp"],
-                    "description": item["weather"][0]["description"],
-                    "icon": item["weather"][0]["icon"]
-                }
-                for item in forecast["list"][7::8][:7]
-            ]
-        })
-    except Exception as e:
-        print(f"Weather error: {e}")
-        return jsonify({"error": str(e)}), 500
+    user_message = data.get("message", "")
+    history = data.get("history", [])
 
-@app.route("/get_advice", methods=["POST"])
-def get_advice():
-    data = request.json
-    lang = data.get("lang", "English")
-    crop = data.get("crop", "Rice")
-    problem = data.get("problem", "Fertilizer")
-    question = data.get("question", "")
-    user_message = question if question else f"Give me advice about {problem} for {crop}."
-    try:
-        response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[
-                {"role": "system", "content": f"""You are FasalMitra, an expert Indian agricultural advisor.
-Farmer asks about {crop} crop regarding {problem}.
-Reply ONLY in {lang} language.
-Give practical simple advice immediately.
-Use simple words. Under 100 words.
-Mention specific quantities where relevant."""},
-                {"role": "user", "content": user_message}
-            ],
-            max_tokens=300
-        )
-        advice = response.choices[0].message.content
-        lang_code = LANGUAGE_CODES.get(lang, "en")
-        audio_filename = f"{uuid.uuid4().hex}.mp3"
-        audio_path = os.path.join(AUDIO_DIR, audio_filename)
-        tts = gTTS(text=advice, lang=lang_code)
-        tts.save(audio_path)
-        return jsonify({"advice": advice, "audio_url": f"/static/audio/{audio_filename}"})
-    except Exception as e:
-        return jsonify({"advice": f"Error: {str(e)}", "audio_url": None}), 500
+    lang = detect_language(user_message)
+    system_prompt = get_system_prompt(lang)
 
-@app.route("/get_recommendation", methods=["POST"])
-def get_recommendation():
-    data = request.json
-    lat = data.get("lat")
-    lon = data.get("lon")
-    weather = data.get("weather", {})
-    lang = data.get("lang", "English")
-    try:
-        response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": f"""You are FasalMitra, expert Indian agricultural advisor.
-Weather: Temp {weather.get('temp')}°C, Humidity {weather.get('humidity')}%, {weather.get('description')}
-Location: {lat}, {lon}
-Reply in {lang} language ONLY.
-Give:
-1. Top 3 crops to grow now
-2. Brief advisory for each
-3. Pesticide schedule
-Under 150 words. Simple language."""}],
-            max_tokens=400
-        )
-        return jsonify({"recommendation": response.choices[0].message.content})
-    except Exception as e:
-        return jsonify({"recommendation": f"Error: {str(e)}"}), 500
+    messages = [{"role": "system", "content": system_prompt}]
+    for h in history[-6:]:  # last 6 messages for context
+        messages.append(h)
+    messages.append({"role": "user", "content": user_message})
 
-@app.route("/get_market", methods=["POST"])
-def get_market():
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=messages,
+        max_tokens=500,
+    )
+
+    reply = response.choices[0].message.content
+    return jsonify({"reply": reply, "lang": lang})
+
+@app.route("/api/hospitals", methods=["POST"])
+def api_hospitals():
     data = request.json
     state = data.get("state", "")
-    commodity = data.get("commodity", "")
-    api_key = os.getenv("DATAGOV_API_KEY")
-    try:
-        params = {"api-key": api_key, "format": "json", "limit": 50}
-        if state:
-            params["filters[state]"] = state
-        if commodity:
-            params["filters[commodity]"] = commodity
-        response = http_session.get(
-            "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070",
-            params=params, timeout=15)
-        result = response.json()
-        if "records" in result and len(result["records"]) > 0:
-            return jsonify({"data": result["records"], "source": "live"})
-        return jsonify({"data": get_fallback_market_data(state, commodity), "source": "fallback"})
-    except Exception as e:
-        print(f"Market error: {e}")
-        return jsonify({"data": get_fallback_market_data(state, commodity), "source": "fallback"})
+    district = data.get("district", "")
+    result = HOSPITALS.get(state, {}).get(district, [])
+    return jsonify({"hospitals": result})
 
-def get_fallback_market_data(state="", commodity=""):
-    data = [
-        {"state": "Bihar", "district": "Patna", "market": "Patna", "commodity": "Wheat", "min_price": "1900", "max_price": "2100", "modal_price": "2000", "arrival_date": "06/06/2026"},
-        {"state": "Bihar", "district": "Patna", "market": "Patna", "commodity": "Rice", "min_price": "2000", "max_price": "2400", "modal_price": "2200", "arrival_date": "06/06/2026"},
-        {"state": "Maharashtra", "district": "Pune", "market": "Pune", "commodity": "Tomato", "min_price": "800", "max_price": "1200", "modal_price": "1000", "arrival_date": "06/06/2026"},
-        {"state": "Punjab", "district": "Ludhiana", "market": "Ludhiana", "commodity": "Wheat", "min_price": "2000", "max_price": "2200", "modal_price": "2100", "arrival_date": "06/06/2026"},
-        {"state": "West Bengal", "district": "Kolkata", "market": "Kolkata", "commodity": "Rice", "min_price": "1800", "max_price": "2200", "modal_price": "2000", "arrival_date": "06/06/2026"},
-        {"state": "Uttar Pradesh", "district": "Lucknow", "market": "Lucknow", "commodity": "Potato", "min_price": "600", "max_price": "900", "modal_price": "750", "arrival_date": "06/06/2026"},
-        {"state": "Gujarat", "district": "Ahmedabad", "market": "Ahmedabad", "commodity": "Cotton", "min_price": "5500", "max_price": "6500", "modal_price": "6000", "arrival_date": "06/06/2026"},
-        {"state": "Karnataka", "district": "Bangalore", "market": "Bangalore", "commodity": "Onion", "min_price": "1200", "max_price": "1800", "modal_price": "1500", "arrival_date": "06/06/2026"},
-        {"state": "Rajasthan", "district": "Jaipur", "market": "Jaipur", "commodity": "Mustard", "min_price": "4500", "max_price": "5200", "modal_price": "4800", "arrival_date": "06/06/2026"},
-        {"state": "Madhya Pradesh", "district": "Indore", "market": "Indore", "commodity": "Soybean", "min_price": "3800", "max_price": "4500", "modal_price": "4200", "arrival_date": "06/06/2026"},
-        {"state": "Andhra Pradesh", "district": "Guntur", "market": "Guntur", "commodity": "Chilli", "min_price": "8000", "max_price": "12000", "modal_price": "10000", "arrival_date": "06/06/2026"},
-        {"state": "Tamil Nadu", "district": "Chennai", "market": "Chennai", "commodity": "Maize", "min_price": "1600", "max_price": "2000", "modal_price": "1800", "arrival_date": "06/06/2026"},
-        {"state": "Haryana", "district": "Karnal", "market": "Karnal", "commodity": "Rice", "min_price": "2000", "max_price": "2400", "modal_price": "2200", "arrival_date": "06/06/2026"},
-    ]
-    if state:
-        filtered = [r for r in data if state.lower() in r["state"].lower() or state.lower() in r["district"].lower()]
-        if filtered:
-            return filtered
-    if commodity:
-        filtered = [r for r in data if commodity.lower() in r["commodity"].lower()]
-        if filtered:
-            return filtered
-    return data
-
-@app.route("/get_alerts", methods=["POST"])
-def get_alerts():
+@app.route("/api/districts", methods=["POST"])
+def api_districts():
     data = request.json
-    weather = data.get("weather", {})
-    lang = data.get("lang", "English")
-    try:
-        response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": f"""You are FasalMitra, expert Indian agricultural advisor.
-Weather: Temp {weather.get('temp')}°C, Humidity {weather.get('humidity')}%, {weather.get('description')}
-Reply in {lang} language ONLY.
-Give exactly 5 farm alerts numbered 1-5:
-1. Weather safety tip
-2. Risky crop to avoid
-3. Pest warning
-4. Pesticide warning
-5. Best practice today
-Each under 25 words. Simple language."""}],
-            max_tokens=400
-        )
-        return jsonify({"alerts": response.choices[0].message.content})
-    except Exception as e:
-        return jsonify({"alerts": f"Error: {str(e)}"}), 500
+    state = data.get("state", "")
+    districts = list(HOSPITALS.get(state, {}).keys())
+    return jsonify({"districts": districts})
 
-@app.route("/diagnose_crop", methods=["POST"])
-def diagnose_crop():
-    if not KINDWISE_API_KEY:
-        return jsonify({'success': False, 'error': 'API key missing'}), 500
-    if 'image' not in request.files:
-        return jsonify({'success': False, 'error': 'No image uploaded'}), 400
-    file = request.files['image']
-    description = request.form.get("description", "")
-    lang = request.form.get("lang", "English")
-    try:
-        file_bytes = file.read()
-        base64_image = base64.b64encode(file_bytes).decode('ascii')
-        url = "https://crop.kindwise.com/api/v1/identification"
-        headers = {
-            "Api-Key": KINDWISE_API_KEY,
-            "Content-Type": "application/json"
-        }
-        payload = {
-            "images": [base64_image],
-            "similar_images": True
-        }
-        response = http_session.post(url, headers=headers, json=payload, timeout=30)
-        print(f"Kindwise status: {response.status_code}")
-        if response.status_code not in [200, 201]:
-            return jsonify({'success': False, 'error': f"API Error (Status: {response.status_code})"}), 500
-        data = response.json()
-        disease_suggestions = data.get('result', {}).get('disease', {}).get('suggestions', [])
-        crop_suggestions = data.get('result', {}).get('crop', {}).get('suggestions', [])
-        disease_name = "Unknown condition"
-        probability = 0
-        raw_treatment = "Monitor crop and consult local agricultural officer."
-        if disease_suggestions:
-            top = disease_suggestions[0]
-            disease_name = top.get('name', 'Unknown')
-            probability = round(top.get('probability', 0) * 100, 1)
-        crop_name = crop_suggestions[0].get('name', '') if crop_suggestions else ''
-        prompt = f"""You are FasalMitra, expert plant pathologist.
-Crop: {crop_name}, Disease: {disease_name} ({probability}% confidence)
-Farmer observation: {description}
-Reply in {lang} language ONLY.
-Format:
-🎯 Diagnosis: [name] ({probability}% confidence)
-🌿 Crop: [name]
-🛠️ Eco-friendly Treatment: [steps]
-🛡️ Prevention: [1-2 tips]
-Under 150 words."""
-        groq_response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=400
-        )
-        return jsonify({'success': True, 'diagnosis': groq_response.choices[0].message.content})
-    except Exception as e:
-        print(f"Diagnose error: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
+@app.route("/api/medicine", methods=["POST"])
+def api_medicine():
+    data = request.json
+    medicine_name = data.get("medicine", "")
+    lang = detect_language(medicine_name)
+
+    if lang == "hi":
+        prompt = f"{medicine_name} दवाई के बारे में सरल हिंदी में बताएं: उपयोग, खुराक, सावधानियां और सस्ते विकल्प।"
+    elif lang == "bn":
+        prompt = f"{medicine_name} ওষুধ সম্পর্কে সহজ বাংলায় বলুন: ব্যবহার, ডোজ, সতর্কতা এবং সস্তা বিকল্প।"
+    else:
+        prompt = f"Tell me about {medicine_name} medicine in simple English: uses, dosage, precautions, and affordable alternatives available in India."
+
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {"role": "system", "content": "You are a helpful medical information assistant for rural India. Give simple, clear information. Always advise consulting a doctor or pharmacist."},
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=400,
+    )
+
+    reply = response.choices[0].message.content
+    return jsonify({"info": reply})
+
+@app.route("/api/tts", methods=["POST"])
+def api_tts():
+    data = request.json
+    text = data.get("text", "")
+    lang = data.get("lang", "en")
+
+    tts_lang = "hi" if lang == "hi" else "bn" if lang == "bn" else "en"
+    tts = gTTS(text=text[:500], lang=tts_lang)
+    buf = io.BytesIO()
+    tts.write_to_fp(buf)
+    buf.seek(0)
+    return send_file(buf, mimetype="audio/mpeg")
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(debug=True)
