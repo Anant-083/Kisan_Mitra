@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header hospital-header">
+    <h2>🏨 Find Government Hospital</h2>
+    <p>Select your state and district to find nearby government hospitals</p>
+</div>
+
+<div class="hospital-finder">
+    <div class="finder-form">
+        <div class="select-group">
+            <label>Select State</label>
+            <select id="stateSelect" onchange="loadDistricts()">
+                <option value="">-- Select State --</option>
+                {% for state in states %}
+                <option value="{{ state }}">{{ state }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="select-group">
+            <label>Select District</label>
+            <select id="districtSelect" onchange="loadHospitals()" disabled>
+                <option value="">-- Select District --</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="hospitalResults" class="hospital-results"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function loadDistricts() {
+    const state = document.getElementById("stateSelect").value;
+    const districtSelect = document.getElementById("districtSelect");
+    document.getElementById("hospitalResults").innerHTML = "";
+
+    if (!state) { districtSelect.disabled = true; return; }
+
+    const res = await fetch("/api/districts", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({state})
+    });
+    const data = await res.json();
+    districtSelect.innerHTML = '<option value="">-- Select District --</option>';
+    data.districts.forEach(d => {
+        districtSelect.innerHTML += `<option value="${d}">${d}</option>`;
+    });
+    districtSelect.disabled = false;
+}
+
+async function loadHospitals() {
+    const state = document.getElementById("stateSelect").value;
+    const district = document.getElementById("districtSelect").value;
+    const resultsDiv = document.getElementById("hospitalResults");
+
+    if (!district) { resultsDiv.innerHTML = ""; return; }
+
+    resultsDiv.innerHTML = '<div class="loading">🔍 Finding hospitals...</div>';
+
+    const res = await fetch("/api/hospitals", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({state, district})
+    });
+    const data = await res.json();
+
+    if (data.hospitals.length === 0) {
+        resultsDiv.innerHTML = '<div class="no-results">No hospitals found for this area.</div>';
+        return;
+    }
+
+    resultsDiv.innerHTML = data.hospitals.map(h => `
+        <div class="hospital-card">
+            <div class="hospital-icon">🏥</div>
+            <div class="hospital-info">
+                <h3>${h.name}</h3>
+                <p>📍 ${h.address}</p>
+                <p>📞 <a href="tel:${h.phone}">${h.phone}</a></p>
+                <span class="hospital-type">${h.type}</span>
+            </div>
+        </div>
+    `).join("");
+}
+</script>
+{% endblock %}
