@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header medicine-header">
+    <h2>💊 Medicine Information</h2>
+    <p>Search any medicine for uses, dosage, and affordable alternatives</p>
+</div>
+
+<div class="medicine-container">
+    <div class="medicine-search">
+        <input type="text" id="medicineInput" placeholder="Enter medicine name (e.g. Paracetamol, Azithromycin...)" />
+        <button onclick="searchMedicine()">🔍 Search</button>
+    </div>
+
+    <div class="common-medicines">
+        <p>Common searches:</p>
+        <div class="pill-tags">
+            <span onclick="quickMedicine('Paracetamol')">Paracetamol</span>
+            <span onclick="quickMedicine('Azithromycin')">Azithromycin</span>
+            <span onclick="quickMedicine('Metformin')">Metformin</span>
+            <span onclick="quickMedicine('Omeprazole')">Omeprazole</span>
+            <span onclick="quickMedicine('Amoxicillin')">Amoxicillin</span>
+            <span onclick="quickMedicine('पैरासिटामोल')">पैरासिटामोल</span>
+        </div>
+    </div>
+
+    <div id="medicineResult" class="medicine-result"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function searchMedicine() {
+    const medicine = document.getElementById("medicineInput").value.trim();
+    if (!medicine) return;
+
+    const resultDiv = document.getElementById("medicineResult");
+    resultDiv.innerHTML = '<div class="loading">💊 Fetching information...</div>';
+
+    const res = await fetch("/api/medicine", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({medicine})
+    });
+    const data = await res.json();
+
+    resultDiv.innerHTML = `
+        <div class="medicine-info-card">
+            <h3>💊 ${medicine}</h3>
+            <div class="medicine-text">${data.info.replace(/\n/g, "<br>")}</div>
+            <p class="medicine-disclaimer">⚠️ Always consult a pharmacist or doctor before taking any medicine.</p>
+        </div>
+    `;
+}
+
+function quickMedicine(name) {
+    document.getElementById("medicineInput").value = name;
+    searchMedicine();
+}
+</script>
+{% endblock %}
