@@ -1,47 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AarogyaBot 🏥</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
-    <meta name="theme-color" content="#1a6b3c">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AarogyaBot{% block title %}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}" />
+  <meta name="theme-color" content="#061a1a" />
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-brand">
-            <span class="nav-icon">🏥</span>
-            <span>AarogyaBot</span>
-        </div>
-        <div class="nav-links">
-            <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">🏠 Home</a>
-            <a href="/chat" class="nav-link {% if request.path == '/chat' %}active{% endif %}">💬 Chat</a>
-            <a href="/hospitals" class="nav-link {% if request.path == '/hospitals' %}active{% endif %}">🏨 Hospitals</a>
-            <a href="/medicines" class="nav-link {% if request.path == '/medicines' %}active{% endif %}">💊 Medicines</a>
-            <a href="/emergency" class="nav-link {% if request.path == '/emergency' %}active{% endif %}">🚨 Emergency</a>
-        </div>
-        <div class="nav-toggle" onclick="toggleNav()">☰</div>
-    </nav>
 
-    <div class="mobile-menu" id="mobileMenu">
-        <a href="/" onclick="toggleNav()">🏠 Home</a>
-        <a href="/chat" onclick="toggleNav()">💬 Symptom Check</a>
-        <a href="/hospitals" onclick="toggleNav()">🏨 Hospitals</a>
-        <a href="/medicines" onclick="toggleNav()">💊 Medicines</a>
-        <a href="/emergency" onclick="toggleNav()">🚨 Emergency</a>
-    </div>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="/" class="nav-brand">
+    <div class="nav-logo">🏥</div>
+    <span class="nav-brand-text">Aarogya<span>Bot</span></span>
+  </a>
 
-    <main class="main-content">
-        {% block content %}{% endblock %}
-    </main>
+  <div class="nav-links">
+    <a href="/"          class="nav-link {% if request.path == '/' %}active{% endif %}"><span class="ni">🏠</span> Home</a>
+    <a href="/chat"      class="nav-link {% if request.path == '/chat' %}active{% endif %}"><span class="ni">💬</span> Chat</a>
+    <a href="/hospitals" class="nav-link {% if request.path == '/hospitals' %}active{% endif %}"><span class="ni">🏨</span> Hospitals</a>
+    <a href="/medicines" class="nav-link {% if request.path == '/medicines' %}active{% endif %}"><span class="ni">💊</span> Medicines</a>
+    <a href="/emergency" class="nav-link {% if request.path == '/emergency' %}active{% endif %}"><span class="ni">🚨</span> Emergency</a>
+  </div>
 
-    <footer class="footer">
-        <p>⚠️ AarogyaBot provides general health guidance only. Always consult a qualified doctor.</p>
-        <p>© 2025 AarogyaBot | Built for Rural India 🇮🇳</p>
-    </footer>
+  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">☰</button>
+</nav>
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    {% block scripts %}{% endblock %}
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/"          onclick="closeNav()" class="{% if request.path == '/' %}active{% endif %}">🏠 Home</a>
+  <a href="/chat"      onclick="closeNav()" class="{% if request.path == '/chat' %}active{% endif %}">💬 Symptom Check</a>
+  <a href="/hospitals" onclick="closeNav()" class="{% if request.path == '/hospitals' %}active{% endif %}">🏨 Find Hospital</a>
+  <a href="/medicines" onclick="closeNav()" class="{% if request.path == '/medicines' %}active{% endif %}">💊 Medicines</a>
+  <a href="/emergency" onclick="closeNav()" class="{% if request.path == '/emergency' %}active{% endif %}">🚨 Emergency</a>
+</div>
+
+<main class="main-content">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <p>⚠️ AarogyaBot provides general health guidance only. Always consult a qualified doctor.</p>
+  <p>© 2025 <strong>AarogyaBot</strong> · Built for Rural India 🇮🇳</p>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
 </body>
 </html>
