@@ -1,50 +1,79 @@
 {% extends "base.html" %}
+{% block title %} · AI Health Assistant{% endblock %}
+
 {% block content %}
-<div class="hero">
-    <div class="hero-content">
-        <div class="hero-icon">🏥</div>
-        <h1>AarogyaBot</h1>
-        <p class="hero-sub">Your AI Health Assistant for Rural India</p>
-        <p class="hero-sub2">स्वास्थ्य सहायक | স্বাস্থ্য সহায়ক</p>
-        <div class="hero-badges">
-            <span class="badge">🇮🇳 Hindi</span>
-            <span class="badge">বাংলা</span>
-            <span class="badge">English</span>
-        </div>
-    </div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">🇮🇳 Free · Multilingual · AI-Powered</div>
+  <h1>Your Rural India<br><span>Health Assistant</span></h1>
+  <p class="hero-sub">Get instant health guidance in your language — Hindi, Bengali, or English. No cost, no registration.</p>
+  <p class="hero-langs">हिंदी · বাংলা · English</p>
+  <div class="hero-cta">
+    <a href="/chat" class="btn-primary">💬 Check Symptoms</a>
+    <a href="/emergency" class="btn-secondary">🚨 Emergency</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stat-item">
+    <div class="stat-num">3</div>
+    <div class="stat-label">Languages</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">5+</div>
+    <div class="stat-label">States Covered</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">8</div>
+    <div class="stat-label">Emergency Lines</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">24/7</div>
+    <div class="stat-label">Always Available</div>
+  </div>
 </div>
 
-<div class="cards-grid">
-    <a href="/chat" class="feature-card chat-card">
-        <div class="card-icon">💬</div>
-        <h3>Symptom Checker</h3>
-        <p>Describe your symptoms in Hindi, Bengali or English. Get instant AI guidance.</p>
-        <span class="card-btn">Start Chat →</span>
+<!-- FEATURES -->
+<div class="section">
+  <div class="section-title">What can AarogyaBot do?</div>
+
+  <div class="feature-grid">
+
+    <a href="/chat" class="fcard teal">
+      <div class="fcard-icon">💬</div>
+      <h3>Symptom Checker</h3>
+      <p>Describe what you feel — fever, cough, pain — and get clear AI-powered guidance. Works in Hindi, Bengali & English.</p>
+      <div class="fcard-cta">Start Chat <span>→</span></div>
     </a>
 
-    <a href="/hospitals" class="feature-card hospital-card">
-        <div class="card-icon">🏨</div>
-        <h3>Find Hospital</h3>
-        <p>Locate nearest government hospitals in your state and district.</p>
-        <span class="card-btn">Find Now →</span>
+    <a href="/hospitals" class="fcard blue">
+      <div class="fcard-icon">🏨</div>
+      <h3>Find Hospital</h3>
+      <p>Locate nearest government hospitals in your state and district. Free to access, always available.</p>
+      <div class="fcard-cta">Find Now <span>→</span></div>
     </a>
 
-    <a href="/medicines" class="feature-card medicine-card">
-        <div class="card-icon">💊</div>
-        <h3>Medicine Info</h3>
-        <p>Know about any medicine — uses, dosage, side effects and affordable alternatives.</p>
-        <span class="card-btn">Search →</span>
+    <a href="/medicines" class="fcard purple">
+      <div class="fcard-icon">💊</div>
+      <h3>Medicine Info</h3>
+      <p>Know any medicine's uses, dosage, side effects and affordable Indian alternatives instantly.</p>
+      <div class="fcard-cta">Search <span>→</span></div>
     </a>
 
-    <a href="/emergency" class="feature-card emergency-card">
-        <div class="card-icon">🚨</div>
-        <h3>Emergency Numbers</h3>
-        <p>Quick access to all national health helplines and emergency contacts.</p>
-        <span class="card-btn">View →</span>
+    <a href="/emergency" class="fcard coral">
+      <div class="fcard-icon">🚨</div>
+      <h3>Emergency Numbers</h3>
+      <p>All national health helplines — ambulance, mental health, senior care — in one place. One tap to call.</p>
+      <div class="fcard-cta">View All <span>→</span></div>
     </a>
+
+  </div>
+
+  <div class="disclaimer-bar">
+    ⚠️ AarogyaBot gives general health information only — it is not a medical diagnosis tool. Please see a doctor for serious conditions.
+  </div>
 </div>
 
-<div class="disclaimer">
-    <p>⚠️ This app provides general health information only. It is not a substitute for professional medical advice.</p>
-</div>
 {% endblock %}
