@@ -2,12 +2,12 @@
 {% block title %} · Find Hospital{% endblock %}
 {% block content %}
 
-<div class="pg-header">
-  <div class="pg-header-inner">
-    <div class="pg-icon blue">🏨</div>
+<div class="pg-hdr">
+  <div class="pg-hdr-inner">
+    <div class="pg-icon ib">🏨</div>
     <div>
       <h1>Find Government Hospital</h1>
-      <p>Select your state and district to find nearby hospitals</p>
+      <p>Select your state and district</p>
     </div>
   </div>
 </div>
@@ -30,7 +30,6 @@
       </div>
     </div>
   </div>
-
   <div id="hospResults"></div>
 </div>
 
@@ -42,26 +41,24 @@ async function loadDistricts() {
   const dsel = document.getElementById("districtSelect");
   document.getElementById("hospResults").innerHTML = "";
   if (!state) { dsel.disabled=true; return; }
-  const res = await fetch("/api/districts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({state})});
-  const d = await res.json();
+  const r = await fetch("/api/districts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({state})});
+  const d = await r.json();
   dsel.innerHTML = '<option value="">Select a district…</option>';
   d.districts.forEach(x => dsel.innerHTML += `<option value="${x}">${x}</option>`);
   dsel.disabled = false;
 }
-
 async function loadHospitals() {
   const state = document.getElementById("stateSelect").value;
   const district = document.getElementById("districtSelect").value;
   const box = document.getElementById("hospResults");
   if (!district) { box.innerHTML=""; return; }
-  box.innerHTML = `<div class="state-box"><div class="state-spinner"></div>Finding hospitals…</div>`;
-  const res = await fetch("/api/hospitals",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({state,district})});
-  const d = await res.json();
+  box.innerHTML = `<div class="state-box"><div class="spinner"></div>Finding hospitals…</div>`;
+  const r = await fetch("/api/hospitals",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({state,district})});
+  const d = await r.json();
   if (!d.hospitals.length) {
-    box.innerHTML = `<div class="state-box">🏥 No hospitals found for this area.</div>`;
-    return;
+    box.innerHTML=`<div class="state-box">🏥 No hospitals found for this area.</div>`; return;
   }
-  box.innerHTML = d.hospitals.map(h => `
+  box.innerHTML = d.hospitals.map(h=>`
     <div class="hcard">
       <div class="hcard-icon">🏥</div>
       <div class="hcard-body">
