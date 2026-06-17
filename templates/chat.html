@@ -2,9 +2,9 @@
 {% block title %} · Symptom Check{% endblock %}
 {% block content %}
 
-<div class="pg-header">
-  <div class="pg-header-inner">
-    <div class="pg-icon green">💬</div>
+<div class="pg-hdr">
+  <div class="pg-hdr-inner">
+    <div class="pg-icon ig">💬</div>
     <div>
       <h1>Symptom Checker</h1>
       <p>Describe what you feel in Hindi, Bengali or English</p>
@@ -14,10 +14,8 @@
 
 <div class="chat-wrap">
   <div class="chat-shell">
-
-    <!-- Top bar -->
     <div class="chat-bar">
-      <div class="chat-bar-av">🤖</div>
+      <div class="chat-av">🤖</div>
       <div>
         <div class="chat-bar-name">AarogyaBot</div>
         <div class="chat-bar-sub">AI Health Assistant · Online</div>
@@ -25,32 +23,28 @@
       <div class="lang-tag" id="langTag">🌐 Auto</div>
     </div>
 
-    <!-- Messages -->
     <div class="chat-body" id="chatBody">
       <div class="msg bot">
         <div class="msg-av">🤖</div>
         <div class="msg-bub">
-          Namaste! 🙏 I'm AarogyaBot. Describe your symptoms and I'll help you understand what's going on.<br><br>
+          Namaste! 🙏 I'm AarogyaBot. Describe your symptoms and I'll help guide you.<br><br>
           <b>नमस्ते!</b> अपने लक्षण हिंदी में बताएं।<br>
           <b>নমস্কার!</b> বাংলায় বলুন।
         </div>
       </div>
     </div>
 
-    <!-- Quick chips -->
     <div class="quick-row">
       <span class="qchip" onclick="quickSend('I have fever and headache')">🌡️ Fever</span>
       <span class="qchip" onclick="quickSend('stomach pain and vomiting')">🤢 Stomach</span>
       <span class="qchip" onclick="quickSend('cough and cold for 3 days')">🤧 Cough</span>
-      <span class="qchip" onclick="quickSend('chest pain and breathing problem')">❤️ Chest</span>
+      <span class="qchip" onclick="quickSend('chest pain and breathlessness')">❤️ Chest</span>
     </div>
 
-    <!-- Input -->
     <div class="chat-input">
       <textarea id="msgInput" rows="2" placeholder="Type symptoms… / लक्षण लिखें… / উপসর্গ লিখুন…"></textarea>
-      <button class="send-btn" onclick="sendMsg()" title="Send">➤</button>
+      <button class="send-btn" onclick="sendMsg()">➤</button>
     </div>
-
   </div>
 </div>
 
@@ -64,22 +58,19 @@ async function sendMsg() {
   const txt = inp.value.trim();
   if (!txt) return;
   appendMsg(txt, "usr");
-  inp.value = "";
-  inp.style.height = "auto";
+  inp.value = ""; inp.style.height = "auto";
   showTyping();
-
   try {
     const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({message: txt, history})
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({message:txt, history})
     });
     const d = await res.json();
     removeTyping();
     appendMsg(d.reply, "bot", d.lang);
-    history.push({role:"user", content:txt});
-    history.push({role:"assistant", content:d.reply});
-    const lm = {"hi":"🇮🇳 Hindi","bn":"🇧🇩 Bengali","en":"🌐 English"};
+    history.push({role:"user",content:txt});
+    history.push({role:"assistant",content:d.reply});
+    const lm = {hi:"🇮🇳 Hindi", bn:"🇧🇩 Bengali", en:"🌐 English"};
     document.getElementById("langTag").textContent = lm[d.lang] || "🌐 Auto";
   } catch {
     removeTyping();
@@ -91,11 +82,9 @@ function appendMsg(text, role, lang) {
   const body = document.getElementById("chatBody");
   const div = document.createElement("div");
   div.className = `msg ${role}`;
-  const tts = role === "bot"
-    ? `<button class="tts-btn" onclick="playTTS(this,'${encodeURIComponent(text)}','${lang||'en'}')">🔊</button>`
-    : "";
-  div.innerHTML = `
-    <div class="msg-av">${role==="bot"?"🤖":"👤"}</div>
+  const tts = role==="bot"
+    ? `<button class="tts-btn" onclick="playTTS(this,'${encodeURIComponent(text)}','${lang||'en'}')">🔊</button>` : "";
+  div.innerHTML = `<div class="msg-av">${role==="bot"?"🤖":"👤"}</div>
     <div class="msg-bub">${text.replace(/\n/g,"<br>")}${tts}</div>`;
   body.appendChild(div);
   body.scrollTop = body.scrollHeight;
@@ -104,39 +93,34 @@ function appendMsg(text, role, lang) {
 function showTyping() {
   const body = document.getElementById("chatBody");
   const div = document.createElement("div");
-  div.className = "msg bot"; div.id = "typingRow";
-  div.innerHTML = `<div class="msg-av">🤖</div><div class="typing-bub"><span class="tdot"></span><span class="tdot"></span><span class="tdot"></span></div>`;
-  body.appendChild(div);
-  body.scrollTop = body.scrollHeight;
+  div.className = "msg bot"; div.id = "typRow";
+  div.innerHTML = `<div class="msg-av">🤖</div>
+    <div class="typing-bub"><span class="tdot"></span><span class="tdot"></span><span class="tdot"></span></div>`;
+  body.appendChild(div); body.scrollTop = body.scrollHeight;
 }
 function removeTyping() {
-  const t = document.getElementById("typingRow");
-  if (t) t.remove();
+  const t = document.getElementById("typRow"); if(t) t.remove();
 }
 function quickSend(txt) {
-  document.getElementById("msgInput").value = txt;
-  sendMsg();
+  document.getElementById("msgInput").value = txt; sendMsg();
 }
 async function playTTS(btn, enc, lang) {
   btn.textContent = "⏳";
   try {
     const res = await fetch("/api/tts", {
       method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({text: decodeURIComponent(enc), lang})
+      body: JSON.stringify({text:decodeURIComponent(enc), lang})
     });
-    const blob = await res.blob();
-    new Audio(URL.createObjectURL(blob)).play();
+    new Audio(URL.createObjectURL(await res.blob())).play();
     btn.textContent = "🔊";
   } catch { btn.textContent = "🔊"; }
 }
-
 document.getElementById("msgInput").addEventListener("keydown", e => {
-  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+  if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMsg();}
 });
-// auto resize textarea
-document.getElementById("msgInput").addEventListener("input", function() {
-  this.style.height = "auto";
-  this.style.height = Math.min(this.scrollHeight, 100) + "px";
+document.getElementById("msgInput").addEventListener("input", function(){
+  this.style.height="auto";
+  this.style.height=Math.min(this.scrollHeight,90)+"px";
 });
 </script>
 {% endblock %}
