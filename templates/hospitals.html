@@ -1,87 +1,78 @@
 {% extends "base.html" %}
+{% block title %} · Find Hospital{% endblock %}
 {% block content %}
-<div class="page-header hospital-header">
-    <h2>🏨 Find Government Hospital</h2>
-    <p>Select your state and district to find nearby government hospitals</p>
-</div>
 
-<div class="hospital-finder">
-    <div class="finder-form">
-        <div class="select-group">
-            <label>Select State</label>
-            <select id="stateSelect" onchange="loadDistricts()">
-                <option value="">-- Select State --</option>
-                {% for state in states %}
-                <option value="{{ state }}">{{ state }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="select-group">
-            <label>Select District</label>
-            <select id="districtSelect" onchange="loadHospitals()" disabled>
-                <option value="">-- Select District --</option>
-            </select>
-        </div>
+<div class="pg-header">
+  <div class="pg-header-inner">
+    <div class="pg-icon blue">🏨</div>
+    <div>
+      <h1>Find Government Hospital</h1>
+      <p>Select your state and district to find nearby hospitals</p>
     </div>
-
-    <div id="hospitalResults" class="hospital-results"></div>
+  </div>
 </div>
-{% endblock %}
 
+<div class="hosp-wrap">
+  <div class="filter-panel">
+    <div class="filter-row">
+      <div class="fg">
+        <label>State</label>
+        <select id="stateSelect" onchange="loadDistricts()">
+          <option value="">Select a state…</option>
+          {% for s in states %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="fg">
+        <label>District</label>
+        <select id="districtSelect" onchange="loadHospitals()" disabled>
+          <option value="">Select a district…</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div id="hospResults"></div>
+</div>
+
+{% endblock %}
 {% block scripts %}
 <script>
 async function loadDistricts() {
-    const state = document.getElementById("stateSelect").value;
-    const districtSelect = document.getElementById("districtSelect");
-    document.getElementById("hospitalResults").innerHTML = "";
-
-    if (!state) { districtSelect.disabled = true; return; }
-
-    const res = await fetch("/api/districts", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({state})
-    });
-    const data = await res.json();
-    districtSelect.innerHTML = '<option value="">-- Select District --</option>';
-    data.districts.forEach(d => {
-        districtSelect.innerHTML += `<option value="${d}">${d}</option>`;
-    });
-    districtSelect.disabled = false;
+  const state = document.getElementById("stateSelect").value;
+  const dsel = document.getElementById("districtSelect");
+  document.getElementById("hospResults").innerHTML = "";
+  if (!state) { dsel.disabled=true; return; }
+  const res = await fetch("/api/districts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({state})});
+  const d = await res.json();
+  dsel.innerHTML = '<option value="">Select a district…</option>';
+  d.districts.forEach(x => dsel.innerHTML += `<option value="${x}">${x}</option>`);
+  dsel.disabled = false;
 }
 
 async function loadHospitals() {
-    const state = document.getElementById("stateSelect").value;
-    const district = document.getElementById("districtSelect").value;
-    const resultsDiv = document.getElementById("hospitalResults");
-
-    if (!district) { resultsDiv.innerHTML = ""; return; }
-
-    resultsDiv.innerHTML = '<div class="loading">🔍 Finding hospitals...</div>';
-
-    const res = await fetch("/api/hospitals", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({state, district})
-    });
-    const data = await res.json();
-
-    if (data.hospitals.length === 0) {
-        resultsDiv.innerHTML = '<div class="no-results">No hospitals found for this area.</div>';
-        return;
-    }
-
-    resultsDiv.innerHTML = data.hospitals.map(h => `
-        <div class="hospital-card">
-            <div class="hospital-icon">🏥</div>
-            <div class="hospital-info">
-                <h3>${h.name}</h3>
-                <p>📍 ${h.address}</p>
-                <p>📞 <a href="tel:${h.phone}">${h.phone}</a></p>
-                <span class="hospital-type">${h.type}</span>
-            </div>
+  const state = document.getElementById("stateSelect").value;
+  const district = document.getElementById("districtSelect").value;
+  const box = document.getElementById("hospResults");
+  if (!district) { box.innerHTML=""; return; }
+  box.innerHTML = `<div class="state-box"><div class="state-spinner"></div>Finding hospitals…</div>`;
+  const res = await fetch("/api/hospitals",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({state,district})});
+  const d = await res.json();
+  if (!d.hospitals.length) {
+    box.innerHTML = `<div class="state-box">🏥 No hospitals found for this area.</div>`;
+    return;
+  }
+  box.innerHTML = d.hospitals.map(h => `
+    <div class="hcard">
+      <div class="hcard-icon">🏥</div>
+      <div class="hcard-body">
+        <div class="hcard-name">${h.name}</div>
+        <div class="hcard-meta">
+          <span>📍 ${h.address}</span>
+          <span>📞 <a href="tel:${h.phone}">${h.phone}</a></span>
         </div>
-    `).join("");
+        <span class="htag">${h.type}</span>
+      </div>
+    </div>`).join("");
 }
 </script>
 {% endblock %}
