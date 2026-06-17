@@ -1,79 +1,59 @@
 {% extends "base.html" %}
 {% block title %} · AI Health Assistant{% endblock %}
-
 {% block content %}
 
-<!-- HERO -->
 <section class="hero">
-  <div class="hero-badge">🇮🇳 Free · Multilingual · AI-Powered</div>
-  <h1>Your Rural India<br><span>Health Assistant</span></h1>
-  <p class="hero-sub">Get instant health guidance in your language — Hindi, Bengali, or English. No cost, no registration.</p>
-  <p class="hero-langs">हिंदी · বাংলা · English</p>
-  <div class="hero-cta">
-    <a href="/chat" class="btn-primary">💬 Check Symptoms</a>
-    <a href="/emergency" class="btn-secondary">🚨 Emergency</a>
+  <div class="hero-pill"><span class="h-dot"></span> Free · No Login · Always On</div>
+  <div class="cross-wrap">
+    <div class="pring"></div>
+    <div class="pring"></div>
+    <div class="cross-box">🏥</div>
+  </div>
+  <h1>Health guidance<br>in <mark>your language</mark></h1>
+  <p class="hero-sub">Describe symptoms, find hospitals, check medicines — Hindi, Bengali or English.</p>
+  <p class="hero-langs">हिंदी &nbsp;·&nbsp; বাংলা &nbsp;·&nbsp; English</p>
+  <div class="hero-btns">
+    <a href="/chat" class="btn btn-g">💬 Check Symptoms</a>
+    <a href="/emergency" class="btn btn-o">🚨 Emergency</a>
   </div>
 </section>
 
-<!-- STATS -->
-<div class="stats-strip">
-  <div class="stat-item">
-    <div class="stat-num">3</div>
-    <div class="stat-label">Languages</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">5+</div>
-    <div class="stat-label">States Covered</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">8</div>
-    <div class="stat-label">Emergency Lines</div>
-  </div>
-  <div class="stat-item">
-    <div class="stat-num">24/7</div>
-    <div class="stat-label">Always Available</div>
-  </div>
+<div class="stats-row">
+  <div class="stat"><span class="stat-n">3</span><span class="stat-l">Languages</span></div>
+  <div class="stat"><span class="stat-n">5+</span><span class="stat-l">States</span></div>
+  <div class="stat"><span class="stat-n">8</span><span class="stat-l">SOS Lines</span></div>
+  <div class="stat"><span class="stat-n">24/7</span><span class="stat-l">Available</span></div>
 </div>
 
-<!-- FEATURES -->
 <div class="section">
-  <div class="section-title">What can AarogyaBot do?</div>
-
-  <div class="feature-grid">
-
-    <a href="/chat" class="fcard teal">
-      <div class="fcard-icon">💬</div>
-      <h3>Symptom Checker</h3>
-      <p>Describe what you feel — fever, cough, pain — and get clear AI-powered guidance. Works in Hindi, Bengali & English.</p>
-      <div class="fcard-cta">Start Chat <span>→</span></div>
+  <div class="sec-ey">Everything you need</div>
+  <div class="feat-grid">
+    <a href="/chat" class="fc c-green">
+      <div class="fc-chip">💬 AI Chat</div>
+      <div class="fc-title">Symptom Checker</div>
+      <div class="fc-desc">Describe what you feel — fever, cough, pain — and get clear AI guidance in your language.</div>
+      <div class="fc-arrow">Start chatting →</div>
     </a>
-
-    <a href="/hospitals" class="fcard blue">
-      <div class="fcard-icon">🏨</div>
-      <h3>Find Hospital</h3>
-      <p>Locate nearest government hospitals in your state and district. Free to access, always available.</p>
-      <div class="fcard-cta">Find Now <span>→</span></div>
+    <a href="/hospitals" class="fc c-blue">
+      <div class="fc-chip">🏨 Locator</div>
+      <div class="fc-title">Find Hospital</div>
+      <div class="fc-desc">Find government hospitals in your state and district. Phone numbers included — tap to call.</div>
+      <div class="fc-arrow">Find now →</div>
     </a>
-
-    <a href="/medicines" class="fcard purple">
-      <div class="fcard-icon">💊</div>
-      <h3>Medicine Info</h3>
-      <p>Know any medicine's uses, dosage, side effects and affordable Indian alternatives instantly.</p>
-      <div class="fcard-cta">Search <span>→</span></div>
+    <a href="/medicines" class="fc c-purp">
+      <div class="fc-chip">💊 Info</div>
+      <div class="fc-title">Medicine Info</div>
+      <div class="fc-desc">Uses, dosage, side effects and affordable Indian alternatives for any medicine.</div>
+      <div class="fc-arrow">Search →</div>
     </a>
-
-    <a href="/emergency" class="fcard coral">
-      <div class="fcard-icon">🚨</div>
-      <h3>Emergency Numbers</h3>
-      <p>All national health helplines — ambulance, mental health, senior care — in one place. One tap to call.</p>
-      <div class="fcard-cta">View All <span>→</span></div>
+    <a href="/emergency" class="fc c-red">
+      <div class="fc-chip">🚨 SOS</div>
+      <div class="fc-title">Emergency Contacts</div>
+      <div class="fc-desc">All national health helplines — ambulance, mental health, senior care — one tap to call.</div>
+      <div class="fc-arrow">View all →</div>
     </a>
-
   </div>
-
-  <div class="disclaimer-bar">
-    ⚠️ AarogyaBot gives general health information only — it is not a medical diagnosis tool. Please see a doctor for serious conditions.
-  </div>
+  <div class="info-bar">⚠️ AarogyaBot gives general health information only — not a substitute for medical diagnosis. See a doctor for serious conditions.</div>
 </div>
 
 {% endblock %}
