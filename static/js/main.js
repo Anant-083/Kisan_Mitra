@@ -1,15 +1,14 @@
 function toggleNav() {
-  const m = document.getElementById("mobDrawer");
-  m.classList.toggle("open");
+  const d = document.getElementById("mobDrawer");
+  d.classList.toggle("open");
 }
 function closeNav() {
   document.getElementById("mobDrawer").classList.remove("open");
 }
-// close drawer on outside click
 document.addEventListener("click", function(e) {
-  const drawer = document.getElementById("mobDrawer");
-  const ham = document.querySelector(".topnav-ham");
-  if (drawer && ham && !drawer.contains(e.target) && !ham.contains(e.target)) {
-    drawer.classList.remove("open");
+  const d = document.getElementById("mobDrawer");
+  const h = document.querySelector(".topnav-ham");
+  if (d && h && !d.contains(e.target) && !h.contains(e.target)) {
+    d.classList.remove("open");
   }
 });
