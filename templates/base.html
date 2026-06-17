@@ -1,48 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>AarogyaBot{% block title %}{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
-  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}" />
-  <meta name="theme-color" content="#061a1a" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700;9..40,800;9..40,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <meta name="theme-color" content="#ffffff"/>
 </head>
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-  <a href="/" class="nav-brand">
-    <div class="nav-logo">🏥</div>
-    <span class="nav-brand-text">Aarogya<span>Bot</span></span>
+<!-- TOP NAV -->
+<nav class="topnav">
+  <a href="/" class="topnav-brand">
+    <div class="brand-mark">🏥</div>
+    <span class="brand-name">Aarogya<em>Bot</em></span>
   </a>
-
-  <div class="nav-links">
-    <a href="/"          class="nav-link {% if request.path == '/' %}active{% endif %}"><span class="ni">🏠</span> Home</a>
-    <a href="/chat"      class="nav-link {% if request.path == '/chat' %}active{% endif %}"><span class="ni">💬</span> Chat</a>
-    <a href="/hospitals" class="nav-link {% if request.path == '/hospitals' %}active{% endif %}"><span class="ni">🏨</span> Hospitals</a>
-    <a href="/medicines" class="nav-link {% if request.path == '/medicines' %}active{% endif %}"><span class="ni">💊</span> Medicines</a>
-    <a href="/emergency" class="nav-link {% if request.path == '/emergency' %}active{% endif %}"><span class="ni">🚨</span> Emergency</a>
+  <div class="topnav-links">
+    <a href="/"          class="tnl {% if request.path=='/' %}active{% endif %}"><span class="tnl-icon">🏠</span>Home</a>
+    <a href="/chat"      class="tnl {% if request.path=='/chat' %}active{% endif %}"><span class="tnl-icon">💬</span>Chat</a>
+    <a href="/hospitals" class="tnl {% if request.path=='/hospitals' %}active{% endif %}"><span class="tnl-icon">🏨</span>Hospitals</a>
+    <a href="/medicines" class="tnl {% if request.path=='/medicines' %}active{% endif %}"><span class="tnl-icon">💊</span>Medicines</a>
+    <a href="/emergency" class="tnl {% if request.path=='/emergency' %}active{% endif %}"><span class="tnl-icon">🚨</span>Emergency</a>
   </div>
-
-  <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">☰</button>
+  <button class="topnav-ham" onclick="toggleNav()">☰</button>
 </nav>
 
-<!-- MOBILE MENU -->
-<div class="mobile-menu" id="mobileMenu">
-  <a href="/"          onclick="closeNav()" class="{% if request.path == '/' %}active{% endif %}">🏠 Home</a>
-  <a href="/chat"      onclick="closeNav()" class="{% if request.path == '/chat' %}active{% endif %}">💬 Symptom Check</a>
-  <a href="/hospitals" onclick="closeNav()" class="{% if request.path == '/hospitals' %}active{% endif %}">🏨 Find Hospital</a>
-  <a href="/medicines" onclick="closeNav()" class="{% if request.path == '/medicines' %}active{% endif %}">💊 Medicines</a>
-  <a href="/emergency" onclick="closeNav()" class="{% if request.path == '/emergency' %}active{% endif %}">🚨 Emergency</a>
+<!-- MOBILE DRAWER -->
+<div class="mob-drawer" id="mobDrawer">
+  <a href="/"          onclick="closeNav()" class="{% if request.path=='/' %}active{% endif %}">🏠 Home</a>
+  <a href="/chat"      onclick="closeNav()" class="{% if request.path=='/chat' %}active{% endif %}">💬 Symptom Check</a>
+  <a href="/hospitals" onclick="closeNav()" class="{% if request.path=='/hospitals' %}active{% endif %}">🏨 Find Hospital</a>
+  <a href="/medicines" onclick="closeNav()" class="{% if request.path=='/medicines' %}active{% endif %}">💊 Medicines</a>
+  <a href="/emergency" onclick="closeNav()" class="{% if request.path=='/emergency' %}active{% endif %}">🚨 Emergency</a>
 </div>
 
-<main class="main-content">
+<!-- BOTTOM NAV (mobile) -->
+<nav class="botnav">
+  <a href="/"          class="{% if request.path=='/' %}active{% endif %}"><span class="bn-icon">🏠</span>Home</a>
+  <a href="/chat"      class="{% if request.path=='/chat' %}active{% endif %}"><span class="bn-icon">💬</span>Chat</a>
+  <a href="/hospitals" class="{% if request.path=='/hospitals' %}active{% endif %}"><span class="bn-icon">🏨</span>Hospital</a>
+  <a href="/medicines" class="{% if request.path=='/medicines' %}active{% endif %}"><span class="bn-icon">💊</span>Medicine</a>
+  <a href="/emergency" class="{% if request.path=='/emergency' %}active{% endif %}"><span class="bn-icon">🚨</span>SOS</a>
+</nav>
+
+<div class="page-body">
   {% block content %}{% endblock %}
-</main>
+</div>
 
 <footer class="footer">
   <p>⚠️ AarogyaBot provides general health guidance only. Always consult a qualified doctor.</p>
