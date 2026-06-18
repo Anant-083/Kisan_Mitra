@@ -1,469 +1,336 @@
 {% extends "base.html" %}
 {% block title %} · Symptom Check{% endblock %}
 {% block content %}
-
 <div class="pg-hdr">
   <div class="pg-hdr-inner">
-    <div class="pg-icon ig">💬</div>
+    <div class="pg-hdr-ic ig">💬</div>
     <div>
       <h1>Symptom Checker</h1>
-      <p>Voice or text · Hindi, Bengali, English · AI-powered</p>
+      <p>Voice or text · Auto language detection · Severity tracking · AI-powered</p>
+    </div>
+    <div class="pg-hdr-meta">
+      <div class="pg-tag">🎤 Voice On</div>
+      <div class="pg-tag">🤖 Groq AI</div>
+      <div class="pg-tag">🆓 Free</div>
     </div>
   </div>
 </div>
 
-<div class="chat-page-wrap">
-
-  <!-- LEFT: CONTROLS SIDEBAR -->
-  <aside class="chat-sidebar">
-
-    <!-- Language -->
-    <div class="sb-card">
-      <div class="sb-label">🌐 Language</div>
-      <div class="lang-btns">
-        <button class="lang-btn active" data-lang="auto" onclick="setLang(this,'auto')">Auto</button>
-        <button class="lang-btn" data-lang="en"   onclick="setLang(this,'en')">English</button>
-        <button class="lang-btn" data-lang="hi"   onclick="setLang(this,'hi')">हिंदी</button>
-        <button class="lang-btn" data-lang="bn"   onclick="setLang(this,'bn')">বাংলা</button>
+<div class="chat-layout">
+  <!-- LEFT -->
+  <aside class="chat-left">
+    <div class="sb">
+      <div class="sb-hd">🌐 Language</div>
+      <div class="lang-grid">
+        <button class="lpill on" onclick="setLang(this,'auto')">🌐 Auto</button>
+        <button class="lpill"    onclick="setLang(this,'en')">🇬🇧 EN</button>
+        <button class="lpill"    onclick="setLang(this,'hi')">🇮🇳 हिंदी</button>
+        <button class="lpill"    onclick="setLang(this,'bn')">🇧🇩 বাংলা</button>
       </div>
     </div>
-
-    <!-- Severity -->
-    <div class="sb-card">
-      <div class="sb-label">⚠️ Severity</div>
-      <div class="sev-btns">
-        <button class="sev-btn sev-mild   active" onclick="setSev(this,'mild')">Mild</button>
-        <button class="sev-btn sev-mod"           onclick="setSev(this,'moderate')">Moderate</button>
-        <button class="sev-btn sev-sev"           onclick="setSev(this,'severe')">Severe</button>
+    <div class="sb">
+      <div class="sb-hd">⚠️ Severity</div>
+      <div class="sev-row">
+        <button class="sv sm on" onclick="setSev(this,'mild')">🟢 Mild</button>
+        <button class="sv md"    onclick="setSev(this,'moderate')">🟡 Mod</button>
+        <button class="sv hd"    onclick="setSev(this,'severe')">🔴 High</button>
       </div>
     </div>
-
-    <!-- Voice toggle -->
-    <div class="sb-card">
-      <div class="sb-label">🔊 Auto Voice Reply</div>
-      <label class="toggle-wrap">
-        <input type="checkbox" id="autoVoice" checked>
-        <span class="toggle-track"><span class="toggle-thumb"></span></span>
-        <span class="toggle-lbl">Speak replies</span>
-      </label>
-    </div>
-
-    <!-- Actions -->
-    <div class="sb-card">
-      <div class="sb-label">⚡ Actions</div>
-      <div class="action-btns">
-        <button class="act-btn" onclick="copyChat()">📋 Copy Chat</button>
-        <button class="act-btn" onclick="downloadChat()">💾 Download</button>
-        <button class="act-btn danger" onclick="clearChat()">🗑️ Clear</button>
+    <div class="sb">
+      <div class="sb-hd">⚙️ Settings</div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <label class="tog"><input type="checkbox" id="autoVoice" checked><span class="tog-track"><span class="tog-thumb"></span></span><span class="tog-lbl">🔊 Speak replies</span></label>
+        <label class="tog"><input type="checkbox" id="autoSend" checked><span class="tog-track"><span class="tog-thumb"></span></span><span class="tog-lbl">⚡ Auto-send voice</span></label>
+        <label class="tog"><input type="checkbox" id="showSug" checked><span class="tog-track"><span class="tog-thumb"></span></span><span class="tog-lbl">💡 Suggestions</span></label>
       </div>
     </div>
-
-    <!-- Health tip -->
-    <div class="sb-card tip-card" id="healthTip">
-      <div class="sb-label">💡 Health Tip</div>
-      <div class="tip-text" id="tipText">Drink 8 glasses of water daily to stay hydrated.</div>
+    <div class="sb">
+      <div class="sb-hd">⚡ Actions</div>
+      <div class="act-list">
+        <button class="act" onclick="copyChat()">📋 Copy chat</button>
+        <button class="act" onclick="downloadChat()">💾 Download .txt</button>
+        <button class="act" onclick="shareChat()">📤 Share</button>
+        <button class="act del" onclick="clearChat()">🗑️ Clear chat</button>
+      </div>
     </div>
-
+    <div class="sb tip-sb">
+      <div class="sb-hd">💡 Health Tip</div>
+      <div class="tip-body" id="tipText">Drink 8 glasses of water daily.</div>
+    </div>
+    <div class="sb hist-sb">
+      <div class="sb-hd">🕐 Recent</div>
+      <div class="hist-list" id="histList"><div style="font-size:.74rem;color:var(--t4)">No history yet</div></div>
+    </div>
   </aside>
 
-  <!-- RIGHT: CHAT -->
+  <!-- CHAT -->
   <div class="chat-main">
     <div class="chat-shell">
-
-      <!-- Top bar -->
       <div class="chat-bar">
-        <div class="chat-av">🤖</div>
-        <div class="chat-bar-info">
-          <div class="chat-bar-name">AarogyaBot</div>
-          <div class="chat-bar-sub"><span class="online-dot"></span> Online · AI Health Assistant</div>
+        <div class="chat-av">🤖<span class="odot"></span></div>
+        <div>
+          <div class="cb-name">AarogyaBot</div>
+          <div class="cb-sub">● Online · Groq AI · Free</div>
         </div>
-        <div class="chat-bar-right">
+        <div class="cb-right">
           <div class="lang-tag" id="langTag">🌐 Auto</div>
-          <div class="sev-badge" id="sevBadge">🟢 Mild</div>
+          <div class="sev-tag" id="sevTag">🟢 Mild</div>
         </div>
       </div>
 
-      <!-- Messages -->
       <div class="chat-body" id="chatBody">
         <div class="msg bot">
-          <div class="msg-av">🤖</div>
-          <div class="msg-bub">
-            Namaste! 🙏 I'm <strong>AarogyaBot</strong> — your AI health assistant.<br><br>
-            You can <strong>type or speak</strong> your symptoms. I understand Hindi, Bengali and English.<br><br>
-            <b>नमस्ते!</b> आवाज़ या टाइप करके लक्षण बताएं।<br>
-            <b>নমস্কার!</b> কথা বলুন বা টাইপ করুন।
-            <div class="msg-time">Just now</div>
+          <div class="m-av">🤖</div>
+          <div class="m-bub">
+            <strong>Namaste! 🙏</strong> I'm <strong>AarogyaBot</strong> — your free AI health assistant.<br><br>
+            🎤 <strong>Tap the mic</strong> and speak your symptoms, or type below.<br>
+            🌐 I understand <strong>Hindi, Bengali and English</strong> automatically.<br><br>
+            <span style="color:var(--t3);font-size:.82rem">
+              🇮🇳 <b>नमस्ते!</b> माइक दबाकर या टाइप करके लक्षण बताएं।<br>
+              🇧🇩 <b>নমস্কার!</b> মাইক চাপুন বা টাইপ করুন।
+            </span>
+            <div class="m-foot"><span class="m-time">Just now</span></div>
           </div>
         </div>
       </div>
 
-      <!-- Suggestions row -->
-      <div class="suggest-row" id="suggestRow" style="display:none">
-        <div class="suggest-label">💡 Ask next:</div>
-        <div class="suggest-chips" id="suggestChips"></div>
+      <div class="sug-row" id="sugRow" style="display:none">
+        <span class="sug-lbl">💡 Ask:</span>
+        <div class="sug-chips" id="sugChips"></div>
       </div>
 
-      <!-- Quick symptoms -->
       <div class="quick-row">
-        <span class="qchip" onclick="quickSend('I have fever and headache since 2 days')">🌡️ Fever</span>
-        <span class="qchip" onclick="quickSend('severe stomach pain and vomiting')">🤢 Stomach</span>
-        <span class="qchip" onclick="quickSend('dry cough and sore throat')">🤧 Cough</span>
-        <span class="qchip" onclick="quickSend('chest pain and difficulty breathing')">❤️ Chest Pain</span>
-        <span class="qchip" onclick="quickSend('skin rash and itching')">🩹 Rash</span>
-        <span class="qchip" onclick="quickSend('feeling very tired and weak')">😴 Fatigue</span>
+        <span class="qc" onclick="qs('I have fever and headache since 2 days')">🌡️ Fever</span>
+        <span class="qc" onclick="qs('stomach pain and vomiting')">🤢 Stomach</span>
+        <span class="qc" onclick="qs('dry cough and sore throat')">🤧 Cough</span>
+        <span class="qc" onclick="qs('chest pain and breathlessness')">❤️ Chest</span>
+        <span class="qc" onclick="qs('skin rash and itching body')">🩹 Rash</span>
+        <span class="qc" onclick="qs('body weakness and fatigue')">😴 Fatigue</span>
+        <span class="qc" onclick="qs('back pain since 3 days')">🦴 Back</span>
+        <span class="qc" onclick="qs('high blood pressure headache')">🩺 BP</span>
+        <span class="qc" onclick="qs('diarrhoea and loose motion')">🚽 Diarrhoea</span>
+        <span class="qc" onclick="qs('eye redness and pain')">👁️ Eye</span>
       </div>
 
-      <!-- Input bar -->
-      <div class="chat-input">
-        <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Speak symptoms">🎤</button>
-        <textarea id="msgInput" rows="1"
-          placeholder="Type symptoms… / बोलें या लिखें… / কথা বলুন…"></textarea>
-        <button class="send-btn" onclick="sendMsg()" title="Send">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      <div class="chat-input-bar">
+        <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Speak">🎤</button>
+        <textarea class="chat-ta" id="msgInput" rows="1"
+          placeholder="Type symptoms… / लक्षण लिखें… / উপসর্গ লিখুন…"></textarea>
+        <button class="send-btn" onclick="sendMsg()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
 
-      <!-- Voice status bar -->
       <div class="voice-bar" id="voiceBar" style="display:none">
-        <div class="voice-anim">
-          <span class="vbar"></span><span class="vbar"></span><span class="vbar"></span>
-          <span class="vbar"></span><span class="vbar"></span>
-        </div>
-        <span id="voiceStatus">Listening… speak your symptoms</span>
+        <div class="vanim"><span class="vb"></span><span class="vb"></span><span class="vb"></span><span class="vb"></span><span class="vb"></span></div>
+        <span id="voiceSt">Listening… speak your symptoms</span>
         <button onclick="stopVoice()">✕ Stop</button>
       </div>
+    </div>
+  </div>
 
-    </div><!-- end chat-shell -->
-  </div><!-- end chat-main -->
+  <!-- RIGHT -->
+  <aside class="chat-right">
+    <div class="sb">
+      <div class="sb-hd">🫀 Body Area</div>
+      <div class="body-grid">
+        <div class="bp" onclick="qs('head pain and dizziness')"><span style="font-size:1.1rem">🧠</span>Head</div>
+        <div class="bp" onclick="qs('chest pain palpitations')"><span style="font-size:1.1rem">❤️</span>Chest</div>
+        <div class="bp" onclick="qs('stomach pain digestion')"><span style="font-size:1.1rem">🫃</span>Stomach</div>
+        <div class="bp" onclick="qs('throat pain swallowing')"><span style="font-size:1.1rem">🫁</span>Throat</div>
+        <div class="bp" onclick="qs('knee and leg joint pain')"><span style="font-size:1.1rem">🦵</span>Legs</div>
+        <div class="bp" onclick="qs('skin rash itching')"><span style="font-size:1.1rem">🤚</span>Skin</div>
+        <div class="bp" onclick="qs('eye redness itching')"><span style="font-size:1.1rem">👁️</span>Eyes</div>
+        <div class="bp" onclick="qs('ear pain blocked')"><span style="font-size:1.1rem">👂</span>Ears</div>
+      </div>
+    </div>
+    <div class="sb">
+      <div class="sb-hd">📋 Common</div>
+      <div class="sym-list">
+        <div class="sym" onclick="qs('high fever 103F')"><span>🌡️</span>High Fever</div>
+        <div class="sym" onclick="qs('severe headache nausea')"><span>🤕</span>Headache</div>
+        <div class="sym" onclick="qs('loose motion dehydration')"><span>🚽</span>Diarrhoea</div>
+        <div class="sym" onclick="qs('blood pressure high')"><span>🩺</span>High BP</div>
+        <div class="sym" onclick="qs('diabetes sugar level high')"><span>🩸</span>Sugar</div>
+        <div class="sym" onclick="qs('anxiety stress panic')"><span>😰</span>Anxiety</div>
+        <div class="sym" onclick="qs('cold and runny nose')"><span>🤧</span>Cold</div>
+        <div class="sym" onclick="qs('urinary burning pain')"><span>🔥</span>UTI</div>
+      </div>
+    </div>
+    <div class="sb sos-panel">
+      <div class="sb-hd" style="color:var(--rd)">🚨 Quick SOS</div>
+      <div class="sos-links">
+        <a href="tel:108" class="sos-link" style="background:var(--rd)">📞 108 — Ambulance</a>
+        <a href="tel:112" class="sos-link" style="background:#ea580c">📞 112 — Emergency</a>
+        <a href="tel:104" class="sos-link" style="background:var(--gr)">📞 104 — Health Line</a>
+      </div>
+    </div>
+  </aside>
+</div>
 
-</div><!-- end chat-page-wrap -->
-
-<!-- Floating voice button (mobile) -->
-<button class="float-mic" id="floatMic" onclick="toggleVoice()" title="Speak">🎤</button>
-
+<button class="float-mic" id="floatMic" onclick="toggleVoice()">🎤</button>
 {% endblock %}
 {% block scripts %}
 <script>
-/* ── STATE ───────────────────────────────────── */
-let history = [];
-let currentLang = 'auto';
-let currentSev  = 'mild';
-let recognition = null;
-let isListening = false;
-let msgCount = 0;
-
-const HEALTH_TIPS = [
-  "Drink 8 glasses of water daily to stay hydrated.",
-  "Wash hands with soap for 20 seconds to prevent infections.",
-  "Sleep 7–8 hours every night for a strong immune system.",
-  "Eat fruits and vegetables of different colours daily.",
-  "Walk at least 30 minutes a day for heart health.",
-  "Avoid self-medication — always consult a doctor first.",
-  "Check your blood pressure regularly after age 30.",
-  "Never skip breakfast — it fuels your brain and body.",
-  "Keep a gap of at least 2 hours between dinner and sleep.",
-  "Deep breathing exercises help reduce stress naturally.",
-];
-
-const SEV_CONFIG = {
-  mild:     { badge:'🟢 Mild',     color:'#16a34a' },
-  moderate: { badge:'🟡 Moderate', color:'#d97706' },
-  severe:   { badge:'🔴 Severe',   color:'#dc2626' },
+let hist=[],lang='auto',sev='mild',recog=null,listening=false;
+const TIPS=["Drink 8 glasses of water daily.","Wash hands 20 seconds before eating.","Sleep 7–8 hours for strong immunity.","Eat 5 coloured vegetables daily.","Walk 30 minutes for heart health.","Never skip breakfast.","Check BP regularly after age 30.","Avoid self-medication always.","Deep breathing reduces stress.","Keep 2 hours gap before sleep.","Honey soothes sore throat naturally.","Ginger tea helps with cough and cold.","Turmeric milk helps with inflammation.","Amla is rich in Vitamin C."];
+const LMAP={auto:'🌐 Auto',en:'🇬🇧 English',hi:'🇮🇳 Hindi',bn:'🇧🇩 Bengali'};
+const FOLLOW={
+  en:['What medicine can I take?','Is this serious?','When to see a doctor?','What food to avoid?','How long will this last?','Any home remedy?','Should I go to hospital?'],
+  hi:['कौन सी दवाई लूं?','क्या यह गंभीर है?','डॉक्टर कब दिखाएं?','क्या नहीं खाएं?','घरेलू उपाय बताएं?','अस्पताल जाना जरूरी है?'],
+  bn:['কোন ওষুধ খাব?','এটা কি গুরুতর?','কখন ডাক্তার দেখাব?','কী খাওয়া উচিত না?','ঘরোয়া প্রতিকার কী?'],
 };
-
-const LANG_LABELS = { auto:'🌐 Auto', en:'🇬🇧 English', hi:'🇮🇳 Hindi', bn:'🇧🇩 Bengali' };
-
-/* ── INIT ─────────────────────────────────────── */
-window.addEventListener('load', () => {
-  rotateTip();
-  setInterval(rotateTip, 12000);
-  setupSpeechRecognition();
-  loadHistory();
+window.addEventListener('load',()=>{
+  rotateTip();setInterval(rotateTip,10000);
+  setupSpeech();loadHist();
 });
-
-function rotateTip() {
-  const el = document.getElementById('tipText');
-  if (!el) return;
-  el.style.opacity = '0';
-  setTimeout(() => {
-    el.textContent = HEALTH_TIPS[Math.floor(Math.random() * HEALTH_TIPS.length)];
-    el.style.opacity = '1';
-  }, 400);
+function rotateTip(){
+  const el=document.getElementById('tipText');if(!el)return;
+  el.style.opacity='0';
+  setTimeout(()=>{el.textContent=TIPS[Math.floor(Math.random()*TIPS.length)];el.style.opacity='1';},380);
 }
-
-/* ── LANGUAGE / SEVERITY ─────────────────────── */
-function setLang(btn, lang) {
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  currentLang = lang;
-  document.getElementById('langTag').textContent = LANG_LABELS[lang];
+function setLang(btn,l){
+  document.querySelectorAll('.lpill').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');lang=l;
+  document.getElementById('langTag').textContent=LMAP[l];
 }
-
-function setSev(btn, sev) {
-  document.querySelectorAll('.sev-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  currentSev = sev;
-  const cfg = SEV_CONFIG[sev];
-  const badge = document.getElementById('sevBadge');
-  badge.textContent = cfg.badge;
-  badge.style.color = cfg.color;
+function setSev(btn,s){
+  document.querySelectorAll('.sv').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');sev=s;
+  const t=document.getElementById('sevTag');
+  const cfg={mild:['🟢 Mild','var(--gr-t)','var(--gr-d)'],moderate:['🟡 Moderate','#fef9c3','#a16207'],severe:['🔴 Severe','#fee2e2','#b91c1c']};
+  t.textContent=cfg[s][0];t.style.background=cfg[s][1];t.style.color=cfg[s][2];
 }
-
-/* ── SEND MESSAGE ────────────────────────────── */
-async function sendMsg() {
-  const inp = document.getElementById('msgInput');
-  const txt = inp.value.trim();
-  if (!txt) return;
-  appendMsg(txt, 'usr');
-  inp.value = ''; inp.style.height = 'auto';
-  hideSuggestions();
-  showTyping();
-  saveToHistory(txt, 'user');
-
-  try {
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: `[Severity: ${currentSev}] ${txt}`,
-        history,
-        lang: currentLang !== 'auto' ? currentLang : undefined
-      })
+async function sendMsg(){
+  const inp=document.getElementById('msgInput');
+  const txt=inp.value.trim();if(!txt)return;
+  appendMsg(txt,'usr');inp.value='';inp.style.height='auto';
+  hideSug();showTyping();saveHist(txt);
+  try{
+    const r=await fetch('/api/chat',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:`[Severity:${sev}] ${txt}`,history:hist,lang:lang!=='auto'?lang:undefined})
     });
-    const d = await res.json();
+    const d=await r.json();
     removeTyping();
-    appendMsg(d.reply, 'bot', d.lang);
-    history.push({ role:'user', content: txt });
-    history.push({ role:'assistant', content: d.reply });
-    saveToHistory(d.reply, 'bot');
-
-    const lm = { hi:'🇮🇳 Hindi', bn:'🇧🇩 Bengali', en:'🇬🇧 English' };
-    if (currentLang === 'auto') {
-      document.getElementById('langTag').textContent = lm[d.lang] || '🌐 Auto';
-    }
-
-    // auto voice
-    if (document.getElementById('autoVoice').checked) {
-      speakText(d.reply, d.lang);
-    }
-
-    // suggestions
-    showSuggestions(d.reply, d.lang);
-
-  } catch(e) {
-    removeTyping();
-    appendMsg('Something went wrong. Please check your connection and try again.', 'bot');
-  }
+    appendMsg(d.reply,'bot',d.lang);
+    hist.push({role:'user',content:txt});
+    hist.push({role:'assistant',content:d.reply});
+    if(lang==='auto')document.getElementById('langTag').textContent=LMAP[d.lang]||'🌐 Auto';
+    if(document.getElementById('autoVoice').checked)speak(d.reply,d.lang);
+    if(document.getElementById('showSug').checked)showSug(d.lang);
+  }catch(e){removeTyping();appendMsg('Connection error. Please try again.','bot')}
 }
-
-function quickSend(txt) {
-  document.getElementById('msgInput').value = txt;
-  sendMsg();
-}
-
-/* ── RENDER MESSAGES ─────────────────────────── */
-function appendMsg(text, role, lang) {
-  const body = document.getElementById('chatBody');
-  const div = document.createElement('div');
-  div.className = `msg ${role}`;
-  msgCount++;
-
-  const now = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
-  const ttsBtn = role === 'bot'
-    ? `<button class="tts-btn" onclick="speakText('${encodeURIComponent(text)}','${lang||'en'}',true)" title="Listen">🔊</button>`
-    : '';
-
-  div.innerHTML = `
-    <div class="msg-av">${role==='bot'?'🤖':'👤'}</div>
-    <div class="msg-bub">
-      ${text.replace(/\n/g,'<br>')}
-      <div class="msg-footer">
-        <span class="msg-time">${now}</span>
-        ${ttsBtn}
-      </div>
+function qs(t){document.getElementById('msgInput').value=t;sendMsg()}
+function appendMsg(text,role,lang){
+  const body=document.getElementById('chatBody');
+  const div=document.createElement('div');
+  div.className=`msg ${role}`;
+  const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const ttsBtn=role==='bot'?`<button class="tts-b" onclick="speak('${encodeURIComponent(text)}','${lang||'en'}',1)">🔊</button>`:'';
+  div.innerHTML=`<div class="m-av">${role==='bot'?'🤖':'👤'}</div>
+    <div class="m-bub">${text.replace(/\n/g,'<br>')}
+      <div class="m-foot"><span class="m-time">${now}</span>${ttsBtn}</div>
     </div>`;
   body.appendChild(div);
-  body.scrollTop = body.scrollHeight;
-
-  // entrance animation
-  div.style.opacity = '0';
-  div.style.transform = role === 'bot' ? 'translateX(-8px)' : 'translateX(8px)';
-  requestAnimationFrame(() => {
-    div.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
-    div.style.opacity = '1';
-    div.style.transform = 'translateX(0)';
-  });
+  div.style.opacity='0';div.style.transform=role==='bot'?'translateX(-8px)':'translateX(8px)';
+  requestAnimationFrame(()=>{div.style.transition='opacity .22s ease,transform .22s ease';div.style.opacity='1';div.style.transform='none'});
+  body.scrollTop=body.scrollHeight;
 }
-
-function showTyping() {
-  const body = document.getElementById('chatBody');
-  const div = document.createElement('div');
-  div.className = 'msg bot'; div.id = 'typRow';
-  div.innerHTML = `
-    <div class="msg-av">🤖</div>
-    <div class="typing-bub">
-      <span class="tdot"></span><span class="tdot"></span><span class="tdot"></span>
-      <span class="typing-tip">Analyzing symptoms…</span>
-    </div>`;
-  body.appendChild(div);
-  body.scrollTop = body.scrollHeight;
+function showTyping(){
+  const body=document.getElementById('chatBody');
+  const div=document.createElement('div');div.className='msg bot';div.id='typRow';
+  div.innerHTML=`<div class="m-av">🤖</div><div class="typing-bub"><span class="td"></span><span class="td"></span><span class="td"></span><span class="typing-label">Analyzing…</span></div>`;
+  body.appendChild(div);body.scrollTop=body.scrollHeight;
 }
-function removeTyping() {
-  const t = document.getElementById('typRow'); if(t) t.remove();
+function removeTyping(){const t=document.getElementById('typRow');if(t)t.remove()}
+function showSug(l){
+  const opts=FOLLOW[l]||FOLLOW.en;
+  const pick=opts.sort(()=>Math.random()-.5).slice(0,3);
+  document.getElementById('sugChips').innerHTML=pick.map(s=>`<span class="sch" onclick="qs('${s.replace(/'/g,"\\'")}')">${s}</span>`).join('');
+  document.getElementById('sugRow').style.display='flex';
 }
-
-/* ── SUGGESTIONS ─────────────────────────────── */
-const FOLLOWUPS = {
-  en: ['What medicine can I take?','Is this serious?','When should I see a doctor?','What foods should I avoid?','How long will this last?'],
-  hi: ['कौन सी दवाई लूं?','क्या यह गंभीर है?','डॉक्टर कब दिखाएं?','क्या नहीं खाना चाहिए?'],
-  bn: ['কোন ওষুধ খাব?','এটা কি গুরুতর?','কখন ডাক্তার দেখাব?'],
-};
-
-function showSuggestions(reply, lang) {
-  const row = document.getElementById('suggestRow');
-  const chips = document.getElementById('suggestChips');
-  const opts = FOLLOWUPS[lang] || FOLLOWUPS.en;
-  const pick = opts.sort(() => Math.random() - 0.5).slice(0, 3);
-  chips.innerHTML = pick.map(s =>
-    `<span class="sug-chip" onclick="quickSend('${s}')">${s}</span>`
-  ).join('');
-  row.style.display = 'flex';
-}
-function hideSuggestions() {
-  document.getElementById('suggestRow').style.display = 'none';
-}
-
-/* ── VOICE INPUT (Speech Recognition) ───────── */
-function setupSpeechRecognition() {
-  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRec) return;
-  recognition = new SpeechRec();
-  recognition.continuous = false;
-  recognition.interimResults = true;
-
-  recognition.onresult = (e) => {
-    const transcript = Array.from(e.results)
-      .map(r => r[0].transcript).join('');
-    document.getElementById('msgInput').value = transcript;
-    if (e.results[0].isFinal) {
-      stopVoice();
-      setTimeout(sendMsg, 300);
-    }
+function hideSug(){document.getElementById('sugRow').style.display='none'}
+function setupSpeech(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
+  recog=new SR();recog.continuous=false;recog.interimResults=true;
+  recog.onresult=e=>{
+    const t=Array.from(e.results).map(r=>r[0].transcript).join('');
+    document.getElementById('msgInput').value=t;
+    if(e.results[0].isFinal){stopVoice();if(document.getElementById('autoSend').checked)setTimeout(sendMsg,300)}
   };
-  recognition.onerror = () => stopVoice();
-  recognition.onend = () => stopVoice();
+  recog.onerror=()=>stopVoice();recog.onend=()=>stopVoice();
 }
-
-function toggleVoice() {
-  if (isListening) { stopVoice(); return; }
-  if (!recognition) {
-    alert('Voice recognition not supported in this browser. Try Chrome.');
-    return;
-  }
-  isListening = true;
-  const langMap = { auto:'hi-IN', en:'en-IN', hi:'hi-IN', bn:'bn-IN' };
-  recognition.lang = langMap[currentLang] || 'hi-IN';
-  recognition.start();
-  document.getElementById('voiceBar').style.display = 'flex';
-  document.getElementById('micBtn').classList.add('mic-active');
-  document.getElementById('floatMic').classList.add('mic-active');
-  document.getElementById('floatMic').textContent = '⏹';
+function toggleVoice(){
+  if(listening){stopVoice();return}
+  if(!recog){toast('⚠️ Voice needs Chrome browser');return}
+  listening=true;
+  recog.lang={auto:'hi-IN',en:'en-IN',hi:'hi-IN',bn:'bn-IN'}[lang]||'hi-IN';
+  try{recog.start()}catch(e){stopVoice();return}
+  document.getElementById('voiceBar').style.display='flex';
+  document.getElementById('micBtn').classList.add('on');
+  const fm=document.getElementById('floatMic');fm.classList.add('on');fm.textContent='⏹';
 }
-
-function stopVoice() {
-  isListening = false;
-  if (recognition) try { recognition.stop(); } catch(e) {}
-  document.getElementById('voiceBar').style.display = 'none';
-  document.getElementById('micBtn').classList.remove('mic-active');
-  document.getElementById('floatMic').classList.remove('mic-active');
-  document.getElementById('floatMic').textContent = '🎤';
+function stopVoice(){
+  listening=false;if(recog)try{recog.stop()}catch(e){}
+  document.getElementById('voiceBar').style.display='none';
+  document.getElementById('micBtn').classList.remove('on');
+  const fm=document.getElementById('floatMic');fm.classList.remove('on');fm.textContent='🎤';
 }
-
-/* ── VOICE OUTPUT (TTS) ──────────────────────── */
-async function speakText(textOrEncoded, lang, isEncoded) {
-  const text = isEncoded ? decodeURIComponent(textOrEncoded) : textOrEncoded;
-  // try browser TTS first (faster)
-  if ('speechSynthesis' in window) {
+function speak(textOrEnc,l,isEnc){
+  const text=isEnc?decodeURIComponent(textOrEnc):textOrEnc;
+  if('speechSynthesis'in window){
     window.speechSynthesis.cancel();
-    const utt = new SpeechSynthesisUtterance(text.slice(0, 300));
-    const langMap = { hi:'hi-IN', bn:'bn-IN', en:'en-US' };
-    utt.lang = langMap[lang] || 'en-US';
-    utt.rate = 0.9;
-    window.speechSynthesis.speak(utt);
-    return;
+    const u=new SpeechSynthesisUtterance(text.slice(0,300));
+    u.lang={hi:'hi-IN',bn:'bn-IN',en:'en-US'}[l]||'en-US';
+    u.rate=.88;window.speechSynthesis.speak(u);return;
   }
-  // fallback: server TTS
-  try {
-    const res = await fetch('/api/tts', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ text: text.slice(0,400), lang })
-    });
-    new Audio(URL.createObjectURL(await res.blob())).play();
-  } catch(e) {}
+  fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({text:text.slice(0,400),lang:l})})
+    .then(r=>r.blob()).then(b=>new Audio(URL.createObjectURL(b)).play()).catch(()=>{});
 }
-
-/* ── CHAT HISTORY (localStorage) ────────────── */
-function saveToHistory(text, role) {
-  try {
-    const key = 'aarogya_history';
-    const h = JSON.parse(localStorage.getItem(key) || '[]');
-    h.push({ role, text, time: new Date().toISOString() });
-    if (h.length > 100) h.splice(0, h.length - 100);
-    localStorage.setItem(key, JSON.stringify(h));
-  } catch(e) {}
+function saveHist(txt){
+  try{
+    const k='ab_h';const h=JSON.parse(localStorage.getItem(k)||'[]');
+    const item=txt.slice(0,40);const f=h.filter(x=>x!==item);f.unshift(item);
+    if(f.length>6)f.pop();localStorage.setItem(k,JSON.stringify(f));renderHist(f);
+  }catch(e){}
 }
-
-function loadHistory() {
-  // just load tip — don't auto-replay messages for clean UX
+function loadHist(){try{const h=JSON.parse(localStorage.getItem('ab_h')||'[]');if(h.length)renderHist(h)}catch(e){}}
+function renderHist(items){
+  const el=document.getElementById('histList');if(!el)return;
+  el.innerHTML=items.map(t=>`<div class="hi" onclick="qs('${t.replace(/'/g,"\\'")}')">${t}</div>`).join('');
 }
-
-/* ── ACTIONS ─────────────────────────────────── */
-function copyChat() {
-  const msgs = [...document.querySelectorAll('.msg-bub')].map(b => {
-    const role = b.closest('.msg').classList.contains('bot') ? 'AarogyaBot' : 'You';
-    return `${role}: ${b.textContent.trim()}`;
+function copyChat(){
+  const msgs=[...document.querySelectorAll('.m-bub')].map(b=>{
+    const r=b.closest('.msg').classList.contains('bot')?'AarogyaBot':'You';
+    return `${r}: ${b.innerText.replace(/\n+/g,' ').trim()}`;
   }).join('\n\n');
-  navigator.clipboard.writeText(msgs).then(() => showToast('Chat copied to clipboard!'));
+  navigator.clipboard.writeText(msgs).then(()=>toast('✅ Copied!'));
 }
-
-function downloadChat() {
-  const msgs = [...document.querySelectorAll('.msg-bub')].map(b => {
-    const role = b.closest('.msg').classList.contains('bot') ? 'AarogyaBot' : 'You';
-    return `${role}: ${b.textContent.trim()}`;
+function downloadChat(){
+  const msgs=[...document.querySelectorAll('.m-bub')].map(b=>{
+    const r=b.closest('.msg').classList.contains('bot')?'AarogyaBot':'You';
+    return `${r}: ${b.innerText.trim()}`;
   }).join('\n\n');
-  const blob = new Blob([`AarogyaBot Chat\n${new Date().toLocaleString()}\n\n${msgs}`], {type:'text/plain'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `aarogyabot-${Date.now()}.txt`;
-  a.click();
-  showToast('Chat downloaded!');
+  const blob=new Blob([`AarogyaBot Chat — ${new Date().toLocaleString()}\n${'─'.repeat(40)}\n\n${msgs}`],{type:'text/plain'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`aarogyabot-${Date.now()}.txt`;a.click();toast('💾 Downloaded!');
 }
-
-function clearChat() {
-  if (!confirm('Clear this conversation?')) return;
-  document.getElementById('chatBody').innerHTML = '';
-  history = [];
-  hideSuggestions();
-  showToast('Chat cleared.');
+function shareChat(){
+  if(navigator.share){navigator.share({title:'AarogyaBot',text:'Free AI health assistant for rural India!',url:location.href}).catch(()=>{})}
+  else{navigator.clipboard.writeText(location.href).then(()=>toast('🔗 Link copied!'))}
 }
-
-function showToast(msg) {
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
-  document.body.appendChild(t);
-  requestAnimationFrame(() => t.classList.add('show'));
-  setTimeout(() => { t.classList.remove('show'); setTimeout(()=>t.remove(),300); }, 2500);
+function clearChat(){
+  if(!confirm('Clear this conversation?'))return;
+  document.getElementById('chatBody').innerHTML='';hist=[];hideSug();toast('🗑️ Cleared');
 }
-
-/* ── INPUT EVENTS ────────────────────────────── */
-document.getElementById('msgInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
-});
-document.getElementById('msgInput').addEventListener('input', function() {
-  this.style.height = 'auto';
-  this.style.height = Math.min(this.scrollHeight, 100) + 'px';
-});
+function toast(msg){
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  document.body.appendChild(t);requestAnimationFrame(()=>t.classList.add('show'));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300)},2500);
+}
+document.getElementById('msgInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg()}});
+document.getElementById('msgInput').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'});
 </script>
 {% endblock %}
