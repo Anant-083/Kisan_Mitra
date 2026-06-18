@@ -1,57 +1,54 @@
 {% extends "base.html" %}
 {% block title %} · Emergency{% endblock %}
 {% block content %}
-
 <div class="pg-hdr">
   <div class="pg-hdr-inner">
-    <div class="pg-icon ir">🚨</div>
+    <div class="pg-hdr-ic ir">🚨</div>
+    <div><h1>Emergency Contacts</h1><p>All national health helplines — free to call, 24/7, no balance needed</p></div>
+    <div class="pg-hdr-meta"><div class="pg-tag">📞 Tap to call</div><div class="pg-tag">🆓 All free</div></div>
+  </div>
+</div>
+<div class="emg-wrap">
+  <div class="emg-alert">
+    <div class="emg-alert-ic">🚑</div>
     <div>
-      <h1>Emergency Contacts</h1>
-      <p>National health helplines — free, 24/7</p>
+      <h2>Life-threatening emergency?</h2>
+      <p>Call 108 — free ambulance service, all India, 24/7, works without balance</p>
+    </div>
+    <a href="tel:108" class="emg-alert-num"><div class="big-num">108</div><span>Tap to call</span></a>
+  </div>
+
+  <div class="emg-sec">
+    <div class="emg-sec-title">🔴 Critical Emergency</div>
+    <div class="emg-grid">
+      <a href="tel:108" class="ec rd"><div class="ec-nw"><div class="ec-n">108</div></div><div class="ec-inf"><div class="ec-name">🚑 Ambulance</div><div class="ec-desc">Emergency Medical · Free · 24/7 · All India</div></div></a>
+      <a href="tel:112" class="ec or"><div class="ec-nw"><div class="ec-n">112</div></div><div class="ec-inf"><div class="ec-name">🆘 National SOS</div><div class="ec-desc">Police + Fire + Ambulance · All in one</div></div></a>
     </div>
   </div>
-</div>
 
-<div class="emg-wrap">
-  <div class="emg-grid">
-    <a href="tel:108" class="ec red">
-      <div class="ec-num-box"><div class="ec-num">108</div></div>
-      <div><div class="ec-name">Ambulance</div><div class="ec-desc">Emergency Medical — Free, 24/7</div></div>
-    </a>
-    <a href="tel:112" class="ec oran">
-      <div class="ec-num-box"><div class="ec-num">112</div></div>
-      <div><div class="ec-name">National SOS</div><div class="ec-desc">Police, Fire & Ambulance</div></div>
-    </a>
-    <a href="tel:102" class="ec grn">
-      <div class="ec-num-box"><div class="ec-num">102</div></div>
-      <div><div class="ec-name">Janani Express</div><div class="ec-desc">Pregnant women & newborn — Free</div></div>
-    </a>
-    <a href="tel:104" class="ec teal">
-      <div class="ec-num-box"><div class="ec-num">104</div></div>
-      <div><div class="ec-name">Health Helpline</div><div class="ec-desc">Doctor advice — Free, 24/7</div></div>
-    </a>
-    <a href="tel:1800111565" class="ec purp">
-      <div class="ec-num-box"><div class="ec-num" style="font-size:0.78rem">1800-111-565</div></div>
-      <div><div class="ec-name">Mental Health</div><div class="ec-desc">NIMHANS — Free, confidential</div></div>
-    </a>
-    <a href="tel:1097" class="ec blue">
-      <div class="ec-num-box"><div class="ec-num">1097</div></div>
-      <div><div class="ec-name">AIDS Helpline</div><div class="ec-desc">National AIDS Control — Free</div></div>
-    </a>
-    <a href="tel:1800110066" class="ec grn">
-      <div class="ec-num-box"><div class="ec-num" style="font-size:0.78rem">1800-110-066</div></div>
-      <div><div class="ec-name">Senior Citizen</div><div class="ec-desc">Elder Care Helpline — Free</div></div>
-    </a>
-    <a href="tel:9152987821" class="ec purp">
-      <div class="ec-num-box"><div class="ec-num" style="font-size:0.68rem">9152987821</div></div>
-      <div><div class="ec-name">iCall</div><div class="ec-desc">Psychosocial Support — TISS</div></div>
-    </a>
+  <div class="emg-sec">
+    <div class="emg-sec-title">🟢 Health Helplines</div>
+    <div class="emg-grid">
+      <a href="tel:102" class="ec gr"><div class="ec-nw"><div class="ec-n">102</div></div><div class="ec-inf"><div class="ec-name">🤰 Janani Express</div><div class="ec-desc">Pregnant women & newborn transport · Free</div></div></a>
+      <a href="tel:104" class="ec tl"><div class="ec-nw"><div class="ec-n">104</div></div><div class="ec-inf"><div class="ec-name">🩺 Health Helpline</div><div class="ec-desc">Doctor advice on phone · Free · 24/7</div></div></a>
+      <a href="tel:1097" class="ec bl"><div class="ec-nw"><div class="ec-n">1097</div></div><div class="ec-inf"><div class="ec-name">🎗️ AIDS Helpline</div><div class="ec-desc">National AIDS Control · Confidential · Free</div></div></a>
+      <a href="tel:1800114477" class="ec gr"><div class="ec-nw"><div class="ec-n" style="font-size:.8rem">1800-11-4477</div></div><div class="ec-inf"><div class="ec-name">🫁 TB Helpline</div><div class="ec-desc">Nikshay — TB info & support · Free</div></div></a>
+    </div>
   </div>
 
-  <div class="tip-strip">
-    <span style="font-size:1.4rem">💡</span>
-    <span><strong>Save 108 and 112 right now.</strong> They work even without balance or a SIM.</span>
+  <div class="emg-sec">
+    <div class="emg-sec-title">🧠 Mental Health & Support</div>
+    <div class="emg-grid">
+      <a href="tel:1800111565" class="ec pu"><div class="ec-nw"><div class="ec-n" style="font-size:.72rem">1800-111-565</div></div><div class="ec-inf"><div class="ec-name">🧠 NIMHANS</div><div class="ec-desc">Mental Health Helpline · Free · Confidential</div></div></a>
+      <a href="tel:9152987821" class="ec pu"><div class="ec-nw"><div class="ec-n" style="font-size:.7rem">9152987821</div></div><div class="ec-inf"><div class="ec-name">💙 iCall TISS</div><div class="ec-desc">Psychosocial Support · Mumbai</div></div></a>
+      <a href="tel:1800599019" class="ec bl"><div class="ec-nw"><div class="ec-n" style="font-size:.72rem">1800-599-019</div></div><div class="ec-inf"><div class="ec-name">☀️ Kiran</div><div class="ec-desc">Mental Health Rehab · NIMHANS · Free</div></div></a>
+      <a href="tel:1800110066" class="ec tl"><div class="ec-nw"><div class="ec-n" style="font-size:.72rem">1800-110-066</div></div><div class="ec-inf"><div class="ec-name">👴 Senior Citizen</div><div class="ec-desc">Elder Care Helpline · Free · All India</div></div></a>
+    </div>
+  </div>
+
+  <div class="emg-tip">
+    <span style="font-size:1.5rem;flex-shrink:0">💡</span>
+    <span><strong>Save 108 and 112 right now.</strong> These work even without balance or a SIM card on any network across India. No cost, no registration.</span>
   </div>
 </div>
-
 {% endblock %}
