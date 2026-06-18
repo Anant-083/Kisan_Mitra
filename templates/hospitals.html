@@ -1,75 +1,84 @@
 {% extends "base.html" %}
 {% block title %} · Find Hospital{% endblock %}
 {% block content %}
-
 <div class="pg-hdr">
   <div class="pg-hdr-inner">
-    <div class="pg-icon ib">🏨</div>
-    <div>
-      <h1>Find Government Hospital</h1>
-      <p>Select your state and district</p>
-    </div>
+    <div class="pg-hdr-ic ib">🏨</div>
+    <div><h1>Find Government Hospital</h1><p>Select your state and district to find nearby hospitals with contact details</p></div>
+    <div class="pg-hdr-meta"><div class="pg-tag">🆓 Free OPD</div><div class="pg-tag">📞 Tap to call</div></div>
   </div>
 </div>
-
 <div class="hosp-wrap">
-  <div class="filter-panel">
+  <div class="filter-card">
     <div class="filter-row">
-      <div class="fg">
-        <label>State</label>
+      <div class="fg"><label>🗺️ State</label>
         <select id="stateSelect" onchange="loadDistricts()">
-          <option value="">Select a state…</option>
+          <option value="">— Select your state —</option>
           {% for s in states %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
         </select>
       </div>
-      <div class="fg">
-        <label>District</label>
+      <div class="fg"><label>📍 District</label>
         <select id="districtSelect" onchange="loadHospitals()" disabled>
-          <option value="">Select a district…</option>
+          <option value="">— Select district —</option>
         </select>
       </div>
     </div>
   </div>
-  <div id="hospResults"></div>
+  <div id="hospResults">
+    <div class="state-box"><span style="font-size:2.5rem">🏥</span><span>Select your state and district to find hospitals</span></div>
+  </div>
 </div>
-
 {% endblock %}
 {% block scripts %}
 <script>
-async function loadDistricts() {
-  const state = document.getElementById("stateSelect").value;
-  const dsel = document.getElementById("districtSelect");
-  document.getElementById("hospResults").innerHTML = "";
-  if (!state) { dsel.disabled=true; return; }
-  const r = await fetch("/api/districts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({state})});
-  const d = await r.json();
-  dsel.innerHTML = '<option value="">Select a district…</option>';
-  d.districts.forEach(x => dsel.innerHTML += `<option value="${x}">${x}</option>`);
-  dsel.disabled = false;
+async function loadDistricts(){
+  const state=document.getElementById('stateSelect').value;
+  const dsel=document.getElementById('districtSelect');
+  document.getElementById('hospResults').innerHTML=`<div class="state-box"><span style="font-size:2.5rem">📍</span><span>Now select your district</span></div>`;
+  if(!state){dsel.disabled=true;return}
+  const r=await fetch('/api/districts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({state})});
+  const d=await r.json();
+  dsel.innerHTML='<option value="">— Select district —</option>';
+  d.districts.forEach(x=>dsel.innerHTML+=`<option value="${x}">${x}</option>`);
+  dsel.disabled=false;
 }
-async function loadHospitals() {
-  const state = document.getElementById("stateSelect").value;
-  const district = document.getElementById("districtSelect").value;
-  const box = document.getElementById("hospResults");
-  if (!district) { box.innerHTML=""; return; }
-  box.innerHTML = `<div class="state-box"><div class="spinner"></div>Finding hospitals…</div>`;
-  const r = await fetch("/api/hospitals",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({state,district})});
-  const d = await r.json();
-  if (!d.hospitals.length) {
-    box.innerHTML=`<div class="state-box">🏥 No hospitals found for this area.</div>`; return;
+async function loadHospitals(){
+  const state=document.getElementById('stateSelect').value;
+  const district=document.getElementById('districtSelect').value;
+  const box=document.getElementById('hospResults');
+  if(!district){return}
+  box.innerHTML=`<div class="state-box"><div class="spinner"></div>Finding hospitals in ${district}…</div>`;
+  const r=await fetch('/api/hospitals',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({state,district})});
+  const d=await r.json();
+  if(!d.hospitals.length){
+    box.innerHTML=`<div class="state-box"><span style="font-size:2rem">😔</span><span>No hospitals found for ${district}. Try a nearby district.</span></div>`;return;
   }
-  box.innerHTML = d.hospitals.map(h=>`
-    <div class="hcard">
-      <div class="hcard-icon">🏥</div>
-      <div class="hcard-body">
-        <div class="hcard-name">${h.name}</div>
-        <div class="hcard-meta">
-          <span>📍 ${h.address}</span>
-          <span>📞 <a href="tel:${h.phone}">${h.phone}</a></span>
+  box.innerHTML=`
+    <div style="font-size:.78rem;color:var(--t3);margin-bottom:12px;padding:0 2px">
+      🏥 Found <strong style="color:var(--bl)">${d.hospitals.length} hospital${d.hospitals.length>1?'s':''}</strong> in ${district}, ${state}
+    </div>
+    <div class="hosp-grid">
+    ${d.hospitals.map(h=>`
+      <div class="hcard">
+        <div class="hcard-ic">🏥</div>
+        <div class="hcard-body">
+          <div class="hcard-name">${h.name}</div>
+          <div class="hcard-meta">
+            <span>📍 ${h.address}</span>
+            <span>📞 <a href="tel:${h.phone}">${h.phone}</a></span>
+            <span>🛏️ ${h.beds} beds</span>
+          </div>
+          <div class="hcard-tags">
+            <span class="htag gov">🏛️ ${h.type}</span>
+            <span class="htag free">🆓 Free OPD</span>
+            ${h.emergency?'<span class="htag emg">🚨 Emergency</span>':''}
+          </div>
         </div>
-        <span class="htag">${h.type}</span>
-      </div>
-    </div>`).join("");
+        <div class="hcard-action">
+          <a href="tel:${h.phone}" class="call-btn">📞 Call</a>
+        </div>
+      </div>`).join('')}
+    </div>`;
 }
 </script>
 {% endblock %}
