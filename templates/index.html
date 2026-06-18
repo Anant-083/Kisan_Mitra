@@ -1,59 +1,98 @@
 {% extends "base.html" %}
 {% block title %} · AI Health Assistant{% endblock %}
 {% block content %}
-
 <section class="hero">
-  <div class="hero-pill"><span class="h-dot"></span> Free · No Login · Always On</div>
-  <div class="cross-wrap">
-    <div class="pring"></div>
-    <div class="pring"></div>
-    <div class="cross-box">🏥</div>
+  <div class="hero-eyebrow"><span class="ldot"></span> Free · No Login · AI-Powered · 24/7</div>
+  <div class="hb-wrap">
+    <div class="hb-ring"></div><div class="hb-ring"></div>
+    <div class="hb-box">🏥</div>
   </div>
   <h1>Health guidance<br>in <mark>your language</mark></h1>
-  <p class="hero-sub">Describe symptoms, find hospitals, check medicines — Hindi, Bengali or English.</p>
+  <p class="hero-sub">Describe symptoms, find hospitals, check medicines — Hindi, Bengali or English. Completely free, no registration.</p>
   <p class="hero-langs">हिंदी &nbsp;·&nbsp; বাংলা &nbsp;·&nbsp; English</p>
   <div class="hero-btns">
     <a href="/chat" class="btn btn-g">💬 Check Symptoms</a>
-    <a href="/emergency" class="btn btn-o">🚨 Emergency</a>
+    <a href="/hospitals" class="btn btn-o">🏨 Find Hospital</a>
+    <a href="/emergency" class="btn btn-r">🚨 Emergency</a>
   </div>
+  <div id="weatherWidget" style="margin-top:20px"></div>
 </section>
 
-<div class="stats-row">
-  <div class="stat"><span class="stat-n">3</span><span class="stat-l">Languages</span></div>
-  <div class="stat"><span class="stat-n">5+</span><span class="stat-l">States</span></div>
-  <div class="stat"><span class="stat-n">8</span><span class="stat-l">SOS Lines</span></div>
-  <div class="stat"><span class="stat-n">24/7</span><span class="stat-l">Available</span></div>
+<div class="stats-grid">
+  <div class="sg"><span class="sg-n">3</span><span class="sg-l">Languages</span></div>
+  <div class="sg"><span class="sg-n">8+</span><span class="sg-l">States</span></div>
+  <div class="sg"><span class="sg-n">8</span><span class="sg-l">SOS Lines</span></div>
+  <div class="sg"><span class="sg-n">24/7</span><span class="sg-l">Available</span></div>
 </div>
 
-<div class="section">
+<div class="trust-row">
+  <div class="tb">🔒 No data stored</div>
+  <div class="tb">💰 100% Free</div>
+  <div class="tb">🎤 Voice enabled</div>
+  <div class="tb">🤖 Groq AI</div>
+  <div class="tb">🌐 Multilingual</div>
+  <div class="tb">📱 Mobile first</div>
+  <div class="tb">🏥 Govt hospitals</div>
+  <div class="tb">🇮🇳 Made for India</div>
+</div>
+
+<div class="home-sec">
   <div class="sec-ey">Everything you need</div>
   <div class="feat-grid">
-    <a href="/chat" class="fc c-green">
-      <div class="fc-chip">💬 AI Chat</div>
+    <a href="/chat" class="fc cg">
+      <div class="fc-head"><div class="fc-ic">💬</div><span class="fc-badge">AI Chat</span></div>
       <div class="fc-title">Symptom Checker</div>
-      <div class="fc-desc">Describe what you feel — fever, cough, pain — and get clear AI guidance in your language.</div>
-      <div class="fc-arrow">Start chatting →</div>
+      <div class="fc-desc">Speak or type symptoms — fever, cough, pain. Get instant AI guidance with voice input in your language. Auto-detects Hindi, Bengali & English.</div>
+      <div class="fc-arr">Start chatting →</div>
     </a>
-    <a href="/hospitals" class="fc c-blue">
-      <div class="fc-chip">🏨 Locator</div>
+    <a href="/hospitals" class="fc cb">
+      <div class="fc-head"><div class="fc-ic">🏨</div><span class="fc-badge">Locator</span></div>
       <div class="fc-title">Find Hospital</div>
-      <div class="fc-desc">Find government hospitals in your state and district. Phone numbers included — tap to call.</div>
-      <div class="fc-arrow">Find now →</div>
+      <div class="fc-desc">Locate nearest government hospitals in your state and district. Phone numbers, bed count, emergency status — one tap to call.</div>
+      <div class="fc-arr">Find now →</div>
     </a>
-    <a href="/medicines" class="fc c-purp">
-      <div class="fc-chip">💊 Info</div>
+    <a href="/medicines" class="fc cp">
+      <div class="fc-head"><div class="fc-ic">💊</div><span class="fc-badge">Info</span></div>
       <div class="fc-title">Medicine Info</div>
-      <div class="fc-desc">Uses, dosage, side effects and affordable Indian alternatives for any medicine.</div>
-      <div class="fc-arrow">Search →</div>
+      <div class="fc-desc">Dosage, uses, side effects and affordable Indian alternatives for any medicine. Search in Hindi or English.</div>
+      <div class="fc-arr">Search →</div>
     </a>
-    <a href="/emergency" class="fc c-red">
-      <div class="fc-chip">🚨 SOS</div>
+    <a href="/emergency" class="fc cr">
+      <div class="fc-head"><div class="fc-ic">🚨</div><span class="fc-badge">SOS</span></div>
       <div class="fc-title">Emergency Contacts</div>
-      <div class="fc-desc">All national health helplines — ambulance, mental health, senior care — one tap to call.</div>
-      <div class="fc-arrow">View all →</div>
+      <div class="fc-desc">All 8 national health helplines — ambulance 108, mental health, senior care, women & child — one tap to call. Works without balance.</div>
+      <div class="fc-arr">View all →</div>
     </a>
   </div>
-  <div class="info-bar">⚠️ AarogyaBot gives general health information only — not a substitute for medical diagnosis. See a doctor for serious conditions.</div>
+  <div class="info-strip">
+    <span style="font-size:1.1rem;flex-shrink:0">⚠️</span>
+    AarogyaBot gives general health information only — not a substitute for medical diagnosis. Please see a qualified doctor for serious conditions.
+  </div>
 </div>
-
+{% endblock %}
+{% block scripts %}
+<script>
+// Load real weather by geolocation
+if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    try{
+      const r=await fetch('/api/weather',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({lat:pos.coords.latitude,lon:pos.coords.longitude})
+      });
+      const d=await r.json();
+      if(d.error)return;
+      const cls=d.warning?'warn':'';
+      const icon=d.icon?`<img src="https://openweathermap.org/img/wn/${d.icon}.png" style="width:28px;height:28px;vertical-align:middle" alt=""/>`:' ';
+      document.getElementById('weatherWidget').innerHTML=`
+        <div class="weather-strip ${cls}">
+          ${icon}
+          📍 ${d.city} &nbsp;·&nbsp; 🌡️ ${d.temp}°C (feels ${d.feels}°C)
+          &nbsp;·&nbsp; 💧 ${d.humidity}% humidity &nbsp;·&nbsp; ${d.desc}
+          ${d.warning?`<br><strong>${d.warning}</strong>`:''}
+        </div>`;
+    }catch(e){}
+  },()=>{});
+}
+</script>
 {% endblock %}
