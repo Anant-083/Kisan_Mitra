@@ -1,62 +1,63 @@
 {% extends "base.html" %}
 {% block title %} · Medicine Info{% endblock %}
 {% block content %}
-
 <div class="pg-hdr">
   <div class="pg-hdr-inner">
-    <div class="pg-icon ip">💊</div>
-    <div>
-      <h1>Medicine Information</h1>
-      <p>Search uses, dosage, side effects and alternatives</p>
-    </div>
+    <div class="pg-hdr-ic ip">💊</div>
+    <div><h1>Medicine Information</h1><p>Dosage, uses, side effects and affordable Indian alternatives for any medicine</p></div>
+    <div class="pg-hdr-meta"><div class="pg-tag">🤖 AI powered</div><div class="pg-tag">🇮🇳 India focus</div></div>
   </div>
 </div>
-
 <div class="med-wrap">
-  <div class="search-panel">
+  <div class="search-card">
     <div class="sbar">
-      <input type="text" id="medInput" placeholder="e.g. Paracetamol, Azithromycin…"/>
-      <button onclick="searchMed()">Search</button>
+      <input type="text" id="medInput" placeholder="Enter medicine — e.g. Paracetamol, Metformin, Dolo 650…"/>
+      <button onclick="searchMed()">🔍 Search</button>
     </div>
-    <div class="chips-label">Common searches</div>
+    <div class="chips-lbl">Common medicines</div>
     <div class="chips">
-      <span class="chip" onclick="quickMed('Paracetamol')">Paracetamol</span>
-      <span class="chip" onclick="quickMed('Azithromycin')">Azithromycin</span>
-      <span class="chip" onclick="quickMed('Metformin')">Metformin</span>
-      <span class="chip" onclick="quickMed('Omeprazole')">Omeprazole</span>
-      <span class="chip" onclick="quickMed('Amoxicillin')">Amoxicillin</span>
-      <span class="chip" onclick="quickMed('Ibuprofen')">Ibuprofen</span>
-      <span class="chip" onclick="quickMed('पैरासिटामोल')">पैरासिटामोल</span>
+      <span class="chip" onclick="qm('Paracetamol')">💊 Paracetamol</span>
+      <span class="chip" onclick="qm('Azithromycin')">💊 Azithromycin</span>
+      <span class="chip" onclick="qm('Metformin')">💊 Metformin</span>
+      <span class="chip" onclick="qm('Omeprazole')">💊 Omeprazole</span>
+      <span class="chip" onclick="qm('Amoxicillin')">💊 Amoxicillin</span>
+      <span class="chip" onclick="qm('Ibuprofen')">💊 Ibuprofen</span>
+      <span class="chip" onclick="qm('Cetirizine')">💊 Cetirizine</span>
+      <span class="chip" onclick="qm('Dolo 650')">💊 Dolo 650</span>
+      <span class="chip" onclick="qm('Pantoprazole')">💊 Pantoprazole</span>
+      <span class="chip" onclick="qm('Atorvastatin')">💊 Atorvastatin</span>
+      <span class="chip" onclick="qm('Amlodipine')">💊 Amlodipine</span>
+      <span class="chip" onclick="qm('पैरासिटामोल')">💊 पैरासिटामोल</span>
     </div>
   </div>
-  <div id="medResult"></div>
+  <div id="medResult">
+    <div class="state-box"><span style="font-size:2.5rem">💊</span><span>Search any medicine for detailed AI-generated information</span></div>
+  </div>
 </div>
-
 {% endblock %}
 {% block scripts %}
 <script>
-async function searchMed() {
-  const med = document.getElementById("medInput").value.trim();
-  if (!med) return;
-  const box = document.getElementById("medResult");
-  box.innerHTML = `<div class="state-box"><div class="spinner"></div>Looking up ${med}…</div>`;
-  const r = await fetch("/api/medicine",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({medicine:med})});
-  const d = await r.json();
-  box.innerHTML = `
-    <div class="med-card">
-      <div class="med-card-head">
-        <div class="med-icon">💊</div>
-        <div><h3>${med}</h3><span>AI-generated · Not a prescription</span></div>
-      </div>
-      <div class="med-text">${d.info.replace(/\n/g,"<br>")}</div>
-      <div class="med-warn">⚠️ Always consult a pharmacist or doctor before taking any medicine.</div>
-    </div>`;
+async function searchMed(){
+  const med=document.getElementById('medInput').value.trim();if(!med)return;
+  const box=document.getElementById('medResult');
+  box.innerHTML=`<div class="state-box"><div class="spinner"></div>Looking up ${med}…</div>`;
+  try{
+    const r=await fetch('/api/medicine',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({medicine:med})});
+    const d=await r.json();
+    box.innerHTML=`
+      <div class="med-card">
+        <div class="med-card-hd">
+          <div class="med-ic">💊</div>
+          <div><h3>${med}</h3><span>AI-generated · Reference only · Not a prescription</span></div>
+        </div>
+        <div class="med-text">${d.info.replace(/\n/g,'<br>')}</div>
+        <div class="med-warn">⚠️ Always consult a licensed pharmacist or doctor before taking any medicine. Do not self-medicate.</div>
+      </div>`;
+  }catch(e){
+    box.innerHTML=`<div class="state-box"><span>❌</span><span>Error fetching info. Please try again.</span></div>`;
+  }
 }
-function quickMed(name){
-  document.getElementById("medInput").value=name; searchMed();
-}
-document.getElementById("medInput").addEventListener("keydown",e=>{
-  if(e.key==="Enter") searchMed();
-});
+function qm(name){document.getElementById('medInput').value=name;searchMed()}
+document.getElementById('medInput').addEventListener('keydown',e=>{if(e.key==='Enter')searchMed()});
 </script>
 {% endblock %}
