@@ -2,4 +2,5 @@ flask
 groq
 langdetect
 gtts
+requests
 gunicorn
