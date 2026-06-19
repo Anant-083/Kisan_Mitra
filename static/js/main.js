@@ -181,5 +181,3 @@ function onLangChange(val){ applyLang(val); }
 window.addEventListener('DOMContentLoaded', ()=>{
   applyLang(currentLang);
 });
-JSEOF
-echo "JS done"
