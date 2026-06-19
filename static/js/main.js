@@ -1,4 +1,4 @@
-/* ── NAV ── */
+/* ── NAV / DRAWER ── */
 function toggleNav(){document.getElementById('drawer').classList.toggle('open')}
 function closeNav(){document.getElementById('drawer').classList.remove('open')}
 document.addEventListener('click',function(e){
@@ -6,6 +6,21 @@ document.addEventListener('click',function(e){
   const h=document.querySelector('.nav-ham');
   if(d&&h&&!d.contains(e.target)&&!h.contains(e.target))d.classList.remove('open');
 });
+
+/* ── THEME (dark / light) ── */
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('ab_theme', t);
+  document.querySelectorAll('.theme-btn').forEach(b=>{
+    b.innerHTML = t === 'dark'
+      ? '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>'
+      : '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
+  });
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme');
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+}
 
 /* ── GLOBAL LANGUAGE SYSTEM ── */
 const TRANSLATIONS={
@@ -23,40 +38,8 @@ const TRANSLATIONS={
     fc3_title:'Medicine Info',fc3_desc:'Dosage, uses, side effects and affordable Indian alternatives for any medicine.',fc3_cta:'Search',
     fc4_title:'Emergency Contacts',fc4_desc:'All national helplines — ambulance, mental health, senior care. One tap to call.',fc4_cta:'View all',
     disclaimer:'AarogyaBot gives general health information only — not a substitute for medical diagnosis.',
-    pg_chat_title:'Symptom Checker',pg_chat_sub:'Voice or text · Auto language · AI-powered',
-    pg_hosp_title:'Find Government Hospital',pg_hosp_sub:'Select your state and district',
-    pg_med_title:'Medicine Information',pg_med_sub:'Dosage, uses, side effects and affordable alternatives',
-    pg_emg_title:'Emergency Contacts',pg_emg_sub:'Free helplines, available 24/7 — tap to call',
-    lbl_language:'Language',lbl_severity:'Severity',lbl_settings:'Settings',
-    lbl_actions:'Actions',lbl_tip:'Health Tip',lbl_recent:'Recent',
-    lbl_body:'Body Area',lbl_common:'Common',lbl_sos:'Quick SOS',
-    sv_mild:'Mild',sv_mod:'Moderate',sv_high:'Severe',
-    tog_voice:'Speak replies',tog_send:'Auto-send voice',tog_sug:'Suggestions',
-    act_copy:'Copy chat',act_dl:'Download',act_share:'Share',act_clear:'Clear chat',
-    quick_fever:'Fever',quick_stomach:'Stomach',quick_cough:'Cough',
-    quick_chest:'Chest',quick_rash:'Rash',quick_fatigue:'Fatigue',quick_back:'Back pain',quick_bp:'High BP',
-    bp_head:'Head',bp_chest:'Chest',bp_stomach:'Stomach',bp_throat:'Throat',
-    bp_legs:'Legs',bp_skin:'Skin',bp_eyes:'Eyes',bp_ears:'Ears',
-    sym1:'High Fever',sym2:'Headache',sym3:'Diarrhoea',sym4:'High BP',sym5:'Sugar',sym6:'Anxiety',sym7:'Cold',sym8:'UTI',
-    sos_amb:'108 — Ambulance',sos_nat:'112 — Emergency',sos_hl:'104 — Health Line',
-    med_placeholder:'Enter medicine — e.g. Paracetamol, Metformin…',
-    med_search:'Search',med_common:'Common medicines',
-    hosp_state:'State',hosp_district:'District',
-    hosp_sel_state:'— Select your state —',hosp_sel_dist:'— Select district —',
-    call_btn:'Call',
-    emg_title:'Life-threatening emergency?',
-    emg_sub:'Call 108 — free ambulance, all India, 24/7',
-    emg_tap:'Tap to call',
-    tip_save:'Save 108 and 112 right now. They work without balance on any network.',
-    welcome:'Hello! I\'m AarogyaBot — your free AI health assistant. Speak or type your symptoms. I understand Hindi, Bengali and English.',
-    listening:'Listening… speak your symptoms',
-    stop_voice:'Stop',
-    placeholder_chat:'Type symptoms… / बोलें या लिखें…',
-    sug_label:'Ask next:',
     footer_copy:'AarogyaBot provides general health guidance only. Always consult a qualified doctor.',
-    state_select_hosp:'Select your state and district to find hospitals',
-    state_select_dist:'Now select your district',
-    speak:'Speak',stop:'Stop',
+    lbl_language:'Language',lbl_theme:'Theme',
   },
   hi:{
     nav_home:'होम',nav_chat:'लक्षण जांच',nav_hospitals:'अस्पताल',
@@ -72,40 +55,8 @@ const TRANSLATIONS={
     fc3_title:'दवाई जानकारी',fc3_desc:'किसी भी दवाई का उपयोग, खुराक, साइड इफेक्ट और सस्ते विकल्प।',fc3_cta:'खोजें',
     fc4_title:'आपातकालीन नंबर',fc4_desc:'सभी राष्ट्रीय हेल्पलाइन — एम्बुलेंस, मानसिक स्वास्थ्य। एक टैप में कॉल करें।',fc4_cta:'सभी देखें',
     disclaimer:'AarogyaBot केवल सामान्य स्वास्थ्य जानकारी देता है — यह चिकित्सा निदान नहीं है।',
-    pg_chat_title:'लक्षण जांचक',pg_chat_sub:'आवाज़ या टेक्स्ट · भाषा स्वतः · AI संचालित',
-    pg_hosp_title:'सरकारी अस्पताल खोजें',pg_hosp_sub:'राज्य और जिला चुनें',
-    pg_med_title:'दवाई जानकारी',pg_med_sub:'खुराक, उपयोग, साइड इफेक्ट और सस्ते विकल्प',
-    pg_emg_title:'आपातकालीन संपर्क',pg_emg_sub:'मुफ्त हेल्पलाइन, 24/7 उपलब्ध — टैप करके कॉल करें',
-    lbl_language:'भाषा',lbl_severity:'गंभीरता',lbl_settings:'सेटिंग्स',
-    lbl_actions:'कार्य',lbl_tip:'स्वास्थ्य सुझाव',lbl_recent:'हाल के',
-    lbl_body:'शरीर का हिस्सा',lbl_common:'सामान्य',lbl_sos:'त्वरित SOS',
-    sv_mild:'हल्का',sv_mod:'मध्यम',sv_high:'गंभीर',
-    tog_voice:'जवाब सुनें',tog_send:'आवाज़ ऑटो-भेजें',tog_sug:'सुझाव',
-    act_copy:'चैट कॉपी',act_dl:'डाउनलोड',act_share:'शेयर',act_clear:'चैट साफ़',
-    quick_fever:'बुखार',quick_stomach:'पेट दर्द',quick_cough:'खांसी',
-    quick_chest:'सीने का दर्द',quick_rash:'चकत्ते',quick_fatigue:'थकान',quick_back:'पीठ दर्द',quick_bp:'बीपी',
-    bp_head:'सिर',bp_chest:'सीना',bp_stomach:'पेट',bp_throat:'गला',
-    bp_legs:'पैर',bp_skin:'त्वचा',bp_eyes:'आंखें',bp_ears:'कान',
-    sym1:'तेज़ बुखार',sym2:'सिरदर्द',sym3:'दस्त',sym4:'हाई बीपी',sym5:'शुगर',sym6:'चिंता',sym7:'जुकाम',sym8:'UTI',
-    sos_amb:'108 — एम्बुलेंस',sos_nat:'112 — आपातकाल',sos_hl:'104 — हेल्थ लाइन',
-    med_placeholder:'दवाई का नाम — जैसे पैरासिटामोल, मेटफॉर्मिन…',
-    med_search:'खोजें',med_common:'सामान्य दवाइयां',
-    hosp_state:'राज्य',hosp_district:'जिला',
-    hosp_sel_state:'— राज्य चुनें —',hosp_sel_dist:'— जिला चुनें —',
-    call_btn:'कॉल',
-    emg_title:'जानलेवा आपातकाल?',
-    emg_sub:'108 पर कॉल करें — मुफ्त एम्बुलेंस, 24/7 उपलब्ध',
-    emg_tap:'टैप करके कॉल करें',
-    tip_save:'अभी 108 और 112 सेव करें। ये बिना बैलेंस के भी काम करते हैं।',
-    welcome:'नमस्ते! मैं AarogyaBot हूं। आवाज़ से या टाइप करके अपने लक्षण बताएं। मैं हिंदी, बंगाली और अंग्रेजी समझता हूं।',
-    listening:'सुन रहा हूं… लक्षण बोलें',
-    stop_voice:'रोकें',
-    placeholder_chat:'लक्षण लिखें या बोलें…',
-    sug_label:'अगला सवाल:',
     footer_copy:'AarogyaBot केवल सामान्य स्वास्थ्य जानकारी देता है। हमेशा डॉक्टर से मिलें।',
-    state_select_hosp:'राज्य और जिला चुनकर अस्पताल खोजें',
-    state_select_dist:'अब जिला चुनें',
-    speak:'सुनें',stop:'रोकें',
+    lbl_language:'भाषा',lbl_theme:'थीम',
   },
   bn:{
     nav_home:'হোম',nav_chat:'লক্ষণ পরীক্ষা',nav_hospitals:'হাসপাতাল',
@@ -121,42 +72,65 @@ const TRANSLATIONS={
     fc3_title:'ওষুধ তথ্য',fc3_desc:'যেকোনো ওষুধের ব্যবহার, ডোজ, পার্শ্বপ্রতিক্রিয়া ও সস্তা বিকল্প।',fc3_cta:'খুঁজুন',
     fc4_title:'জরুরি যোগাযোগ',fc4_desc:'সব জাতীয় হেল্পলাইন — অ্যাম্বুলেন্স, মানসিক স্বাস্থ্য। এক ট্যাপে কল।',fc4_cta:'সব দেখুন',
     disclaimer:'AarogyaBot শুধু সাধারণ স্বাস্থ্য তথ্য দেয় — এটি চিকিৎসা নির্ণয় নয়।',
-    pg_chat_title:'লক্ষণ পরীক্ষক',pg_chat_sub:'কণ্ঠ বা টেক্সট · স্বয়ংক্রিয় ভাষা · AI-চালিত',
-    pg_hosp_title:'সরকারি হাসপাতাল খুঁজুন',pg_hosp_sub:'রাজ্য ও জেলা নির্বাচন করুন',
-    pg_med_title:'ওষুধ তথ্য',pg_med_sub:'ডোজ, ব্যবহার, পার্শ্বপ্রতিক্রিয়া ও বিকল্প',
-    pg_emg_title:'জরুরি যোগাযোগ',pg_emg_sub:'বিনামূল্যে হেল্পলাইন, ২৪/৭ — ট্যাপ করে কল',
-    lbl_language:'ভাষা',lbl_severity:'তীব্রতা',lbl_settings:'সেটিংস',
-    lbl_actions:'কার্যাবলি',lbl_tip:'স্বাস্থ্য পরামর্শ',lbl_recent:'সাম্প্রতিক',
-    lbl_body:'শরীরের অংশ',lbl_common:'সাধারণ',lbl_sos:'দ্রুত SOS',
-    sv_mild:'হালকা',sv_mod:'মাঝারি',sv_high:'গুরুতর',
-    tog_voice:'উত্তর শুনুন',tog_send:'কণ্ঠ অটো-পাঠান',tog_sug:'পরামর্শ',
-    act_copy:'চ্যাট কপি',act_dl:'ডাউনলোড',act_share:'শেয়ার',act_clear:'চ্যাট মুছুন',
-    quick_fever:'জ্বর',quick_stomach:'পেটব্যথা',quick_cough:'কাশি',
-    quick_chest:'বুকব্যথা',quick_rash:'র‍্যাশ',quick_fatigue:'ক্লান্তি',quick_back:'পিঠব্যথা',quick_bp:'বিপি',
-    bp_head:'মাথা',bp_chest:'বুক',bp_stomach:'পেট',bp_throat:'গলা',
-    bp_legs:'পা',bp_skin:'চামড়া',bp_eyes:'চোখ',bp_ears:'কান',
-    sym1:'তীব্র জ্বর',sym2:'মাথাব্যথা',sym3:'ডায়রিয়া',sym4:'হাই বিপি',sym5:'সুগার',sym6:'উদ্বেগ',sym7:'ঠান্ডা',sym8:'ইউটিআই',
-    sos_amb:'108 — অ্যাম্বুলেন্স',sos_nat:'112 — জরুরি',sos_hl:'104 — স্বাস্থ্য লাইন',
-    med_placeholder:'ওষুধের নাম — যেমন প্যারাসিটামল, মেটফর্মিন…',
-    med_search:'খুঁজুন',med_common:'সাধারণ ওষুধ',
-    hosp_state:'রাজ্য',hosp_district:'জেলা',
-    hosp_sel_state:'— রাজ্য নির্বাচন করুন —',hosp_sel_dist:'— জেলা নির্বাচন করুন —',
-    call_btn:'কল',
-    emg_title:'জীবনঘাতী জরুরি অবস্থা?',
-    emg_sub:'108 কল করুন — বিনামূল্যে অ্যাম্বুলেন্স, সর্বত্র, ২৪/৭',
-    emg_tap:'ট্যাপ করে কল করুন',
-    tip_save:'এখনই 108 ও 112 সেভ করুন। এগুলো ব্যালেন্স ছাড়াও কাজ করে।',
-    welcome:'নমস্কার! আমি AarogyaBot। কথা বলুন বা টাইপ করুন আপনার লক্ষণ। আমি হিন্দি, বাংলা ও ইংরেজি বুঝি।',
-    listening:'শুনছি… লক্ষণ বলুন',
-    stop_voice:'থামুন',
-    placeholder_chat:'লক্ষণ লিখুন বা বলুন…',
-    sug_label:'পরবর্তী প্রশ্ন:',
     footer_copy:'AarogyaBot শুধু সাধারণ স্বাস্থ্য তথ্য দেয়। সর্বদা ডাক্তারের পরামর্শ নিন।',
-    state_select_hosp:'রাজ্য ও জেলা নির্বাচন করে হাসপাতাল খুঁজুন',
-    state_select_dist:'এখন জেলা নির্বাচন করুন',
-    speak:'শুনুন',stop:'থামুন',
+    lbl_language:'ভাষা',lbl_theme:'থিম',
+  },
+  ta:{
+    nav_home:'முகப்பு',nav_chat:'அறிகுறி பரிசோதனை',nav_hospitals:'மருத்துவமனைகள்',
+    nav_medicines:'மருந்துகள்',nav_sos:'அவசரநிலை',
+    hero_kicker:'இலவசம் · உள்நுழைவு தேவையில்லை · AI · 24/7',
+    hero_h1:'<b>உங்கள் மொழியில்</b> சுகாதார வழிகாட்டுதல்',
+    hero_sub:'அறிகுறிகளைச் சொல்லுங்கள், மருத்துவமனைகளைக் கண்டறியுங்கள், மருந்துகளைச் சரிபார்க்கவும் — முற்றிலும் இலவசம்.',
+    btn_chat:'அறிகுறிகளை சரிபார்க்க',btn_hosp:'மருத்துவமனை தேடு',btn_emg:'அவசரநிலை',
+    stat1:'மொழிகள்',stat2:'மாநிலங்கள்',stat3:'SOS லைன்கள்',stat4:'கிடைக்கும்',
+    sec_title:'உங்களுக்கு தேவையான அனைத்தும்',
+    fc1_title:'அறிகுறி பரிசோதகர்',fc1_desc:'பேசுங்கள் அல்லது தட்டச்சு செய்யுங்கள் — காய்ச்சல், இருமல், வலி. உடனடி AI வழிகாட்டுதல்.',fc1_cta:'அரட்டை தொடங்கு',
+    fc2_title:'மருத்துவமனை தேடு',fc2_desc:'உங்கள் மாவட்டத்தில் அரசு மருத்துவமனைகள். ஒரே தட்டில் அழைக்கவும்.',fc2_cta:'இப்போது தேடு',
+    fc3_title:'மருந்து தகவல்',fc3_desc:'எந்த மருந்துக்கும் பயன்பாடு, அளவு, பக்க விளைவுகள் மற்றும் மாற்றுகள்.',fc3_cta:'தேடு',
+    fc4_title:'அவசர தொடர்புகள்',fc4_desc:'அனைத்து தேசிய உதவி எண்கள் — ஆம்புலன்ஸ், மனநல உதவி. ஒரே தட்டில் அழைக்கவும்.',fc4_cta:'அனைத்தையும் பார்',
+    disclaimer:'AarogyaBot பொது சுகாதார தகவலை மட்டுமே வழங்குகிறது — இது மருத்துவ நோயறிதல் அல்ல.',
+    footer_copy:'AarogyaBot பொது சுகாதார வழிகாட்டுதலை மட்டுமே வழங்குகிறது. எப்போதும் மருத்துவரை அணுகவும்.',
+    lbl_language:'மொழி',lbl_theme:'தீம்',
+  },
+  te:{
+    nav_home:'హోమ్',nav_chat:'లక్షణ తనిఖీ',nav_hospitals:'ఆసుపత్రులు',
+    nav_medicines:'మందులు',nav_sos:'అత్యవసరం',
+    hero_kicker:'ఉచితం · లాగిన్ అవసరం లేదు · AI · 24/7',
+    hero_h1:'<b>మీ భాషలో</b> ఆరోగ్య మార్గదర్శనం',
+    hero_sub:'లక్షణాలను చెప్పండి, ఆసుపత్రులను కనుగొనండి, మందులను తనిఖీ చేయండి — పూర్తిగా ఉచితం.',
+    btn_chat:'లక్షణాలను తనిఖీ చేయండి',btn_hosp:'ఆసుపత్రి కనుగొనండి',btn_emg:'అత్యవసరం',
+    stat1:'భాషలు',stat2:'రాష్ట్రాలు',stat3:'SOS లైన్లు',stat4:'అందుబాటులో',
+    sec_title:'మీకు కావలసినవన్నీ',
+    fc1_title:'లక్షణ తనిఖీదారు',fc1_desc:'మాట్లాడండి లేదా టైప్ చేయండి — జ్వరం, దగ్గు, నొప్పి. తక్షణ AI మార్గదర్శనం పొందండి.',fc1_cta:'చాట్ ప్రారంభించండి',
+    fc2_title:'ఆసుపత్రి కనుగొనండి',fc2_desc:'మీ జిల్లాలో ప్రభుత్వ ఆసుపత్రులు. ఒక్క నొక్కుతో కాల్ చేయండి.',fc2_cta:'ఇప్పుడే వెతకండి',
+    fc3_title:'మందుల సమాచారం',fc3_desc:'ఏ మందుకైనా ఉపయోగాలు, మోతాదు, దుష్ప్రభావాలు మరియు చౌక ప్రత్యామ్నాయాలు.',fc3_cta:'వెతకండి',
+    fc4_title:'అత్యవసర పరిచయాలు',fc4_desc:'అన్ని జాతీయ హెల్ప్‌లైన్‌లు — అంబులెన్స్, మానసిక ఆరోగ్యం. ఒక్క నొక్కుతో కాల్ చేయండి.',fc4_cta:'అన్నీ చూడండి',
+    disclaimer:'AarogyaBot సాధారణ ఆరోగ్య సమాచారాన్ని మాత్రమే ఇస్తుంది — ఇది వైద్య నిర్ధారణ కాదు.',
+    footer_copy:'AarogyaBot సాధారణ ఆరోగ్య మార్గదర్శకత్వాన్ని మాత్రమే అందిస్తుంది. ఎల్లప్పుడూ వైద్యుడిని సంప్రదించండి.',
+    lbl_language:'భాష',lbl_theme:'థీమ్',
+  },
+  mr:{
+    nav_home:'मुख्यपृष्ठ',nav_chat:'लक्षण तपासणी',nav_hospitals:'रुग्णालये',
+    nav_medicines:'औषधे',nav_sos:'आणीबाणी',
+    hero_kicker:'मोफत · लॉगिन नाही · AI · 24/7',
+    hero_h1:'<b>तुमच्या भाषेत</b> आरोग्य मार्गदर्शन',
+    hero_sub:'लक्षणे सांगा, रुग्णालये शोधा, औषधे तपासा — पूर्णपणे मोफत.',
+    btn_chat:'लक्षणे तपासा',btn_hosp:'रुग्णालय शोधा',btn_emg:'आणीबाणी',
+    stat1:'भाषा',stat2:'राज्ये',stat3:'SOS लाईन्स',stat4:'उपलब्ध',
+    sec_title:'तुम्हाला हवे ते सर्व',
+    fc1_title:'लक्षण तपासक',fc1_desc:'बोला किंवा टाइप करा — ताप, खोकला, वेदना. त्वरित AI मार्गदर्शन मिळवा.',fc1_cta:'चॅट सुरू करा',
+    fc2_title:'रुग्णालय शोधा',fc2_desc:'तुमच्या जिल्ह्यातील सरकारी रुग्णालये. एका टॅपमध्ये कॉल करा.',fc2_cta:'आता शोधा',
+    fc3_title:'औषध माहिती',fc3_desc:'कोणत्याही औषधाचा वापर, मात्रा, दुष्परिणाम आणि स्वस्त पर्याय.',fc3_cta:'शोधा',
+    fc4_title:'आणीबाणी संपर्क',fc4_desc:'सर्व राष्ट्रीय हेल्पलाईन्स — रुग्णवाहिका, मानसिक आरोग्य. एका टॅपमध्ये कॉल करा.',fc4_cta:'सर्व पहा',
+    disclaimer:'AarogyaBot फक्त सामान्य आरोग्य माहिती देते — हे वैद्यकीय निदान नाही.',
+    footer_copy:'AarogyaBot फक्त सामान्य आरोग्य मार्गदर्शन देते. नेहमी डॉक्टरांचा सल्ला घ्या.',
+    lbl_language:'भाषा',lbl_theme:'थीम',
   },
 };
+const LANG_LIST=[
+  {code:'en',label:'🇬🇧 English'},{code:'hi',label:'🇮🇳 हिंदी'},{code:'bn',label:'🇧🇩 বাংলা'},
+  {code:'ta',label:'🇮🇳 தமிழ்'},{code:'te',label:'🇮🇳 తెలుగు'},{code:'mr',label:'🇮🇳 मराठी'},
+];
 
 let currentLang = localStorage.getItem('ab_lang') || 'en';
 
@@ -164,20 +138,29 @@ function applyLang(lang){
   currentLang = lang;
   localStorage.setItem('ab_lang', lang);
   const T = TRANSLATIONS[lang] || TRANSLATIONS.en;
+  const FALLBACK = TRANSLATIONS.en;
   document.querySelectorAll('[data-t]').forEach(el=>{
     const key = el.getAttribute('data-t');
-    if(T[key] !== undefined) el.innerHTML = T[key];
+    const val = T[key] !== undefined ? T[key] : FALLBACK[key];
+    if(val !== undefined) el.innerHTML = val;
   });
   document.querySelectorAll('[data-tp]').forEach(el=>{
     const key = el.getAttribute('data-tp');
-    if(T[key] !== undefined) el.placeholder = T[key];
+    const val = T[key] !== undefined ? T[key] : FALLBACK[key];
+    if(val !== undefined) el.placeholder = val;
   });
-  // sync all lang selectors
   document.querySelectorAll('.lang-select').forEach(s=>{ s.value = lang; });
 }
-
 function onLangChange(val){ applyLang(val); }
 
+function populateLangSelectors(){
+  document.querySelectorAll('.lang-select').forEach(sel=>{
+    sel.innerHTML = LANG_LIST.map(l=>`<option value="${l.code}">${l.label}</option>`).join('');
+  });
+}
+
 window.addEventListener('DOMContentLoaded', ()=>{
+  applyTheme(localStorage.getItem('ab_theme') || 'dark');
+  populateLangSelectors();
   applyLang(currentLang);
 });
