@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
   <title>AarogyaBot{% block title %}{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}"/>
   <link rel="manifest" href="/manifest.json"/>
@@ -64,6 +64,7 @@
   <a href="/hospitals" onclick="closeNav()" class="dr-a {% if request.path=='/hospitals' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg><span data-t="nav_hospitals">Hospitals</span></a>
   <a href="/medicines" onclick="closeNav()" class="dr-a {% if request.path=='/medicines' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><path d="M18 15v6M15 18h6"/></svg><span data-t="nav_medicines">Medicines</span></a>
   <a href="/emergency" onclick="closeNav()" class="dr-a {% if request.path=='/emergency' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/></svg><span data-t="nav_sos">Emergency</span></a>
+  <a href="javascript:void(0)" onclick="installApp();closeNav()" class="dr-a"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Install App</span></a>
   <div class="dr-row"><span style="font-size:.8rem;font-weight:600;color:var(--t3)" data-t="lbl_theme">Theme</span><button class="theme-btn" onclick="toggleTheme()" style="margin-left:auto"></button></div>
   <div class="dr-row"><span style="font-size:.8rem;font-weight:600;color:var(--t3)" data-t="lbl_language">Language</span><select class="lang-select" onchange="onLangChange(this.value)"></select></div>
 </div>
@@ -87,8 +88,17 @@
     <a href="/emergency" data-t="nav_sos">Emergency</a>
   </div>
   <p data-t="footer_copy">AarogyaBot provides general health guidance only. Always consult a qualified doctor.</p>
-  <p>© 2026 <strong>AarogyaBot</strong> · Built for Rural India · Always Free</p>
+  <p>© 2025 <strong>AarogyaBot</strong> · Built for Rural India · Always Free</p>
 </footer>
+
+<!-- INSTALL FALLBACK MODAL (for iOS / browsers without native install prompt) -->
+<div class="install-modal-bg" id="installModalBg">
+  <div class="install-modal">
+    <h3 data-t="install_title">Install AarogyaBot</h3>
+    <div id="installInstructions" style="font-size:.85rem;color:var(--t2);line-height:1.7"></div>
+    <button class="btn btn-g install-modal-close" onclick="closeInstallModal()" data-t="install_close">Got it</button>
+  </div>
+</div>
 
 <script src="{{ url_for('static',filename='js/main.js') }}"></script>
 {% block scripts %}{% endblock %}
