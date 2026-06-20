@@ -392,3 +392,37 @@ svg{display:block}
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+/* ============ MOBILE OVERFLOW FIX ============ */
+html, body { overflow-x: hidden; width: 100%; max-width: 100vw; }
+* { min-width: 0; }
+.nav { flex-wrap: nowrap; }
+
+@media (max-width: 680px) {
+  .nav { padding: 0 10px; gap: 6px; }
+  .nav-wm { font-size: .92rem; }
+  .nav-logo { width: 30px; height: 30px; }
+  .nav-controls { gap: 4px; }
+  .theme-btn { width: 32px; height: 32px; }
+  .lang-select { max-width: 88px; padding: 6px 22px 6px 8px; font-size: .68rem; }
+  .nav-sos { padding: 7px 9px; font-size: 0; gap: 0; }
+  .nav-sos svg { width: 14px; height: 14px; }
+  .nav-sos span { display: none; }
+  #installBtn { width: 32px; height: 32px; }
+  .hero, .home-sec, .pg-hdr, .hosp-wrap, .med-wrap, .emg-wrap, .chat-layout { padding-left: 12px; padding-right: 12px; }
+  .stats-row, .feat-grid, .trust-row { margin-left: 0; margin-right: 0; }
+}
+
+/* ============ TTS STOP BUTTON ============ */
+.tts-controls-msg { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.tts-b.speaking { background: var(--rd-t); color: var(--rd); border-color: var(--rd); }
+.tts-stop-b { display: none; background: var(--rd-t); border: 1px solid var(--rd); border-radius: var(--rf); width: 24px; height: 24px; align-items: center; justify-content: center; color: var(--rd); transition: all .15s; }
+.tts-stop-b.show { display: flex; }
+.tts-stop-b:hover { background: var(--rd); color: #fff; }
+
+/* ============ INSTALL MODAL ============ */
+.install-modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+.install-modal-bg.show { display: flex; animation: fadeIn .2s ease; }
+.install-modal { background: var(--surf); border: 1px solid var(--border); border-radius: var(--r20); padding: 24px; max-width: 360px; width: 100%; box-shadow: var(--s3); animation: scaleIn .25s cubic-bezier(.34,1.56,.64,1); }
+.install-modal h3 { font-size: 1.05rem; font-weight: 800; margin-bottom: 10px; color: var(--t1); }
+.install-modal ol { margin: 12px 0; padding-left: 20px; color: var(--t2); font-size: .85rem; line-height: 1.8; }
+.install-modal-close { margin-top: 14px; width: 100%; }
