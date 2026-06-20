@@ -3,37 +3,35 @@
 {% block content %}
 
 <section class="hero">
-  <div class="hero-kicker"><span class="live-dot"></span> <span data-t="hero_kicker">Free · No Login · AI-Powered · 24/7</span></div>
-  <div class="hb-wrap">
+  <div class="hero-kicker anim-up"><span class="live-dot"></span> <span data-t="hero_kicker">Free · No Login · AI-Powered · 24/7</span></div>
+  <div class="hb-wrap anim-scale d1">
     <div class="hb-ring"></div><div class="hb-ring"></div>
-    <div class="hb-box">
-      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-    </div>
+    <div class="hb-box"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
   </div>
-  <h1 data-t="hero_h1">Health guidance in <b>your language</b></h1>
-  <p class="hero-sub" data-t="hero_sub">Describe symptoms, find hospitals, check medicines — completely free, no registration.</p>
-  <div class="hero-btns">
-    <a href="/chat"      class="btn btn-g"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span data-t="btn_chat">Check Symptoms</span></a>
+  <h1 class="anim-up d2" data-t="hero_h1">Health guidance in <b>your language</b></h1>
+  <p class="hero-sub anim-up d3" data-t="hero_sub">Describe symptoms, find hospitals, check medicines — completely free, no registration.</p>
+  <div class="hero-btns anim-up d4">
+    <a href="/chat" class="btn btn-g"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span data-t="btn_chat">Check Symptoms</span></a>
     <a href="/hospitals" class="btn btn-o"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg><span data-t="btn_hosp">Find Hospital</span></a>
     <a href="/emergency" class="btn btn-r"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/></svg><span data-t="btn_emg">Emergency</span></a>
   </div>
   <div id="weatherWidget" style="margin-top:18px"></div>
 </section>
 
-<div class="stats-row">
-  <div class="sg"><span class="sg-n">3</span><span class="sg-l" data-t="stat1">Languages</span></div>
+<div class="stats-row anim-up">
+  <div class="sg"><span class="sg-n">6</span><span class="sg-l" data-t="stat1">Languages</span></div>
   <div class="sg"><span class="sg-n">8+</span><span class="sg-l" data-t="stat2">States</span></div>
   <div class="sg"><span class="sg-n">8</span><span class="sg-l" data-t="stat3">SOS Lines</span></div>
   <div class="sg"><span class="sg-n">24/7</span><span class="sg-l" data-t="stat4">Available</span></div>
 </div>
 
 <div class="trust-row">
-  <div class="tb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gr)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> No data stored</div>
-  <div class="tb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gr)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 000 4h4a2 2 0 010 4H8M12 6v2m0 8v2"/></svg> 100% Free</div>
-  <div class="tb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gr)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4m-4 0h8"/></svg> Voice Input</div>
-  <div class="tb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gr)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg> Multilingual</div>
-  <div class="tb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gr)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Mobile First</div>
-  <div class="tb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gr)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Groq AI</div>
+  <div class="tb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--pri)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> No data stored</div>
+  <div class="tb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--pri)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 000 4h4a2 2 0 010 4H8M12 6v2m0 8v2"/></svg> 100% Free</div>
+  <div class="tb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--pri)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4m-4 0h8"/></svg> Voice Input</div>
+  <div class="tb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--pri)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg> Multilingual</div>
+  <div class="tb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--pri)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Mobile First</div>
+  <div class="tb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--pri)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Groq AI</div>
 </div>
 
 <div class="home-sec">
@@ -41,7 +39,7 @@
   <div class="feat-grid">
     <a href="/chat" class="fc cg">
       <div class="fc-head">
-        <div class="fc-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gr)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+        <div class="fc-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--pri)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
         <span class="fc-badge">AI Chat</span>
       </div>
       <div class="fc-title" data-t="fc1_title">Symptom Checker</div>
@@ -59,7 +57,7 @@
     </a>
     <a href="/medicines" class="fc cp">
       <div class="fc-head">
-        <div class="fc-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--pu)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20H4a2 2 0 01-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 011.66.9l.82 1.2a2 2 0 001.66.9H20a2 2 0 012 2v3"/><circle cx="18" cy="18" r="3"/><path d="M18 15v6M15 18h6"/></svg></div>
+        <div class="fc-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--acc-l)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20H4a2 2 0 01-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 011.66.9l.82 1.2a2 2 0 001.66.9H20a2 2 0 012 2v3"/><circle cx="18" cy="18" r="3"/><path d="M18 15v6M15 18h6"/></svg></div>
         <span class="fc-badge">Info</span>
       </div>
       <div class="fc-title" data-t="fc3_title">Medicine Info</div>
@@ -87,15 +85,12 @@
 if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(async pos=>{
     try{
-      const r=await fetch('/api/weather',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({lat:pos.coords.latitude,lon:pos.coords.longitude})
-      });
+      const r=await fetch('/api/weather',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lat:pos.coords.latitude,lon:pos.coords.longitude})});
       const d=await r.json();
       if(d.error)return;
       const cls=d.warning?'warn':'';
       document.getElementById('weatherWidget').innerHTML=`
-        <div class="weather-card ${cls}">
+        <div class="weather-card ${cls} anim-up">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 115.2-11.7"/><path d="M17.5 19a4.5 4.5 0 100-9h-1.8A7 7 0 015 12"/></svg>
           ${d.city} · ${d.temp}°C · ${d.humidity}% humidity · ${d.desc}
           ${d.warning?`<br><strong>${d.warning}</strong>`:''}
