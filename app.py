@@ -1,5 +1,4 @@
-
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, send_from_directory
 from groq import Groq
 from langdetect import detect
 from gtts import gTTS
@@ -48,13 +47,15 @@ HOSPITALS = {
 }
 
 def detect_lang(text):
-    try: return detect(text)
-    except: return "en"
+    try:
+        return detect(text)
+    except Exception:
+        return "en"
 
 LANG_NAMES = {
-    "en":"English","hi":"Hindi","bn":"Bengali","ta":"Tamil","te":"Telugu",
-    "mr":"Marathi","gu":"Gujarati","kn":"Kannada","ml":"Malayalam",
-    "pa":"Punjabi","or":"Odia","as":"Assamese","ur":"Urdu",
+    "en": "English", "hi": "Hindi", "bn": "Bengali", "ta": "Tamil", "te": "Telugu",
+    "mr": "Marathi", "gu": "Gujarati", "kn": "Kannada", "ml": "Malayalam",
+    "pa": "Punjabi", "or": "Odia", "as": "Assamese", "ur": "Urdu",
 }
 
 def system_prompt(lang):
@@ -66,105 +67,158 @@ Always recommend seeing a doctor for serious symptoms. Be warm and empathetic.
 Keep responses concise, well-structured with short bullet points where useful.
 This is NOT a medical diagnosis."""
 
+# ---------- PAGE ROUTES ----------
+
 @app.route("/")
-def index(): return render_template("index.html")
+def index():
+    return render_template("index.html")
 
 @app.route("/chat")
-def chat(): return render_template("chat.html")
+def chat():
+    return render_template("chat.html")
 
 @app.route("/hospitals")
-def hospitals(): return render_template("hospitals.html", states=list(HOSPITALS.keys()))
+def hospitals():
+    return render_template("hospitals.html", states=list(HOSPITALS.keys()))
 
 @app.route("/medicines")
-def medicines(): return render_template("medicines.html")
+def medicines():
+    return render_template("medicines.html")
 
 @app.route("/emergency")
-def emergency(): return render_template("emergency.html")
+def emergency():
+    return render_template("emergency.html")
+
+# ---------- PWA ROUTES ----------
+
+@app.route("/manifest.json")
+def manifest():
+    return send_from_directory("static", "manifest.json", mimetype="application/manifest+json")
+
+@app.route("/sw.js")
+def service_worker():
+    response = send_from_directory("static", "sw.js", mimetype="application/javascript")
+    response.headers["Service-Worker-Allowed"] = "/"
+    return response
+
+@app.route("/offline.html")
+def offline():
+    return render_template("offline.html")
+
+# ---------- API ROUTES ----------
 
 @app.route("/api/chat", methods=["POST"])
 def api_chat():
-    data = request.json
-    user_msg = data.get("message", "")
+    data = request.get_json(silent=True) or {}
+    user_msg = data.get("message", "").strip()
     history = data.get("history", [])
-    force_lang = data.get("lang", "en")
+    force_lang = data.get("lang")
 
-    sys = system_prompt(force_lang)
+    if not user_msg:
+        return jsonify({"error": "empty message"}), 400
+
+    # Use auto language detection only when the user hasn't forced a specific language
+    lang = force_lang if force_lang else detect_lang(user_msg)
+
+    sys = system_prompt(lang)
     messages = [{"role": "system", "content": sys}]
     for h in history[-8:]:
         messages.append(h)
     messages.append({"role": "user", "content": user_msg})
 
-    resp = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=messages,
-        max_tokens=500,
-        temperature=0.7,
-    )
-    reply = resp.choices[0].message.content
-    return jsonify({"reply": reply, "lang": force_lang})
+    try:
+        resp = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=messages,
+            max_tokens=500,
+            temperature=0.7,
+        )
+        reply = resp.choices[0].message.content
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    return jsonify({"reply": reply, "lang": lang})
 
 @app.route("/api/districts", methods=["POST"])
 def api_districts():
-    state = request.json.get("state", "")
+    data = request.get_json(silent=True) or {}
+    state = data.get("state", "")
     return jsonify({"districts": list(HOSPITALS.get(state, {}).keys())})
 
 @app.route("/api/hospitals", methods=["POST"])
 def api_hospitals():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     state = data.get("state", "")
     district = data.get("district", "")
     return jsonify({"hospitals": HOSPITALS.get(state, {}).get(district, [])})
 
 @app.route("/api/medicine", methods=["POST"])
 def api_medicine():
-    med = request.json.get("medicine", "")
-    lang = request.json.get("lang", "en")
+    data = request.get_json(silent=True) or {}
+    med = data.get("medicine", "").strip()
+    lang = data.get("lang", "en")
+
+    if not med:
+        return jsonify({"error": "no medicine provided"}), 400
+
     name = LANG_NAMES.get(lang, "English")
     prompt = (
         f"Provide information about the medicine '{med}' for Indian patients, in {name} language. "
         f"Cover: 1) Uses 2) Dosage 3) Side effects 4) When not to take it 5) Affordable Indian brand alternatives. "
         f"Keep it concise and clearly structured."
     )
-    resp = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[
-            {"role": "system", "content": f"You are a clinical pharmacist. Always answer in {name} language."},
-            {"role": "user", "content": prompt}
-        ],
-        max_tokens=450,
-    )
-    return jsonify({"info": resp.choices[0].message.content})
+    try:
+        resp = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": f"You are a clinical pharmacist. Always answer in {name} language."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=450,
+        )
+        return jsonify({"info": resp.choices[0].message.content})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/weather", methods=["POST"])
 def api_weather():
     if not WEATHER_KEY:
         return jsonify({"error": "not configured"}), 503
-    data = request.json
+    data = request.get_json(silent=True) or {}
     lat, lon = data.get("lat"), data.get("lon")
     try:
         url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={WEATHER_KEY}&units=metric"
         d = requests.get(url, timeout=5).json()
-        temp = d["main"]["temp"]; humidity = d["main"]["humidity"]
+        temp = d["main"]["temp"]
+        humidity = d["main"]["humidity"]
         warning = ""
-        if temp > 38: warning = "Heat alert: stay hydrated, avoid sun 11am-4pm"
-        elif humidity > 85: warning = "High humidity: risk of fungal/respiratory issues"
-        elif temp < 10: warning = "Cold alert: cover up, risk of respiratory infection"
-        return jsonify({"city": d["name"], "temp": round(temp), "humidity": humidity,
-                         "desc": d["weather"][0]["description"].title(), "warning": warning})
+        if temp > 38:
+            warning = "Heat alert: stay hydrated, avoid sun 11am-4pm"
+        elif humidity > 85:
+            warning = "High humidity: risk of fungal/respiratory issues"
+        elif temp < 10:
+            warning = "Cold alert: cover up, risk of respiratory infection"
+        return jsonify({
+            "city": d["name"], "temp": round(temp), "humidity": humidity,
+            "desc": d["weather"][0]["description"].title(), "warning": warning
+        })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @app.route("/api/tts", methods=["POST"])
 def api_tts():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     text = data.get("text", "")
     lang = data.get("lang", "en")
-    gtts_lang = lang if lang in ["hi","bn","ta","te","mr","gu","kn","ml","pa","ur","en"] else "en"
-    tts = gTTS(text=text[:500], lang=gtts_lang)
-    buf = io.BytesIO()
-    tts.write_to_fp(buf)
-    buf.seek(0)
-    return send_file(buf, mimetype="audio/mpeg")
+    gtts_lang = lang if lang in ["hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "ur", "en"] else "en"
+    try:
+        tts = gTTS(text=text[:500], lang=gtts_lang)
+        buf = io.BytesIO()
+        tts.write_to_fp(buf)
+        buf.seek(0)
+        return send_file(buf, mimetype="audio/mpeg")
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
