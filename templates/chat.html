@@ -65,10 +65,13 @@
       <div class="chat-bar">
         <div class="chat-av"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg><span class="odot"></span></div>
         <div><div class="cb-name">AarogyaBot</div><div class="cb-sub">● Online · Groq AI · Free</div></div>
-        <div class="cb-right">
-          <div class="lang-tag" id="langTag">Auto</div>
-          <div class="sev-tag" id="sevTag">Mild</div>
-        </div>
+       <div class="cb-right">
+  <button id="globalTtsStop" class="tts-stop-b" onclick="stopSpeak()" title="Stop speaking">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+  </button>
+  <div class="lang-tag" id="langTag">Auto</div>
+  <div class="sev-tag" id="sevTag">Mild</div>
+</div>
       </div>
 
       <div class="chat-body" id="chatBody">
@@ -194,7 +197,15 @@ function appendMsg(text,role,lang){
   const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   const botIcon='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>';
   const userIcon='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
-  const ttsBtn=role==='bot'?`<button class="tts-b" onclick="speak('${encodeURIComponent(text)}','${lang||'en'}',1)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/></svg></button>`:'';
+  let ttsBtn='';
+  if(role==='bot'){
+    const msgId='m'+Date.now()+Math.floor(Math.random()*1000);
+    ttsBtn=`<div class="tts-controls-msg">
+      <button class="tts-b" id="${msgId}" onclick="speak('${encodeURIComponent(text)}','${lang||'en'}',1,document.getElementById('${msgId}'))" title="Play">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/></svg>
+      </button>
+    </div>`;
+  }
   div.innerHTML=`<div class="m-av">${role==='bot'?botIcon:userIcon}</div>
     <div class="m-bub">${text.replace(/\n/g,'<br>')}<div class="m-foot"><span class="m-time">${now}</span>${ttsBtn}</div></div>`;
   body.appendChild(div);body.scrollTop=body.scrollHeight;
