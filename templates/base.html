@@ -5,11 +5,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>AarogyaBot{% block title %}{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.png"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="AarogyaBot"/>
   <meta name="theme-color" content="#0b0f17"/>
+  <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('ab_theme') || 'dark');</script>
 </head>
 <body>
 
-<!-- NAV -->
 <nav class="nav">
   <a href="/" class="nav-brand">
     <div class="nav-logo">
@@ -19,31 +24,32 @@
   </a>
 
   <div class="nav-links">
-    <a href="/"          class="nl {% if request.path=='/' %}on{% endif %}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <a href="/" class="nl {% if request.path=='/' %}on{% endif %}">
+      <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span data-t="nav_home">Home</span>
     </a>
-    <a href="/chat"      class="nl {% if request.path=='/chat' %}on{% endif %}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <a href="/chat" class="nl {% if request.path=='/chat' %}on{% endif %}">
+      <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
       <span data-t="nav_chat">Symptom Check</span>
     </a>
     <a href="/hospitals" class="nl {% if request.path=='/hospitals' %}on{% endif %}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
+      <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
       <span data-t="nav_hospitals">Hospitals</span>
     </a>
     <a href="/medicines" class="nl {% if request.path=='/medicines' %}on{% endif %}">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20H4a2 2 0 01-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 011.66.9l.82 1.2a2 2 0 001.66.9H20a2 2 0 012 2v3"/><circle cx="18" cy="18" r="3"/><path d="M18 15v6M15 18h6"/></svg>
+      <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20H4a2 2 0 01-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 011.66.9l.82 1.2a2 2 0 001.66.9H20a2 2 0 012 2v3"/><circle cx="18" cy="18" r="3"/><path d="M18 15v6M15 18h6"/></svg>
       <span data-t="nav_medicines">Medicines</span>
     </a>
   </div>
 
   <div class="nav-controls">
-    <button class="theme-btn" onclick="toggleTheme()" title="Toggle dark/light mode"></button>
-    <div class="lang-toggle">
-      <select class="lang-select" onchange="onLangChange(this.value)"></select>
-    </div>
+    <button id="installBtn" onclick="installApp()" class="theme-btn" style="display:none" title="Install App">
+      <svg class="icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    </button>
+    <button class="theme-btn" onclick="toggleTheme()" title="Toggle dark/light"></button>
+    <div class="lang-toggle"><select class="lang-select" onchange="onLangChange(this.value)"></select></div>
     <a href="/emergency" class="nav-sos">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <span data-t="nav_sos">Emergency</span>
     </a>
     <button class="nav-ham" onclick="toggleNav()">
@@ -52,45 +58,22 @@
   </div>
 </nav>
 
-<!-- MOBILE DRAWER -->
 <div class="drawer" id="drawer">
-  <a href="/"          onclick="closeNav()" class="dr-a {% if request.path=='/' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span data-t="nav_home">Home</span></a>
-  <a href="/chat"      onclick="closeNav()" class="dr-a {% if request.path=='/chat' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span data-t="nav_chat">Symptom Check</span></a>
+  <a href="/" onclick="closeNav()" class="dr-a {% if request.path=='/' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span data-t="nav_home">Home</span></a>
+  <a href="/chat" onclick="closeNav()" class="dr-a {% if request.path=='/chat' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span data-t="nav_chat">Symptom Check</span></a>
   <a href="/hospitals" onclick="closeNav()" class="dr-a {% if request.path=='/hospitals' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg><span data-t="nav_hospitals">Hospitals</span></a>
   <a href="/medicines" onclick="closeNav()" class="dr-a {% if request.path=='/medicines' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><path d="M18 15v6M15 18h6"/></svg><span data-t="nav_medicines">Medicines</span></a>
   <a href="/emergency" onclick="closeNav()" class="dr-a {% if request.path=='/emergency' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/></svg><span data-t="nav_sos">Emergency</span></a>
-  <div class="dr-row">
-    <span style="font-size:.8rem;font-weight:600;color:var(--t3)" data-t="lbl_theme">Theme</span>
-    <button class="theme-btn" onclick="toggleTheme()" style="margin-left:auto"></button>
-  </div>
-  <div class="dr-row">
-    <span style="font-size:.8rem;font-weight:600;color:var(--t3)" data-t="lbl_language">Language</span>
-    <select class="lang-select" onchange="onLangChange(this.value)"></select>
-  </div>
+  <div class="dr-row"><span style="font-size:.8rem;font-weight:600;color:var(--t3)" data-t="lbl_theme">Theme</span><button class="theme-btn" onclick="toggleTheme()" style="margin-left:auto"></button></div>
+  <div class="dr-row"><span style="font-size:.8rem;font-weight:600;color:var(--t3)" data-t="lbl_language">Language</span><select class="lang-select" onchange="onLangChange(this.value)"></select></div>
 </div>
 
-<!-- BOTTOM NAV -->
 <nav class="botnav">
-  <a href="/"          class="bn-a {% if request.path=='/' %}on{% endif %}">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-    <span data-t="nav_home">Home</span>
-  </a>
-  <a href="/chat"      class="bn-a {% if request.path=='/chat' %}on{% endif %}">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-    <span data-t="nav_chat">Chat</span>
-  </a>
-  <a href="/hospitals" class="bn-a {% if request.path=='/hospitals' %}on{% endif %}">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
-    <span data-t="nav_hospitals">Hospital</span>
-  </a>
-  <a href="/medicines" class="bn-a {% if request.path=='/medicines' %}on{% endif %}">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><path d="M18 15v6M15 18h6"/></svg>
-    <span data-t="nav_medicines">Medicine</span>
-  </a>
-  <a href="/emergency" class="bn-a sos-bn {% if request.path=='/emergency' %}on{% endif %}">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/></svg>
-    <span data-t="nav_sos">SOS</span>
-  </a>
+  <a href="/" class="bn-a {% if request.path=='/' %}on{% endif %}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span data-t="nav_home">Home</span></a>
+  <a href="/chat" class="bn-a {% if request.path=='/chat' %}on{% endif %}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span data-t="nav_chat">Chat</span></a>
+  <a href="/hospitals" class="bn-a {% if request.path=='/hospitals' %}on{% endif %}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg><span data-t="nav_hospitals">Hospital</span></a>
+  <a href="/medicines" class="bn-a {% if request.path=='/medicines' %}on{% endif %}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><path d="M18 15v6M15 18h6"/></svg><span data-t="nav_medicines">Medicine</span></a>
+  <a href="/emergency" class="bn-a sos-bn {% if request.path=='/emergency' %}on{% endif %}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/></svg><span data-t="nav_sos">SOS</span></a>
 </nav>
 
 <div class="pb">{% block content %}{% endblock %}</div>
@@ -107,10 +90,6 @@
   <p>© 2025 <strong>AarogyaBot</strong> · Built for Rural India · Always Free</p>
 </footer>
 
-<script>
-  // Set theme before paint to avoid flash of wrong theme
-  document.documentElement.setAttribute('data-theme', localStorage.getItem('ab_theme') || 'dark');
-</script>
 <script src="{{ url_for('static',filename='js/main.js') }}"></script>
 {% block scripts %}{% endblock %}
 </body>
