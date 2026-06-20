@@ -2,36 +2,37 @@
 {% block title %} · Medicine Info{% endblock %}
 {% block content %}
 <div class="pg-hdr">
-  <div class="pg-hdr-inner">
-    <div class="pg-hdr-ic ip">💊</div>
-    <div><h1>Medicine Information</h1><p>Dosage, uses, side effects and affordable Indian alternatives for any medicine</p></div>
-    <div class="pg-hdr-meta"><div class="pg-tag">🤖 AI powered</div><div class="pg-tag">🇮🇳 India focus</div></div>
+  <div class="pg-hdr-inner anim-up">
+    <div class="pg-hdr-ic ip"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20H4a2 2 0 01-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 011.66.9l.82 1.2a2 2 0 001.66.9H20a2 2 0 012 2v3"/><circle cx="18" cy="18" r="3"/><path d="M18 15v6M15 18h6"/></svg></div>
+    <div><h1 data-t="pg_med_title">Medicine Information</h1><p data-t="pg_med_sub">Dosage, uses, side effects and affordable Indian alternatives</p></div>
+    <div class="pg-hdr-meta"><div class="pg-tag">AI powered</div><div class="pg-tag">India focus</div></div>
   </div>
 </div>
 <div class="med-wrap">
-  <div class="search-card">
+  <div class="search-card anim-up">
     <div class="sbar">
       <input type="text" id="medInput" placeholder="Enter medicine — e.g. Paracetamol, Metformin, Dolo 650…"/>
-      <button onclick="searchMed()">🔍 Search</button>
+      <button onclick="searchMed()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search</button>
     </div>
     <div class="chips-lbl">Common medicines</div>
     <div class="chips">
-      <span class="chip" onclick="qm('Paracetamol')">💊 Paracetamol</span>
-      <span class="chip" onclick="qm('Azithromycin')">💊 Azithromycin</span>
-      <span class="chip" onclick="qm('Metformin')">💊 Metformin</span>
-      <span class="chip" onclick="qm('Omeprazole')">💊 Omeprazole</span>
-      <span class="chip" onclick="qm('Amoxicillin')">💊 Amoxicillin</span>
-      <span class="chip" onclick="qm('Ibuprofen')">💊 Ibuprofen</span>
-      <span class="chip" onclick="qm('Cetirizine')">💊 Cetirizine</span>
-      <span class="chip" onclick="qm('Dolo 650')">💊 Dolo 650</span>
-      <span class="chip" onclick="qm('Pantoprazole')">💊 Pantoprazole</span>
-      <span class="chip" onclick="qm('Atorvastatin')">💊 Atorvastatin</span>
-      <span class="chip" onclick="qm('Amlodipine')">💊 Amlodipine</span>
-      <span class="chip" onclick="qm('पैरासिटामोल')">💊 पैरासिटामोल</span>
+      <span class="chip" onclick="qm('Paracetamol')">Paracetamol</span>
+      <span class="chip" onclick="qm('Azithromycin')">Azithromycin</span>
+      <span class="chip" onclick="qm('Metformin')">Metformin</span>
+      <span class="chip" onclick="qm('Omeprazole')">Omeprazole</span>
+      <span class="chip" onclick="qm('Amoxicillin')">Amoxicillin</span>
+      <span class="chip" onclick="qm('Ibuprofen')">Ibuprofen</span>
+      <span class="chip" onclick="qm('Cetirizine')">Cetirizine</span>
+      <span class="chip" onclick="qm('Dolo 650')">Dolo 650</span>
+      <span class="chip" onclick="qm('Pantoprazole')">Pantoprazole</span>
+      <span class="chip" onclick="qm('Atorvastatin')">Atorvastatin</span>
     </div>
   </div>
   <div id="medResult">
-    <div class="state-box"><span style="font-size:2.5rem">💊</span><span>Search any medicine for detailed AI-generated information</span></div>
+    <div class="state-box">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20H4a2 2 0 01-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 011.66.9l.82 1.2a2 2 0 001.66.9H20a2 2 0 012 2v3"/><circle cx="18" cy="18" r="3"/></svg>
+      <span>Search any medicine for detailed AI-generated information</span>
+    </div>
   </div>
 </div>
 {% endblock %}
@@ -47,14 +48,14 @@ async function searchMed(){
     box.innerHTML=`
       <div class="med-card">
         <div class="med-card-hd">
-          <div class="med-ic">💊</div>
+          <div class="med-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20H4a2 2 0 01-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 011.66.9l.82 1.2a2 2 0 001.66.9H20a2 2 0 012 2v3"/><circle cx="18" cy="18" r="3"/></svg></div>
           <div><h3>${med}</h3><span>AI-generated · Reference only · Not a prescription</span></div>
         </div>
         <div class="med-text">${d.info.replace(/\n/g,'<br>')}</div>
-        <div class="med-warn">⚠️ Always consult a licensed pharmacist or doctor before taking any medicine. Do not self-medicate.</div>
+        <div class="med-warn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg> Always consult a licensed pharmacist or doctor before taking any medicine. Do not self-medicate.</div>
       </div>`;
   }catch(e){
-    box.innerHTML=`<div class="state-box"><span>❌</span><span>Error fetching info. Please try again.</span></div>`;
+    box.innerHTML=`<div class="state-box"><span>Error fetching info. Please try again.</span></div>`;
   }
 }
 function qm(name){document.getElementById('medInput').value=name;searchMed()}
