@@ -9,6 +9,9 @@ client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 WEATHER_KEY = os.environ.get("OPENWEATHER_KEY", "")
 
 HOSPITALS = {
+    "Andhra Pradesh": {"Visakhapatnam": [{"name": "King George Hospital", "address": "Visakhapatnam", "phone": "0891-2565051", "type": "Government"}]},
+    "Arunachal Pradesh": {"Itanagar": [{"name": "Tomo Riba Institute of Health & Medical Sciences", "address": "Naharlagun, Itanagar", "phone": "0360-2244140", "type": "Government"}]},
+    "Assam": {"Guwahati": [{"name": "Guwahati Medical College Hospital", "address": "Guwahati", "phone": "0361-2528214", "type": "Government"}]},
     "Bihar": {
         "Patna": [
             {"name": "Patna Medical College & Hospital", "address": "Ashok Rajpath, Patna", "phone": "0612-2300440", "type": "Government"},
@@ -18,19 +21,32 @@ HOSPITALS = {
         "Muzaffarpur": [{"name": "Sri Krishna Medical College Hospital", "address": "Muzaffarpur", "phone": "0621-2266102", "type": "Government"}],
         "Bhagalpur": [{"name": "Jawaharlal Nehru Medical College Hospital", "address": "Bhagalpur", "phone": "0641-2400370", "type": "Government"}],
     },
-    "West Bengal": {
-        "Kolkata": [
-            {"name": "SSKM Hospital", "address": "244 AJC Bose Road, Kolkata", "phone": "033-22044440", "type": "Government"},
-            {"name": "RG Kar Medical College", "address": "1 Khudiram Bose Sarani, Kolkata", "phone": "033-25551234", "type": "Government"},
+    "Chhattisgarh": {"Raipur": [{"name": "Dr. Bhimrao Ambedkar Memorial Hospital", "address": "Raipur", "phone": "0771-2236415", "type": "Government"}]},
+    "Delhi": {
+        "New Delhi": [
+            {"name": "AIIMS New Delhi", "address": "Ansari Nagar, New Delhi", "phone": "011-26588500", "type": "Government"},
+            {"name": "Safdarjung Hospital", "address": "Ansari Nagar West, New Delhi", "phone": "011-26165060", "type": "Government"},
         ],
-        "Howrah": [{"name": "Howrah General Hospital", "address": "Howrah", "phone": "033-26415748", "type": "Government"}],
-        "Siliguri": [{"name": "North Bengal Medical College", "address": "Siliguri", "phone": "0353-2581001", "type": "Government"}],
     },
-    "Uttar Pradesh": {
-        "Lucknow": [{"name": "King George's Medical University", "address": "Shah Mina Road, Lucknow", "phone": "0522-2257450", "type": "Government"}],
-        "Varanasi": [{"name": "BHU Sir Sunderlal Hospital", "address": "BHU Campus, Varanasi", "phone": "0542-2309289", "type": "Government"}],
-        "Kanpur": [{"name": "GSVM Medical College", "address": "Kanpur", "phone": "0512-2530803", "type": "Government"}],
-        "Agra": [{"name": "S.N. Medical College", "address": "Agra", "phone": "0562-2520163", "type": "Government"}],
+    "Goa": {"Panaji": [{"name": "Goa Medical College Hospital", "address": "Bambolim, Panaji", "phone": "0832-2458700", "type": "Government"}]},
+    "Gujarat": {
+        "Ahmedabad": [{"name": "Civil Hospital Ahmedabad", "address": "Asarwa, Ahmedabad", "phone": "079-22683721", "type": "Government"}],
+        "Surat": [{"name": "New Civil Hospital Surat", "address": "Surat", "phone": "0261-2244343", "type": "Government"}],
+    },
+    "Haryana": {"Rohtak": [{"name": "Pt. B.D. Sharma PGIMS", "address": "Rohtak", "phone": "01262-211309", "type": "Government"}]},
+    "Himachal Pradesh": {"Shimla": [{"name": "Indira Gandhi Medical College Hospital", "address": "Shimla", "phone": "0177-2880085", "type": "Government"}]},
+    "Jharkhand": {"Ranchi": [{"name": "Rajendra Institute of Medical Sciences", "address": "Ranchi", "phone": "0651-2540700", "type": "Government"}]},
+    "Karnataka": {
+        "Bengaluru": [{"name": "Victoria Hospital", "address": "Fort, Bengaluru", "phone": "080-26701150", "type": "Government"}],
+        "Mysuru": [{"name": "K.R. Hospital", "address": "Mysuru", "phone": "0821-2520355", "type": "Government"}],
+    },
+    "Kerala": {
+        "Thiruvananthapuram": [{"name": "Thiruvananthapuram Medical College", "address": "Thiruvananthapuram", "phone": "0471-2528300", "type": "Government"}],
+        "Kochi": [{"name": "Ernakulam General Hospital", "address": "Kochi", "phone": "0484-2360002", "type": "Government"}],
+    },
+    "Madhya Pradesh": {
+        "Bhopal": [{"name": "Hamidia Hospital", "address": "Bhopal", "phone": "0755-2540222", "type": "Government"}],
+        "Indore": [{"name": "Maharaja Yeshwantrao Hospital", "address": "Indore", "phone": "0731-2527145", "type": "Government"}],
     },
     "Maharashtra": {
         "Mumbai": [
@@ -40,46 +56,41 @@ HOSPITALS = {
         "Pune": [{"name": "Sassoon General Hospital", "address": "Pune", "phone": "020-26128000", "type": "Government"}],
         "Nagpur": [{"name": "Government Medical College Nagpur", "address": "Nagpur", "phone": "0712-2700488", "type": "Government"}],
     },
-    "Delhi": {
-        "New Delhi": [
-            {"name": "AIIMS New Delhi", "address": "Ansari Nagar, New Delhi", "phone": "011-26588500", "type": "Government"},
-            {"name": "Safdarjung Hospital", "address": "Ansari Nagar West, New Delhi", "phone": "011-26165060", "type": "Government"},
-        ],
-    },
-    "Tamil Nadu": {
-        "Chennai": [{"name": "Rajiv Gandhi Govt General Hospital", "address": "Park Town, Chennai", "phone": "044-25305000", "type": "Government"}],
-        "Madurai": [{"name": "Madurai Medical College Hospital", "address": "Madurai", "phone": "0452-2530855", "type": "Government"}],
-        "Coimbatore": [{"name": "Coimbatore Medical College Hospital", "address": "Coimbatore", "phone": "0422-2301393", "type": "Government"}],
-    },
-    "Karnataka": {
-        "Bengaluru": [{"name": "Victoria Hospital", "address": "Fort, Bengaluru", "phone": "080-26701150", "type": "Government"}],
-        "Mysuru": [{"name": "K.R. Hospital", "address": "Mysuru", "phone": "0821-2520355", "type": "Government"}],
+    "Manipur": {"Imphal": [{"name": "Regional Institute of Medical Sciences", "address": "Imphal", "phone": "0385-2414939", "type": "Government"}]},
+    "Meghalaya": {"Shillong": [{"name": "North Eastern Indira Gandhi Regional Institute", "address": "Shillong", "phone": "0364-2538014", "type": "Government"}]},
+    "Mizoram": {"Aizawl": [{"name": "Zoram Medical College Hospital", "address": "Aizawl", "phone": "0389-2391054", "type": "Government"}]},
+    "Nagaland": {"Kohima": [{"name": "Naga Hospital Authority Kohima", "address": "Kohima", "phone": "0370-2270366", "type": "Government"}]},
+    "Odisha": {"Bhubaneswar": [{"name": "Capital Hospital", "address": "Bhubaneswar", "phone": "0674-2391983", "type": "Government"}]},
+    "Punjab": {
+        "Amritsar": [{"name": "Guru Nanak Dev Hospital", "address": "Amritsar", "phone": "0183-2225465", "type": "Government"}],
+        "Ludhiana": [{"name": "Civil Hospital Ludhiana", "address": "Ludhiana", "phone": "0161-2444140", "type": "Government"}],
     },
     "Rajasthan": {
         "Jaipur": [{"name": "Sawai Man Singh Hospital", "address": "Jaipur", "phone": "0141-2518222", "type": "Government"}],
         "Jodhpur": [{"name": "Mahatma Gandhi Hospital", "address": "Jodhpur", "phone": "0291-2434861", "type": "Government"}],
     },
-    "Madhya Pradesh": {
-        "Bhopal": [{"name": "Hamidia Hospital", "address": "Bhopal", "phone": "0755-2540222", "type": "Government"}],
-        "Indore": [{"name": "Maharaja Yeshwantrao Hospital", "address": "Indore", "phone": "0731-2527145", "type": "Government"}],
+    "Sikkim": {"Gangtok": [{"name": "STNM Hospital", "address": "Gangtok", "phone": "03592-202944", "type": "Government"}]},
+    "Tamil Nadu": {
+        "Chennai": [{"name": "Rajiv Gandhi Govt General Hospital", "address": "Park Town, Chennai", "phone": "044-25305000", "type": "Government"}],
+        "Madurai": [{"name": "Madurai Medical College Hospital", "address": "Madurai", "phone": "0452-2530855", "type": "Government"}],
+        "Coimbatore": [{"name": "Coimbatore Medical College Hospital", "address": "Coimbatore", "phone": "0422-2301393", "type": "Government"}],
     },
-    "Gujarat": {
-        "Ahmedabad": [{"name": "Civil Hospital Ahmedabad", "address": "Asarwa, Ahmedabad", "phone": "079-22683721", "type": "Government"}],
-        "Surat": [{"name": "New Civil Hospital Surat", "address": "Surat", "phone": "0261-2244343", "type": "Government"}],
+    "Telangana": {"Hyderabad": [{"name": "Osmania General Hospital", "address": "Hyderabad", "phone": "040-24600523", "type": "Government"}]},
+    "Tripura": {"Agartala": [{"name": "Agartala Government Medical College", "address": "Agartala", "phone": "0381-2412020", "type": "Government"}]},
+    "Uttar Pradesh": {
+        "Lucknow": [{"name": "King George's Medical University", "address": "Shah Mina Road, Lucknow", "phone": "0522-2257450", "type": "Government"}],
+        "Varanasi": [{"name": "BHU Sir Sunderlal Hospital", "address": "BHU Campus, Varanasi", "phone": "0542-2309289", "type": "Government"}],
+        "Kanpur": [{"name": "GSVM Medical College", "address": "Kanpur", "phone": "0512-2530803", "type": "Government"}],
+        "Agra": [{"name": "S.N. Medical College", "address": "Agra", "phone": "0562-2520163", "type": "Government"}],
     },
-    "Punjab": {
-        "Amritsar": [{"name": "Guru Nanak Dev Hospital", "address": "Amritsar", "phone": "0183-2225465", "type": "Government"}],
-        "Ludhiana": [{"name": "Civil Hospital Ludhiana", "address": "Ludhiana", "phone": "0161-2444140", "type": "Government"}],
-    },
-    "Kerala": {
-        "Thiruvananthapuram": [{"name": "Thiruvananthapuram Medical College", "address": "Thiruvananthapuram", "phone": "0471-2528300", "type": "Government"}],
-        "Kochi": [{"name": "Ernakulam General Hospital", "address": "Kochi", "phone": "0484-2360002", "type": "Government"}],
-    },
-    "Odisha": {
-        "Bhubaneswar": [{"name": "Capital Hospital", "address": "Bhubaneswar", "phone": "0674-2391983", "type": "Government"}],
-    },
-    "Assam": {
-        "Guwahati": [{"name": "Guwahati Medical College Hospital", "address": "Guwahati", "phone": "0361-2528214", "type": "Government"}],
+    "Uttarakhand": {"Dehradun": [{"name": "Doon Medical College Hospital", "address": "Dehradun", "phone": "0135-2726067", "type": "Government"}]},
+    "West Bengal": {
+        "Kolkata": [
+            {"name": "SSKM Hospital", "address": "244 AJC Bose Road, Kolkata", "phone": "033-22044440", "type": "Government"},
+            {"name": "RG Kar Medical College", "address": "1 Khudiram Bose Sarani, Kolkata", "phone": "033-25551234", "type": "Government"},
+        ],
+        "Howrah": [{"name": "Howrah General Hospital", "address": "Howrah", "phone": "033-26415748", "type": "Government"}],
+        "Siliguri": [{"name": "North Bengal Medical College", "address": "Siliguri", "phone": "0353-2581001", "type": "Government"}],
     },
 }
 
@@ -93,6 +104,9 @@ LANG_NAMES = {
     "en": "English", "hi": "Hindi", "bn": "Bengali", "ta": "Tamil", "te": "Telugu",
     "mr": "Marathi", "gu": "Gujarati", "kn": "Kannada", "ml": "Malayalam",
     "pa": "Punjabi", "or": "Odia", "as": "Assamese", "ur": "Urdu",
+    "sa": "Sanskrit", "ks": "Kashmiri", "sd": "Sindhi", "ne": "Nepali",
+    "kok": "Konkani", "doi": "Dogri", "mni": "Manipuri", "sat": "Santali",
+    "mai": "Maithili", "bho": "Bhojpuri",
 }
 
 def system_prompt(lang):
@@ -190,7 +204,6 @@ def api_hospitals():
 
 @app.route("/api/hospitals/nearby", methods=["POST"])
 def api_hospitals_nearby():
-    """Live hospital search via OpenStreetMap Overpass API, no key required."""
     data = request.get_json(silent=True) or {}
     lat = data.get("lat")
     lon = data.get("lon")
@@ -299,7 +312,8 @@ def api_tts():
     data = request.get_json(silent=True) or {}
     text = data.get("text", "")
     lang = data.get("lang", "en")
-    gtts_lang = lang if lang in ["hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "ur", "en"] else "en"
+    gtts_supported = ["hi","bn","ta","te","mr","gu","kn","ml","pa","ur","en","ne","sa"]
+    gtts_lang = lang if lang in gtts_supported else "en"
     try:
         tts = gTTS(text=text[:500], lang=gtts_lang)
         buf = io.BytesIO()
