@@ -235,3 +235,52 @@ window.addEventListener('DOMContentLoaded', ()=>{
     }
   }, 1500);
 });
+/* ── FLOATING CHAT POPUP ── */
+let cpHist = [];
+function toggleChatPopup(){
+  const p = document.getElementById('chatPopup');
+  if(!p) return;
+  p.classList.toggle('open');
+  document.getElementById('chatFab').classList.toggle('hide', p.classList.contains('open'));
+}
+async function sendCpMsg(){
+  const inp = document.getElementById('cpInput');
+  const txt = inp.value.trim();
+  if(!txt) return;
+  const body = document.getElementById('cpBody');
+  inp.value = '';
+
+  const uDiv = document.createElement('div');
+  uDiv.className = 'msg usr';
+  uDiv.innerHTML = `<div class="m-av"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="m-bub">${txt.replace(/\n/g,'<br>')}</div>`;
+  body.appendChild(uDiv);
+  body.scrollTop = body.scrollHeight;
+
+  const typ = document.createElement('div');
+  typ.className = 'msg bot'; typ.id = 'cpTyping';
+  typ.innerHTML = `<div class="m-av"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="10" rx="2"/></svg></div><div class="typing-bub"><span class="td"></span><span class="td"></span><span class="td"></span></div>`;
+  body.appendChild(typ);
+  body.scrollTop = body.scrollHeight;
+
+  try{
+    const r = await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:txt,history:cpHist})});
+    const d = await r.json();
+    document.getElementById('cpTyping')?.remove();
+    const bDiv = document.createElement('div');
+    bDiv.className = 'msg bot';
+    bDiv.innerHTML = `<div class="m-av"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="10" rx="2"/></svg></div><div class="m-bub">${mdToHtml(d.reply)}</div>`;
+    body.appendChild(bDiv);
+    body.scrollTop = body.scrollHeight;
+    cpHist.push({role:'user',content:txt});
+    cpHist.push({role:'assistant',content:d.reply});
+  }catch(e){
+    document.getElementById('cpTyping')?.remove();
+  }
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  const cpInput = document.getElementById('cpInput');
+  if(cpInput){
+    cpInput.addEventListener('keydown', e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendCpMsg(); } });
+  }
+});
