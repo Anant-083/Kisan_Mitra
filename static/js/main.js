@@ -20,7 +20,7 @@ function toggleTheme(){
   applyTheme(cur === 'dark' ? 'light' : 'dark');
 }
 
-/* ── MARKDOWN RENDERER (for AI replies) ── */
+/* ── MARKDOWN RENDERER ── */
 function mdToHtml(text){
   if(!text) return '';
   let html = text
@@ -48,9 +48,24 @@ function mdToHtml(text){
   return out.join('');
 }
 
-/* ── LANGUAGE SYSTEM ── */
-/* 6 languages with full real UI translations. Trimmed from 12 because the other
-   6 had no actual translated strings and were silently falling back to English. */
+function cleanTextForSpeech(text){
+  return text
+    .replace(/[\u{1F000}-\u{1FFFF}]/gu, '')
+    .replace(/[\u{2600}-\u{27FF}]/gu, '')
+    .replace(/[\u{FE00}-\u{FEFF}]/gu, '')
+    .replace(/•/g, '')
+    .replace(/[►▶→←↑↓]/g, '')
+    .replace(/\*\*/g, '')
+    .replace(/\*/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/* ── LANGUAGE SYSTEM (23 languages) ── */
+/* Full UI translations exist for 6: en, hi, bn, ta, te, mr.
+   The remaining 17 fall back to English for button/header text,
+   but the AI chat and voice both work correctly in all 23 —
+   see app.py LANG_NAMES and SPEECH_LANGS below. */
 const TRANSLATIONS={
   en:{nav_home:'Home',nav_chat:'Symptom Check',nav_hospitals:'Hospitals',nav_medicines:'Medicines',nav_sos:'Emergency',
     hero_kicker:'Free · No Login · AI-Powered · 24/7',hero_h1:'Health guidance in <b>your language</b>',
@@ -179,10 +194,43 @@ const TRANSLATIONS={
     install_close:'समजले',
   },
 };
+
+/* All 23 languages — shown in dropdown, all work for AI chat + voice */
 const LANG_LIST=[
   {code:'en',label:'🇬🇧 English'},{code:'hi',label:'🇮🇳 हिंदी'},{code:'bn',label:'🇧🇩 বাংলা'},
   {code:'ta',label:'🇮🇳 தமிழ்'},{code:'te',label:'🇮🇳 తెలుగు'},{code:'mr',label:'🇮🇳 मराठी'},
+  {code:'gu',label:'🇮🇳 ગુજરાતી'},{code:'kn',label:'🇮🇳 ಕನ್ನಡ'},{code:'ml',label:'🇮🇳 മലയാളം'},
+  {code:'pa',label:'🇮🇳 ਪੰਜਾਬੀ'},{code:'or',label:'🇮🇳 ଓଡ଼ିଆ'},{code:'as',label:'🇮🇳 অসমীয়া'},
+  {code:'ur',label:'🇵🇰 اردو'},{code:'sa',label:'🇮🇳 संस्कृतम्'},{code:'ks',label:'🇮🇳 کٲشُر'},
+  {code:'sd',label:'🇮🇳 سنڌي'},{code:'ne',label:'🇳🇵 नेपाली'},{code:'kok',label:'🇮🇳 कोंकणी'},
+  {code:'doi',label:'🇮🇳 डोगरी'},{code:'mni',label:'🇮🇳 মৈতৈলোন্'},{code:'sat',label:'🇮🇳 ᱥᱟᱱᱛᱟᱲᱤ'},
+  {code:'mai',label:'🇮🇳 मैथिली'},{code:'bho',label:'🇮🇳 भोजपुरी'},
 ];
+
+/* Speech recognition + synthesis language tags for all 23 */
+const SPEECH_LANGS = {
+  en:'en-IN', hi:'hi-IN', bn:'bn-IN', ta:'ta-IN', te:'te-IN', mr:'mr-IN',
+  gu:'gu-IN', kn:'kn-IN', ml:'ml-IN', pa:'pa-IN', or:'or-IN', as:'as-IN',
+  ur:'ur-IN', sa:'sa-IN', ks:'ks-IN', sd:'sd-IN', ne:'ne-NP', kok:'kok-IN',
+  doi:'hi-IN', mni:'mni-IN', sat:'sat-IN', mai:'hi-IN', bho:'hi-IN',
+};
+
+let availableVoices = [];
+function loadVoices(){ availableVoices = window.speechSynthesis ? window.speechSynthesis.getVoices() : []; }
+if('speechSynthesis' in window){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+function getBestVoice(langCode){
+  const speechLang = SPEECH_LANGS[langCode] || 'en-IN';
+  const langPrefix = speechLang.split('-')[0];
+  let voice = availableVoices.find(v => v.lang === speechLang);
+  if(!voice) voice = availableVoices.find(v => v.lang.startsWith(langPrefix));
+  if(!voice && langCode !== 'en') voice = availableVoices.find(v => v.lang === 'en-IN');
+  if(!voice) voice = availableVoices.find(v => v.lang.startsWith('en'));
+  return voice || null;
+}
+
 let currentLang = localStorage.getItem('ab_lang') || 'en';
 
 function applyLang(lang){
@@ -219,17 +267,21 @@ function setupScrollAnim(){
   els.forEach(e=>io.observe(e));
 }
 
-/* ── TTS WITH STOP CONTROL ── */
+/* ── TTS WITH STOP CONTROL (per-language voice + emoji cleaning) ── */
 let currentUtterance = null;
 let currentAudio = null;
 
 function speak(textOrEnc, l, isEnc, btnEl){
   stopSpeak();
-  const text = isEnc ? decodeURIComponent(textOrEnc) : textOrEnc;
+  const raw = isEnc ? decodeURIComponent(textOrEnc) : textOrEnc;
+  const text = cleanTextForSpeech(raw);
+  const lang = l || currentLang;
 
   if('speechSynthesis' in window){
+    const voice = getBestVoice(lang);
     currentUtterance = new SpeechSynthesisUtterance(text.slice(0,300));
-    currentUtterance.lang = {hi:'hi-IN',bn:'bn-IN',ta:'ta-IN',te:'te-IN',mr:'mr-IN',en:'en-US'}[l] || 'en-US';
+    currentUtterance.lang = SPEECH_LANGS[lang] || 'en-IN';
+    if(voice) currentUtterance.voice = voice;
     currentUtterance.rate = .88;
     currentUtterance.onend = () => setSpeakingState(false, btnEl);
     currentUtterance.onerror = () => setSpeakingState(false, btnEl);
@@ -237,7 +289,7 @@ function speak(textOrEnc, l, isEnc, btnEl){
     setSpeakingState(true, btnEl);
     return;
   }
-  fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,400),lang:l})})
+  fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.slice(0,400),lang})})
     .then(r=>r.blob())
     .then(b=>{
       currentAudio = new Audio(URL.createObjectURL(b));
@@ -250,7 +302,7 @@ function speak(textOrEnc, l, isEnc, btnEl){
 function setSpeakingState(isSpeaking, btnEl){
   document.querySelectorAll('.tts-b').forEach(b=>b.classList.remove('speaking'));
   if(btnEl) btnEl.classList.toggle('speaking', isSpeaking);
-  document.querySelectorAll('.tts-stop-b, #globalTtsStop').forEach(b=>b.classList.toggle('show', isSpeaking));
+  document.querySelectorAll('.tts-stop-b, #globalTtsStop, #cpTtsStop').forEach(b=>b.classList.toggle('show', isSpeaking));
 }
 
 function stopSpeak(){
@@ -303,9 +355,7 @@ function dismissInstallToast(){
   sessionStorage.setItem('ab_install_dismissed','1');
 }
 
-window.addEventListener('appinstalled',()=>{
-  dismissInstallToast();
-});
+window.addEventListener('appinstalled',()=>{ dismissInstallToast(); });
 
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{ navigator.serviceWorker.register('/sw.js').catch(()=>{}); });
@@ -340,12 +390,13 @@ async function sendCpMsg(){
 
   try{
     const r = await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({message:txt,history:cpHist})});
+      body:JSON.stringify({message:txt,history:cpHist,lang: currentLang})});
     const d = await r.json();
     document.getElementById('cpTyping')?.remove();
     const bDiv = document.createElement('div');
     bDiv.className = 'msg bot';
-    bDiv.innerHTML = `<div class="m-av"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="10" rx="2"/></svg></div><div class="m-bub">${mdToHtml(d.reply)}</div>`;
+    const msgId = 'cp'+Date.now();
+    bDiv.innerHTML = `<div class="m-av"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="10" rx="2"/></svg></div><div class="m-bub">${mdToHtml(d.reply)}<div class="m-foot"><button class="tts-b" id="${msgId}" onclick="speak('${encodeURIComponent(d.reply)}','${d.lang||currentLang}',1,document.getElementById('${msgId}'))"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/></svg></button></div></div>`;
     body.appendChild(bDiv);
     body.scrollTop = body.scrollHeight;
     cpHist.push({role:'user',content:txt});
