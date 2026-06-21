@@ -9,7 +9,14 @@
   </div>
 </div>
 <div class="hosp-wrap">
+
+  <button class="btn btn-g" onclick="findNearMe()" style="width:100%;margin-bottom:16px;justify-content:center" id="nearMeBtn">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <span id="nearMeBtnText">Find Hospitals Near Me</span>
+  </button>
+
   <div class="filter-card anim-up">
+    <div style="font-size:.71rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Or search by state &amp; district</div>
     <div class="filter-row">
       <div class="fg"><label><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/></svg> State</label>
         <select id="stateSelect" onchange="loadDistricts()">
@@ -27,7 +34,7 @@
   <div id="hospResults">
     <div class="state-box">
       <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
-      <span>Select your state and district to find hospitals</span>
+      <span>Tap "Find Hospitals Near Me" or select your state and district</span>
     </div>
   </div>
 </div>
@@ -45,6 +52,7 @@ async function loadDistricts(){
   d.districts.forEach(x=>dsel.innerHTML+=`<option value="${x}">${x}</option>`);
   dsel.disabled=false;
 }
+
 async function loadHospitals(){
   const state=document.getElementById('stateSelect').value;
   const district=document.getElementById('districtSelect').value;
@@ -77,6 +85,91 @@ async function loadHospitals(){
           </div>
         </div>
         <div class="hcard-action"><a href="tel:${h.phone}" class="call-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.36 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg> Call</a></div>
+      </div>`).join('')}
+    </div>`;
+}
+
+/* ── NEAR ME (live search via OpenStreetMap, no API key) ── */
+function findNearMe(){
+  const btn = document.getElementById('nearMeBtn');
+  const btnText = document.getElementById('nearMeBtnText');
+  const box = document.getElementById('hospResults');
+
+  if(!navigator.geolocation){
+    box.innerHTML = `<div class="state-box"><span>Location is not supported on this device. Please use the state/district search below.</span></div>`;
+    return;
+  }
+
+  btn.disabled = true;
+  btnText.textContent = 'Getting your location…';
+  box.innerHTML = `<div class="state-box"><div class="spinner"></div><span>Getting your location…</span></div>`;
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude, lon = pos.coords.longitude;
+    btnText.textContent = 'Searching nearby hospitals…';
+    box.innerHTML = `<div class="state-box"><div class="spinner"></div><span>Searching hospitals near you…</span></div>`;
+
+    try{
+      const r = await fetch('/api/hospitals/nearby', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({lat, lon})
+      });
+      const d = await r.json();
+      renderNearbyHospitals(d.hospitals || [], lat, lon);
+    }catch(e){
+      box.innerHTML = `<div class="state-box"><span>Couldn't fetch nearby hospitals. Please try the state/district search below.</span></div>`;
+    }
+
+    btn.disabled = false;
+    btnText.textContent = 'Find Hospitals Near Me';
+  }, () => {
+    box.innerHTML = `<div class="state-box"><span>Location access denied. Please use the state/district search below, or enable location and try again.</span></div>`;
+    btn.disabled = false;
+    btnText.textContent = 'Find Hospitals Near Me';
+  }, {timeout: 12000, enableHighAccuracy: true});
+}
+
+function renderNearbyHospitals(list, userLat, userLon){
+  const box = document.getElementById('hospResults');
+  if(!list.length){
+    box.innerHTML = `<div class="state-box"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg><span>No hospitals found nearby. Try the state/district search below.</span></div>`;
+    return;
+  }
+
+  function distKm(h){
+    const R = 6371;
+    const dLat = (h.lat - userLat) * Math.PI/180;
+    const dLon = (h.lon - userLon) * Math.PI/180;
+    const a = Math.sin(dLat/2)**2 + Math.cos(userLat*Math.PI/180)*Math.cos(h.lat*Math.PI/180)*Math.sin(dLon/2)**2;
+    return (R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))).toFixed(1);
+  }
+
+  box.innerHTML = `
+    <div style="font-size:.78rem;color:var(--t3);margin-bottom:12px;padding:0 2px">
+      Found <strong style="color:var(--pri)">${list.length} place${list.length>1?'s':''}</strong> near you
+    </div>
+    <div class="hosp-grid">
+    ${list.map((h,i)=>`
+      <div class="hcard" style="animation-delay:${i*60}ms">
+        <div class="hcard-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg></div>
+        <div class="hcard-body">
+          <div class="hcard-name">${h.name}</div>
+          <div class="hcard-meta">
+            <span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${h.address} · ${distKm(h)} km away</span>
+            ${h.phone ? `<span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.36 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg> <a href="tel:${h.phone}">${h.phone}</a></span>` : ''}
+          </div>
+          <div class="hcard-tags">
+            <span class="htag">${h.type}</span>
+            ${h.emergency?'<span class="htag emg">24/7 Emergency</span>':''}
+          </div>
+        </div>
+        <div class="hcard-action" style="display:flex;flex-direction:column;gap:6px">
+          ${h.phone ? `<a href="tel:${h.phone}" class="call-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.36 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg> Call</a>` : ''}
+          <a href="https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}" target="_blank" rel="noopener" class="call-btn" style="background:linear-gradient(135deg,var(--bl),#5fc2ff)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg> Directions
+          </a>
+        </div>
       </div>`).join('')}
     </div>`;
 }
