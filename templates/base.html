@@ -16,6 +16,10 @@
 <body>
 
 <nav class="nav">
+  <button class="nav-ham" onclick="toggleNav()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+
   <a href="/" class="nav-brand">
     <div class="nav-logo">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
@@ -43,14 +47,10 @@
   </div>
 
   <div class="nav-controls">
-    <button id="installBtn" onclick="installApp()" class="theme-btn nav-desktop-only" style="display:none" title="Install App">
-      <svg class="icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    </button>
-    <button class="theme-btn nav-desktop-only" onclick="toggleTheme()" title="Toggle dark/light"></button>
-    <div class="lang-toggle nav-desktop-only"><select class="lang-select" onchange="onLangChange(this.value)"></select></div>
-    <button class="nav-ham" onclick="toggleNav()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    </button>
+    <div class="mode-lang-group">
+      <button class="theme-btn" onclick="toggleTheme()" title="Toggle dark/light"></button>
+      <select class="lang-select" onchange="onLangChange(this.value)"></select>
+    </div>
   </div>
 </nav>
 
@@ -61,8 +61,6 @@
   <a href="/medicines" onclick="closeNav()" class="dr-a {% if request.path=='/medicines' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><path d="M18 15v6M15 18h6"/></svg><span data-t="nav_medicines">Medicines</span></a>
   <a href="/emergency" onclick="closeNav()" class="dr-a {% if request.path=='/emergency' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/></svg><span data-t="nav_sos">Emergency</span></a>
   <a href="javascript:void(0)" onclick="installApp();closeNav()" class="dr-a"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Install App</span></a>
-  <div class="dr-row"><span style="font-size:.8rem;font-weight:600;color:var(--t3)" data-t="lbl_theme">Theme</span><button class="theme-btn" onclick="toggleTheme()" style="margin-left:auto"></button></div>
-  <div class="dr-row"><span style="font-size:.8rem;font-weight:600;color:var(--t3)" data-t="lbl_language">Language</span><select class="lang-select" onchange="onLangChange(this.value)"></select></div>
 </div>
 
 <nav class="botnav">
@@ -111,7 +109,21 @@
   </div>
 </div>
 {% endif %}
-  
+
+<div class="install-toast" id="installToast">
+  <div class="install-toast-ic">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  </div>
+  <div class="install-toast-text">
+    <strong>Install AarogyaBot</strong>
+    <span>Get faster access, works offline</span>
+  </div>
+  <div class="install-toast-btns">
+    <button class="it-install" onclick="installApp()">Install</button>
+    <button class="it-dismiss" onclick="dismissInstallToast()">✕</button>
+  </div>
+</div>
+
 <div class="install-modal-bg" id="installModalBg">
   <div class="install-modal">
     <h3 data-t="install_title">Install AarogyaBot</h3>
