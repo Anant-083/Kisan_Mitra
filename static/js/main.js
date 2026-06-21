@@ -20,6 +20,34 @@ function toggleTheme(){
   applyTheme(cur === 'dark' ? 'light' : 'dark');
 }
 
+/* ── MARKDOWN RENDERER (for AI replies) ── */
+function mdToHtml(text){
+  if(!text) return '';
+  let html = text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/^### (.*$)/gim, '<h4 class="md-h">$1</h4>')
+    .replace(/^## (.*$)/gim, '<h3 class="md-h">$1</h3>')
+    .replace(/^# (.*$)/gim, '<h2 class="md-h">$1</h2>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+  const lines = html.split('\n');
+  let out = [];
+  let inList = false;
+  for(let line of lines){
+    const m = line.match(/^[-•]\s+(.*)/);
+    if(m){
+      if(!inList){ out.push('<ul class="md-list">'); inList = true; }
+      out.push(`<li>${m[1]}</li>`);
+    } else {
+      if(inList){ out.push('</ul>'); inList = false; }
+      if(line.trim() !== '') out.push(`<p class="md-p">${line}</p>`);
+    }
+  }
+  if(inList) out.push('</ul>');
+  return out.join('');
+}
+
 /* ── LANGUAGE SYSTEM ── */
 const TRANSLATIONS={
   en:{nav_home:'Home',nav_chat:'Symptom Check',nav_hospitals:'Hospitals',nav_medicines:'Medicines',nav_sos:'Emergency',
@@ -68,6 +96,8 @@ const TRANSLATIONS={
 const LANG_LIST=[
   {code:'en',label:'🇬🇧 English'},{code:'hi',label:'🇮🇳 हिंदी'},{code:'bn',label:'🇧🇩 বাংলা'},
   {code:'ta',label:'🇮🇳 தமிழ்'},{code:'te',label:'🇮🇳 తెలుగు'},{code:'mr',label:'🇮🇳 मराठी'},
+  {code:'gu',label:'🇮🇳 ગુજરાતી'},{code:'kn',label:'🇮🇳 ಕನ್ನಡ'},{code:'ml',label:'🇮🇳 മലയാളം'},
+  {code:'pa',label:'🇮🇳 ਪੰਜਾਬੀ'},{code:'or',label:'🇮🇳 ଓଡ଼ିଆ'},{code:'ur',label:'🇵🇰 اردو'},
 ];
 let currentLang = localStorage.getItem('ab_lang') || 'en';
 
@@ -110,9 +140,8 @@ let currentUtterance = null;
 let currentAudio = null;
 
 function speak(textOrEnc, l, isEnc, btnEl){
-  stopSpeak(); // always stop anything currently playing first
+  stopSpeak();
   const text = isEnc ? decodeURIComponent(textOrEnc) : textOrEnc;
-  const stopBtn = document.getElementById('globalTtsStop');
 
   if('speechSynthesis' in window){
     currentUtterance = new SpeechSynthesisUtterance(text.slice(0,300));
@@ -148,14 +177,12 @@ function stopSpeak(){
   setSpeakingState(false, null);
 }
 
-/* ── PWA INSTALL (with iOS / fallback support) ── */
+/* ── PWA INSTALL ── */
 let deferredPrompt;
-let installPromptFired = false;
 
 window.addEventListener('beforeinstallprompt',(e)=>{
   e.preventDefault();
   deferredPrompt = e;
-  installPromptFired = true;
   document.querySelectorAll('#installBtn').forEach(b=>b.style.display='flex');
 });
 
@@ -168,18 +195,17 @@ function installApp(){
     });
     return;
   }
-  // Fallback: browser doesn't support beforeinstallprompt (iOS Safari, Firefox, etc.)
   showInstallModal();
 }
 
 function showInstallModal(){
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const modal = document.getElementById('installModal');
+  const modal = document.getElementById('installModalBg');
   if(!modal) return;
   document.getElementById('installInstructions').innerHTML =
     isIOS ? (TRANSLATIONS[currentLang]?.install_ios || TRANSLATIONS.en.install_ios)
           : (TRANSLATIONS[currentLang]?.install_android || TRANSLATIONS.en.install_android);
-  document.getElementById('installModalBg').classList.add('show');
+  modal.classList.add('show');
 }
 function closeInstallModal(){
   document.getElementById('installModalBg').classList.remove('show');
@@ -193,13 +219,14 @@ if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{ navigator.serviceWorker.register('/sw.js').catch(()=>{}); });
 }
 
-// Always show the install button after a short delay, even if beforeinstallprompt never fires
-// (covers iOS Safari / browsers that don't support the native prompt)
 window.addEventListener('DOMContentLoaded', ()=>{
   applyTheme(localStorage.getItem('ab_theme') || 'dark');
   populateLangSelectors();
   applyLang(currentLang);
   setupScrollAnim();
+
+  const yearEl = document.getElementById('copyYear');
+  if(yearEl) yearEl.textContent = new Date().getFullYear();
 
   setTimeout(()=>{
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
