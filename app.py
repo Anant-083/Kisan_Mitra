@@ -15,22 +15,30 @@ HOSPITALS = {
             {"name": "IGIMS Patna", "address": "Sheikhpura, Patna", "phone": "0612-2297631", "type": "Government"},
         ],
         "Gaya": [{"name": "Anugrah Narayan Magadh Medical College", "address": "Gaya", "phone": "0631-2220323", "type": "Government"}],
+        "Muzaffarpur": [{"name": "Sri Krishna Medical College Hospital", "address": "Muzaffarpur", "phone": "0621-2266102", "type": "Government"}],
+        "Bhagalpur": [{"name": "Jawaharlal Nehru Medical College Hospital", "address": "Bhagalpur", "phone": "0641-2400370", "type": "Government"}],
     },
     "West Bengal": {
         "Kolkata": [
             {"name": "SSKM Hospital", "address": "244 AJC Bose Road, Kolkata", "phone": "033-22044440", "type": "Government"},
             {"name": "RG Kar Medical College", "address": "1 Khudiram Bose Sarani, Kolkata", "phone": "033-25551234", "type": "Government"},
         ],
+        "Howrah": [{"name": "Howrah General Hospital", "address": "Howrah", "phone": "033-26415748", "type": "Government"}],
+        "Siliguri": [{"name": "North Bengal Medical College", "address": "Siliguri", "phone": "0353-2581001", "type": "Government"}],
     },
     "Uttar Pradesh": {
         "Lucknow": [{"name": "King George's Medical University", "address": "Shah Mina Road, Lucknow", "phone": "0522-2257450", "type": "Government"}],
         "Varanasi": [{"name": "BHU Sir Sunderlal Hospital", "address": "BHU Campus, Varanasi", "phone": "0542-2309289", "type": "Government"}],
+        "Kanpur": [{"name": "GSVM Medical College", "address": "Kanpur", "phone": "0512-2530803", "type": "Government"}],
+        "Agra": [{"name": "S.N. Medical College", "address": "Agra", "phone": "0562-2520163", "type": "Government"}],
     },
     "Maharashtra": {
         "Mumbai": [
             {"name": "KEM Hospital", "address": "Parel, Mumbai", "phone": "022-24107000", "type": "Government"},
             {"name": "Nair Hospital", "address": "Mumbai Central", "phone": "022-23027600", "type": "Government"},
         ],
+        "Pune": [{"name": "Sassoon General Hospital", "address": "Pune", "phone": "020-26128000", "type": "Government"}],
+        "Nagpur": [{"name": "Government Medical College Nagpur", "address": "Nagpur", "phone": "0712-2700488", "type": "Government"}],
     },
     "Delhi": {
         "New Delhi": [
@@ -40,9 +48,38 @@ HOSPITALS = {
     },
     "Tamil Nadu": {
         "Chennai": [{"name": "Rajiv Gandhi Govt General Hospital", "address": "Park Town, Chennai", "phone": "044-25305000", "type": "Government"}],
+        "Madurai": [{"name": "Madurai Medical College Hospital", "address": "Madurai", "phone": "0452-2530855", "type": "Government"}],
+        "Coimbatore": [{"name": "Coimbatore Medical College Hospital", "address": "Coimbatore", "phone": "0422-2301393", "type": "Government"}],
     },
     "Karnataka": {
         "Bengaluru": [{"name": "Victoria Hospital", "address": "Fort, Bengaluru", "phone": "080-26701150", "type": "Government"}],
+        "Mysuru": [{"name": "K.R. Hospital", "address": "Mysuru", "phone": "0821-2520355", "type": "Government"}],
+    },
+    "Rajasthan": {
+        "Jaipur": [{"name": "Sawai Man Singh Hospital", "address": "Jaipur", "phone": "0141-2518222", "type": "Government"}],
+        "Jodhpur": [{"name": "Mahatma Gandhi Hospital", "address": "Jodhpur", "phone": "0291-2434861", "type": "Government"}],
+    },
+    "Madhya Pradesh": {
+        "Bhopal": [{"name": "Hamidia Hospital", "address": "Bhopal", "phone": "0755-2540222", "type": "Government"}],
+        "Indore": [{"name": "Maharaja Yeshwantrao Hospital", "address": "Indore", "phone": "0731-2527145", "type": "Government"}],
+    },
+    "Gujarat": {
+        "Ahmedabad": [{"name": "Civil Hospital Ahmedabad", "address": "Asarwa, Ahmedabad", "phone": "079-22683721", "type": "Government"}],
+        "Surat": [{"name": "New Civil Hospital Surat", "address": "Surat", "phone": "0261-2244343", "type": "Government"}],
+    },
+    "Punjab": {
+        "Amritsar": [{"name": "Guru Nanak Dev Hospital", "address": "Amritsar", "phone": "0183-2225465", "type": "Government"}],
+        "Ludhiana": [{"name": "Civil Hospital Ludhiana", "address": "Ludhiana", "phone": "0161-2444140", "type": "Government"}],
+    },
+    "Kerala": {
+        "Thiruvananthapuram": [{"name": "Thiruvananthapuram Medical College", "address": "Thiruvananthapuram", "phone": "0471-2528300", "type": "Government"}],
+        "Kochi": [{"name": "Ernakulam General Hospital", "address": "Kochi", "phone": "0484-2360002", "type": "Government"}],
+    },
+    "Odisha": {
+        "Bhubaneswar": [{"name": "Capital Hospital", "address": "Bhubaneswar", "phone": "0674-2391983", "type": "Government"}],
+    },
+    "Assam": {
+        "Guwahati": [{"name": "Guwahati Medical College Hospital", "address": "Guwahati", "phone": "0361-2528214", "type": "Government"}],
     },
 }
 
@@ -71,7 +108,7 @@ This is NOT a medical diagnosis."""
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", state_count=len(HOSPITALS))
 
 @app.route("/chat")
 def chat():
@@ -117,7 +154,6 @@ def api_chat():
     if not user_msg:
         return jsonify({"error": "empty message"}), 400
 
-    # Use auto language detection only when the user hasn't forced a specific language
     lang = force_lang if force_lang else detect_lang(user_msg)
 
     sys = system_prompt(lang)
@@ -151,6 +187,59 @@ def api_hospitals():
     state = data.get("state", "")
     district = data.get("district", "")
     return jsonify({"hospitals": HOSPITALS.get(state, {}).get(district, [])})
+
+@app.route("/api/hospitals/nearby", methods=["POST"])
+def api_hospitals_nearby():
+    """Live hospital search via OpenStreetMap Overpass API, no key required."""
+    data = request.get_json(silent=True) or {}
+    lat = data.get("lat")
+    lon = data.get("lon")
+    if not lat or not lon:
+        return jsonify({"error": "location required"}), 400
+
+    overpass_query = f"""
+    [out:json][timeout:15];
+    (
+      node["amenity"="hospital"](around:8000,{lat},{lon});
+      way["amenity"="hospital"](around:8000,{lat},{lon});
+      node["amenity"="clinic"](around:5000,{lat},{lon});
+    );
+    out center 25;
+    """
+    try:
+        r = requests.post(
+            "https://overpass-api.de/api/interpreter",
+            data={"data": overpass_query},
+            timeout=15
+        )
+        elements = r.json().get("elements", [])
+        results = []
+        for el in elements:
+            tags = el.get("tags", {})
+            name = tags.get("name")
+            if not name:
+                continue
+            elat = el.get("lat") or el.get("center", {}).get("lat")
+            elon = el.get("lon") or el.get("center", {}).get("lon")
+            if not elat or not elon:
+                continue
+            results.append({
+                "name": name,
+                "lat": elat,
+                "lon": elon,
+                "address": tags.get("addr:full") or tags.get("addr:street", "Address not available"),
+                "phone": tags.get("phone") or tags.get("contact:phone", ""),
+                "emergency": tags.get("emergency") == "yes",
+                "type": "Hospital" if "hospital" in str(tags.get("amenity")) else "Clinic",
+            })
+
+        def dist(h):
+            return (h["lat"] - lat) ** 2 + (h["lon"] - lon) ** 2
+
+        results.sort(key=dist)
+        return jsonify({"hospitals": results[:15]})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/medicine", methods=["POST"])
 def api_medicine():
