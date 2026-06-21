@@ -91,7 +91,15 @@ svg{display:block}
 .lang-select{border:1.5px solid var(--border);background:var(--surf2);color:var(--t2);padding:7px 28px 7px 12px;border-radius:var(--rf);font-size:.78rem;font-weight:700;cursor:pointer;outline:none;appearance:none;background-repeat:no-repeat;background-position:right 10px center;background-size:10px;max-width:150px;transition:border-color .15s}
 .lang-select:focus,.lang-select:hover{border-color:var(--pri)}
 .mode-lang-group .lang-select{border:none;background:none;max-width:120px}
+.mode-lang-group{display:flex;align-items:center;gap:6px;background:var(--surf2);border:1px solid var(--border);border-radius:var(--rf);padding:4px;flex-shrink:0;max-width:220px}
+.mode-lang-group .theme-btn{border:none;background:none;width:32px;height:32px;flex-shrink:0}
+.mode-lang-group .lang-select{border:none;background:none;max-width:130px;min-width:0;flex-shrink:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:6px 18px 6px 8px}
+.nav-controls{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0;min-width:0}
 
+@media(max-width:680px){
+  .mode-lang-group{max-width:130px}
+  .mode-lang-group .lang-select{max-width:70px;font-size:.66rem;padding:6px 16px 6px 6px}
+}
 .nav-sos{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--rd),var(--rd-l));color:#fff;padding:8px 15px;border-radius:var(--rf);font-size:.78rem;font-weight:800;box-shadow:0 4px 14px rgba(239,67,96,.3);transition:all .18s;flex-shrink:0}
 .nav-sos:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 8px 22px rgba(239,67,96,.45)}
 
