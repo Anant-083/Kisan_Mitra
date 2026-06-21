@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aarogyabot-v2';
+const CACHE_NAME = 'aarogyabot-v3';
 const PRECACHE_URLS = ['/', '/chat', '/hospitals', '/medicines', '/emergency', '/static/css/style.css', '/static/js/main.js', '/offline.html'];
 
 self.addEventListener('install', (event) => {
