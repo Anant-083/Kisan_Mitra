@@ -477,3 +477,26 @@ svg{display:block}
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+/* ============ PRESCRIPTION PAGE ============ */
+.prx-wrap{max-width:720px;margin:0 auto;padding:8px 16px 40px;display:flex;flex-direction:column;gap:18px}
+.prx-upload-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r20);padding:22px;box-shadow:var(--s1)}
+.prx-upload-area{border:2px dashed var(--border);border-radius:var(--r16);padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:12px}
+.prx-upload-area:hover{border-color:var(--acc-l);background:var(--acc-t)}
+.prx-upload-icon{width:72px;height:72px;background:var(--acc-t);border-radius:var(--r20);display:flex;align-items:center;justify-content:center}
+.prx-upload-text strong{display:block;font-size:.95rem;font-weight:800;color:var(--t1);margin-bottom:4px}
+.prx-upload-text span{font-size:.78rem;color:var(--t3)}
+.prx-btn-row{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap}
+.prx-btn-row .btn{flex:1;justify-content:center;min-width:120px}
+.prx-result-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r20);padding:22px;box-shadow:var(--s2)}
+.prx-result-hd{display:flex;align-items:center;gap:11px;margin-bottom:16px;padding-bottom:13px;border-bottom:1px solid var(--border)}
+.prx-tips{background:var(--surf);border:1px solid var(--border);border-radius:var(--r20);padding:20px}
+.prx-tips-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.prx-tip{display:flex;gap:10px;align-items:flex-start;padding:11px;background:var(--surf2);border-radius:var(--r12)}
+.prx-tip span{font-size:1.4rem;flex-shrink:0;margin-top:2px}
+.prx-tip strong{display:block;font-size:.8rem;font-weight:800;color:var(--t1);margin-bottom:3px}
+.prx-tip p{font-size:.73rem;color:var(--t3);line-height:1.5;margin:0}
+@media(max-width:480px){
+  .prx-tips-grid{grid-template-columns:1fr}
+  .prx-btn-row{flex-direction:column}
+  .prx-btn-row .btn{min-width:unset}
+}
