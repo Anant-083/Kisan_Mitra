@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %} · Prescription Reader{% endblock %}
+{% block content %}
+<div class="pg-hdr">
+  <div class="pg-hdr-inner anim-up">
+    <div class="pg-hdr-ic ip">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+    </div>
+    <div>
+      <h1>Prescription Reader</h1>
+      <p>Upload a photo of your prescription — AI will explain it in simple language</p>
+    </div>
+    <div class="pg-hdr-meta">
+      <div class="pg-tag">AI-Powered</div>
+      <div class="pg-tag">23 Languages</div>
+    </div>
+  </div>
+</div>
+
+<div class="prx-wrap">
+  <div class="prx-upload-card anim-up">
+    <div class="prx-upload-area" id="uploadArea" onclick="document.getElementById('rxFile').click()">
+      <div class="prx-upload-icon" id="uploadIcon">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--acc-l)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      </div>
+      <div class="prx-upload-text">
+        <strong>Tap to upload prescription</strong>
+        <span>Photo, scan, or screenshot — JPG, PNG, PDF</span>
+      </div>
+      <img id="previewImg" style="display:none;max-width:100%;max-height:260px;border-radius:var(--r12);margin-top:14px;object-fit:contain"/>
+    </div>
+    <input type="file" id="rxFile" accept="image/*,application/pdf" style="display:none" onchange="handleFile(this)"/>
+
+    <div class="prx-btn-row">
+      <button class="btn btn-o" onclick="document.getElementById('rxFile').click()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Choose File
+      </button>
+      <button class="btn btn-o" onclick="openCamera()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Take Photo
+      </button>
+      <button class="btn btn-g" id="analyzeBtn" onclick="analyzeRx()" disabled>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Explain Prescription
+      </button>
+    </div>
+  </div>
+
+  <div id="rxResult" style="display:none" class="prx-result-card anim-up">
+    <div class="prx-result-hd">
+      <div class="pg-hdr-ic ip" style="width:38px;height:38px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <div>
+        <div style="font-size:.9rem;font-weight:800;color:var(--t1)">Prescription Summary</div>
+        <div style="font-size:.72rem;color:var(--t3)">AI explanation in simple language</div>
+      </div>
+      <button id="rxTtsBtn" class="tts-b" style="margin-left:auto;width:34px;height:34px" onclick="speakRx()" title="Listen">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+      </button>
+      <button class="tts-stop-b" id="rxStopBtn" onclick="stopSpeak()" title="Stop">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+      </button>
+    </div>
+    <div class="med-text" id="rxSummaryText"></div>
+    <div class="med-warn" style="margin-top:16px">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+      This is an AI-generated explanation only. Always follow your doctor's exact instructions. If unsure, ask your doctor or pharmacist.
+    </div>
+  </div>
+
+  <div class="prx-tips anim-up d2">
+    <div class="sec-ey">Tips for best results</div>
+    <div class="prx-tips-grid">
+      <div class="prx-tip"><span>📸</span><div><strong>Good lighting</strong><p>Take photo in bright light, avoid shadows on the prescription</p></div></div>
+      <div class="prx-tip"><span>📐</span><div><strong>Flat surface</strong><p>Place prescription flat and take photo from directly above</p></div></div>
+      <div class="prx-tip"><span>🔍</span><div><strong>Full prescription</strong><p>Make sure the entire prescription fits in the frame</p></div></div>
+      <div class="prx-tip"><span>🌐</span><div><strong>Any language</strong><p>Works with prescriptions in English, Hindi, or any regional language</p></div></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+let rxBase64 = null;
+let rxFullText = '';
+
+function handleFile(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const result = e.target.result;
+    rxBase64 = result.split(',')[1];
+    document.getElementById('previewImg').src = result;
+    document.getElementById('previewImg').style.display = 'block';
+    document.getElementById('uploadIcon').style.display = 'none';
+    document.querySelector('.prx-upload-text').style.display = 'none';
+    document.getElementById('analyzeBtn').disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+function openCamera(){
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = 'image/*';
+  inp.capture = 'environment';
+  inp.onchange = () => handleFile(inp);
+  inp.click();
+}
+
+async function analyzeRx(){
+  if(!rxBase64) return;
+  const btn = document.getElementById('analyzeBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="width:16px;height:16px;border-width:2px;margin-right:6px"></div> Analyzing…';
+  document.getElementById('rxResult').style.display = 'none';
+
+  try{
+    const lang = typeof currentLang !== 'undefined' ? currentLang : 'en';
+    const r = await fetch('/api/prescription',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({image: rxBase64, lang})
+    });
+    const d = await r.json();
+    if(d.error){ alert('Could not read prescription. Please try a clearer photo.'); return; }
+    rxFullText = d.summary;
+    document.getElementById('rxSummaryText').innerHTML = mdToHtml(d.summary);
+    document.getElementById('rxResult').style.display = 'block';
+    document.getElementById('rxResult').scrollIntoView({behavior:'smooth', block:'start'});
+  }catch(e){
+    alert('Connection error. Please try again.');
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Explain Prescription';
+  }
+}
+
+function speakRx(){
+  const btn = document.getElementById('rxTtsBtn');
+  if(!rxFullText) return;
+  const lang = typeof currentLang !== 'undefined' ? currentLang : 'en';
+  speak(encodeURIComponent(rxFullText), lang, 1, btn);
+}
+</script>
+{% endblock %}
