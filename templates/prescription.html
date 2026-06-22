@@ -4,14 +4,14 @@
 <div class="pg-hdr">
   <div class="pg-hdr-inner anim-up">
     <div class="pg-hdr-ic ip">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
     </div>
     <div>
       <h1>Prescription Reader</h1>
-      <p>Upload a photo of your prescription — AI will explain it in simple language</p>
+      <p>Upload any prescription — photo, PDF, or screenshot — AI explains it simply</p>
     </div>
     <div class="pg-hdr-meta">
-      <div class="pg-tag">AI-Powered</div>
+      <div class="pg-tag">AI Vision</div>
       <div class="pg-tag">23 Languages</div>
     </div>
   </div>
@@ -23,13 +23,14 @@
       <div class="prx-upload-icon" id="uploadIcon">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--acc-l)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
       </div>
-      <div class="prx-upload-text">
+      <div class="prx-upload-text" id="uploadText">
         <strong>Tap to upload prescription</strong>
-        <span>Photo, scan, or screenshot — JPG, PNG, PDF</span>
+        <span>Photo · PDF · Screenshot · Any image format</span>
       </div>
+      <canvas id="pdfCanvas" style="display:none;max-width:100%;border-radius:var(--r12);margin-top:14px"></canvas>
       <img id="previewImg" style="display:none;max-width:100%;max-height:260px;border-radius:var(--r12);margin-top:14px;object-fit:contain"/>
     </div>
-    <input type="file" id="rxFile" accept="image/*,application/pdf" style="display:none" onchange="handleFile(this)"/>
+    <input type="file" id="rxFile" accept="image/*,application/pdf,.pdf,.jpg,.jpeg,.png,.webp,.heic,.bmp,.tiff" style="display:none" onchange="handleFile(this)"/>
 
     <div class="prx-btn-row">
       <button class="btn btn-o" onclick="document.getElementById('rxFile').click()">
@@ -38,13 +39,14 @@
       </button>
       <button class="btn btn-o" onclick="openCamera()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        Take Photo
+        Camera
       </button>
       <button class="btn btn-g" id="analyzeBtn" onclick="analyzeRx()" disabled>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         Explain Prescription
       </button>
     </div>
+    <div id="fileNote" style="font-size:.72rem;color:var(--t3);text-align:center;margin-top:8px"></div>
   </div>
 
   <div id="rxResult" style="display:none" class="prx-result-card anim-up">
@@ -65,41 +67,92 @@
     </div>
     <div class="med-text" id="rxSummaryText"></div>
     <div class="med-warn" style="margin-top:16px">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
-      This is an AI-generated explanation only. Always follow your doctor's exact instructions. If unsure, ask your doctor or pharmacist.
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+      This is an AI-generated explanation only. Always follow your doctor's exact instructions. Ask your doctor or pharmacist if unsure.
     </div>
   </div>
 
   <div class="prx-tips anim-up d2">
     <div class="sec-ey">Tips for best results</div>
     <div class="prx-tips-grid">
-      <div class="prx-tip"><span>📸</span><div><strong>Good lighting</strong><p>Take photo in bright light, avoid shadows on the prescription</p></div></div>
-      <div class="prx-tip"><span>📐</span><div><strong>Flat surface</strong><p>Place prescription flat and take photo from directly above</p></div></div>
-      <div class="prx-tip"><span>🔍</span><div><strong>Full prescription</strong><p>Make sure the entire prescription fits in the frame</p></div></div>
-      <div class="prx-tip"><span>🌐</span><div><strong>Any language</strong><p>Works with prescriptions in English, Hindi, or any regional language</p></div></div>
+      <div class="prx-tip"><span>📸</span><div><strong>Good lighting</strong><p>Take photo in bright light, avoid shadows</p></div></div>
+      <div class="prx-tip"><span>📐</span><div><strong>Flat &amp; straight</strong><p>Place prescription flat, shoot from directly above</p></div></div>
+      <div class="prx-tip"><span>🔍</span><div><strong>Full frame</strong><p>Make sure entire prescription is visible</p></div></div>
+      <div class="prx-tip"><span>📄</span><div><strong>PDF supported</strong><p>Digital prescriptions as PDF also work</p></div></div>
     </div>
   </div>
 </div>
+
+<!-- PDF.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 {% endblock %}
 {% block scripts %}
 <script>
 let rxBase64 = null;
+let rxMime = 'image/jpeg';
+let rxTextContent = '';
 let rxFullText = '';
+
+// Configure PDF.js worker
+if(typeof pdfjsLib !== 'undefined'){
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
 
 function handleFile(input){
   const file = input.files[0];
   if(!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const result = e.target.result;
-    rxBase64 = result.split(',')[1];
-    document.getElementById('previewImg').src = result;
-    document.getElementById('previewImg').style.display = 'block';
-    document.getElementById('uploadIcon').style.display = 'none';
-    document.querySelector('.prx-upload-text').style.display = 'none';
-    document.getElementById('analyzeBtn').disabled = false;
-  };
-  reader.readAsDataURL(file);
+  const note = document.getElementById('fileNote');
+  note.textContent = `Processing: ${file.name}`;
+
+  if(file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')){
+    // Handle PDF: render first page to canvas using PDF.js
+    note.textContent = 'Reading PDF — rendering first page…';
+    const reader = new FileReader();
+    reader.onload = async e => {
+      try{
+        const typedArray = new Uint8Array(e.target.result);
+        const pdf = await pdfjsLib.getDocument({data: typedArray}).promise;
+        const page = await pdf.getPage(1);
+        const scale = 2.0;
+        const viewport = page.getViewport({scale});
+        const canvas = document.getElementById('pdfCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({canvasContext: ctx, viewport}).promise;
+        // Convert canvas to base64 JPEG
+        rxBase64 = canvas.toDataURL('image/jpeg', 0.92).split(',')[1];
+        rxMime = 'image/jpeg';
+        rxTextContent = '';
+        canvas.style.display = 'block';
+        document.getElementById('uploadIcon').style.display = 'none';
+        document.getElementById('uploadText').style.display = 'none';
+        document.getElementById('analyzeBtn').disabled = false;
+        note.textContent = `PDF ready (${pdf.numPages} page${pdf.numPages>1?'s':''} — reading page 1)`;
+      }catch(err){
+        note.textContent = 'Could not render PDF. Try uploading as an image instead.';
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    // Handle all image types
+    rxTextContent = '';
+    const reader = new FileReader();
+    reader.onload = e => {
+      const result = e.target.result;
+      // Detect MIME type from data URL
+      const mimeMatch = result.match(/^data:([^;]+);/);
+      rxMime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+      rxBase64 = result.split(',')[1];
+      document.getElementById('previewImg').src = result;
+      document.getElementById('previewImg').style.display = 'block';
+      document.getElementById('uploadIcon').style.display = 'none';
+      document.getElementById('uploadText').style.display = 'none';
+      document.getElementById('analyzeBtn').disabled = false;
+      note.textContent = `Ready: ${file.name} (${(file.size/1024).toFixed(0)} KB)`;
+    };
+    reader.readAsDataURL(file);
+  }
 }
 
 function openCamera(){
@@ -122,16 +175,19 @@ async function analyzeRx(){
     const lang = typeof currentLang !== 'undefined' ? currentLang : 'en';
     const r = await fetch('/api/prescription',{
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({image: rxBase64, lang})
+      body: JSON.stringify({image: rxBase64, mime: rxMime, lang, text_content: rxTextContent})
     });
     const d = await r.json();
-    if(d.error){ alert('Could not read prescription. Please try a clearer photo.'); return; }
+    if(d.error){
+      document.getElementById('fileNote').textContent = 'Error: ' + d.error + '. Try a clearer photo.';
+      return;
+    }
     rxFullText = d.summary;
     document.getElementById('rxSummaryText').innerHTML = mdToHtml(d.summary);
     document.getElementById('rxResult').style.display = 'block';
     document.getElementById('rxResult').scrollIntoView({behavior:'smooth', block:'start'});
   }catch(e){
-    alert('Connection error. Please try again.');
+    document.getElementById('fileNote').textContent = 'Connection error. Please try again.';
   }finally{
     btn.disabled = false;
     btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Explain Prescription';
