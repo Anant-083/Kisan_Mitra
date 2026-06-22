@@ -272,49 +272,87 @@ def api_hospitals_nearby():
     data = request.get_json(silent=True) or {}
     lat = data.get("lat")
     lon = data.get("lon")
+    hosp_type = data.get("type", "all")
     if not lat or not lon:
         return jsonify({"error": "location required"}), 400
-    # Expanded radius + more amenity types to handle sparse OSM data in India
+
+    # Comprehensive query including Indian PHC/CHC/dispensary tags
     overpass_query = f"""
-    [out:json][timeout:20];
+    [out:json][timeout:25];
     (
-      node["amenity"="hospital"](around:15000,{lat},{lon});
-      way["amenity"="hospital"](around:15000,{lat},{lon});
-      node["amenity"="clinic"](around:10000,{lat},{lon});
-      node["amenity"="health_post"](around:10000,{lat},{lon});
-      node["healthcare"="hospital"](around:15000,{lat},{lon});
-      node["healthcare"="clinic"](around:10000,{lat},{lon});
+      node["amenity"="hospital"](around:20000,{lat},{lon});
+      way["amenity"="hospital"](around:20000,{lat},{lon});
+      node["amenity"="clinic"](around:15000,{lat},{lon});
+      way["amenity"="clinic"](around:15000,{lat},{lon});
+      node["amenity"="doctors"](around:10000,{lat},{lon});
+      node["healthcare"="hospital"](around:20000,{lat},{lon});
+      way["healthcare"="hospital"](around:20000,{lat},{lon});
+      node["healthcare"="clinic"](around:15000,{lat},{lon});
+      node["healthcare"="centre"](around:15000,{lat},{lon});
+      node["health_facility:type"="PHC"](around:20000,{lat},{lon});
+      node["health_facility:type"="CHC"](around:20000,{lat},{lon});
+      node["health_facility:type"="DH"](around:20000,{lat},{lon});
+      node["health_facility:type"="Sub Centre"](around:15000,{lat},{lon});
+      node["dispensary"="yes"](around:10000,{lat},{lon});
     );
-    out center 20;
+    out center 30;
     """
     try:
         r = requests.post(
             "https://overpass-api.de/api/interpreter",
-            data={"data": overpass_query}, timeout=20)
+            data={"data": overpass_query}, timeout=25)
         elements = r.json().get("elements", [])
         results = []
         for el in elements:
             tags = el.get("tags", {})
-            # Try multiple name fields for India
-            name = tags.get("name") or tags.get("name:en") or tags.get("name:hi")
+            name = (tags.get("name") or tags.get("name:en") or
+                    tags.get("name:hi") or tags.get("name:te") or
+                    tags.get("name:ta") or tags.get("name:bn"))
             if not name:
                 continue
             elat = el.get("lat") or el.get("center", {}).get("lat")
             elon = el.get("lon") or el.get("center", {}).get("lon")
             if not elat or not elon:
                 continue
+
+            # Determine type
+            op = tags.get("operator:type", "")
+            ftype = tags.get("health_facility:type", "")
+            name_lower = name.lower()
+            is_govt = (
+                op in ("public", "government") or
+                ftype in ("PHC", "CHC", "DH", "Sub Centre") or
+                any(w in name_lower for w in [
+                    "government","govt","civil","district","community",
+                    "primary health","general hospital","medical college",
+                    "public","railway","esic","army","military","central",
+                    "phc","chc","dispensary","sub centre","sub-centre"
+                ])
+            )
+            ptype = "Government" if is_govt else "Private"
+            if hosp_type == "government" and ptype != "Government":
+                continue
+            if hosp_type == "private" and ptype != "Private":
+                continue
+
             results.append({
                 "name": name,
                 "lat": elat, "lon": elon,
-                "address": tags.get("addr:full") or tags.get("addr:street") or tags.get("addr:city", ""),
-                "phone": tags.get("phone") or tags.get("contact:phone") or tags.get("contact:mobile", ""),
+                "address": (tags.get("addr:full") or
+                            tags.get("addr:street") or
+                            tags.get("addr:city") or ""),
+                "phone": (tags.get("phone") or
+                          tags.get("contact:phone") or
+                          tags.get("contact:mobile") or ""),
                 "emergency": tags.get("emergency") == "yes",
-                "type": "Hospital" if "hospital" in str(tags.get("amenity","")) or "hospital" in str(tags.get("healthcare","")) else "Clinic",
+                "type": ptype,
+                "facility_type": ftype or tags.get("amenity") or tags.get("healthcare") or "",
             })
+
         def dist(h):
             return (h["lat"] - lat)**2 + (h["lon"] - lon)**2
         results.sort(key=dist)
-        return jsonify({"hospitals": results[:15]})
+        return jsonify({"hospitals": results[:20], "source": "osm"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
