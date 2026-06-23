@@ -19,38 +19,18 @@
   <button class="nav-ham" onclick="toggleNav()">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
-
   <a href="/" class="nav-brand">
     <div class="nav-logo">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
     </div>
     <span class="nav-wm">Aarogya<b>Bot</b></span>
   </a>
-
   <div class="nav-links">
-    <a href="/" class="nl {% if request.path=='/' %}on{% endif %}">
-      <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      <span data-t="nav_home">Home</span>
-    </a>
-    <a href="/chat" class="nl {% if request.path=='/chat' %}on{% endif %}">
-      <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      <span data-t="nav_chat">Symptom Check</span>
-    </a>
-    <a href="/hospitals" class="nl {% if request.path=='/hospitals' %}on{% endif %}">
-      <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
-      <span data-t="nav_hospitals">Hospitals</span>
-    </a>
-    <a href="/emergency" class="nl {% if request.path=='/emergency' %}on{% endif %}">
-      <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <span data-t="nav_sos">Emergency</span>
-    </a>
-    <a href="/prescription" onclick="closeNav()" class="dr-a {% if request.path=='/prescription' %}on{% endif %}">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-  <span>Prescription Reader</span>
-  <span style="margin-left:auto;font-size:.6rem;background:var(--acc-t);color:var(--acc-l);padding:2px 7px;border-radius:var(--rf);font-weight:800">NEW</span>
-</a>
+    <a href="/" class="nl {% if request.path=='/' %}on{% endif %}"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span data-t="nav_home">Home</span></a>
+    <a href="/chat" class="nl {% if request.path=='/chat' %}on{% endif %}"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span data-t="nav_chat">Symptom Check</span></a>
+    <a href="/hospitals" class="nl {% if request.path=='/hospitals' %}on{% endif %}"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg><span data-t="nav_hospitals">Hospitals</span></a>
+    <a href="/emergency" class="nl {% if request.path=='/emergency' %}on{% endif %}"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span data-t="nav_sos">Emergency</span></a>
   </div>
-
   <div class="nav-controls">
     <div class="mode-lang-group">
       <button class="theme-btn" onclick="toggleTheme()" title="Toggle dark/light"></button>
@@ -64,15 +44,33 @@
   <a href="/chat" onclick="closeNav()" class="dr-a {% if request.path=='/chat' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span data-t="nav_chat">Symptom Check</span></a>
   <a href="/hospitals" onclick="closeNav()" class="dr-a {% if request.path=='/hospitals' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg><span data-t="nav_hospitals">Hospitals</span></a>
   <a href="/medicines" onclick="closeNav()" class="dr-a {% if request.path=='/medicines' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><path d="M18 15v6M15 18h6"/></svg><span data-t="nav_medicines">Medicines</span></a>
+  <a href="/prescription" onclick="closeNav()" class="dr-a {% if request.path=='/prescription' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span data-t="nav_prx">Prescription</span><span style="margin-left:auto;font-size:.6rem;background:var(--acc-t);color:var(--acc-l);padding:2px 7px;border-radius:var(--rf);font-weight:800">NEW</span></a>
   <a href="/emergency" onclick="closeNav()" class="dr-a {% if request.path=='/emergency' %}on{% endif %}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/></svg><span data-t="nav_sos">Emergency</span></a>
   <a href="javascript:void(0)" onclick="installApp();closeNav()" class="dr-a"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Install App</span></a>
 </div>
 
+<!-- Bottom nav: 5 items — Home, Chat, Hospitals, Prescription, SOS -->
 <nav class="botnav">
-  <a href="/" class="bn-a {% if request.path=='/' %}on{% endif %}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span data-t="nav_home">Home</span></a>
-  <a href="/chat" class="bn-a {% if request.path=='/chat' %}on{% endif %}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span data-t="nav_chat">Chat</span></a>
-  <a href="/hospitals" class="bn-a {% if request.path=='/hospitals' %}on{% endif %}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg><span data-t="nav_hospitals">Hospital</span></a>
-  <a href="/emergency" class="bn-a sos-bn {% if request.path=='/emergency' %}on{% endif %}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/></svg><span data-t="nav_sos">SOS</span></a>
+  <a href="/" class="bn-a {% if request.path=='/' %}on{% endif %}">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+    <span data-t="nav_home">Home</span>
+  </a>
+  <a href="/chat" class="bn-a {% if request.path=='/chat' %}on{% endif %}">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <span data-t="nav_chat">Chat</span>
+  </a>
+  <a href="/hospitals" class="bn-a {% if request.path=='/hospitals' %}on{% endif %}">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
+    <span data-t="nav_hospitals">Hospital</span>
+  </a>
+  <a href="/prescription" class="bn-a {% if request.path=='/prescription' %}on{% endif %}">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    <span data-t="nav_prx">Prescription</span>
+  </a>
+  <a href="/emergency" class="bn-a sos-bn {% if request.path=='/emergency' %}on{% endif %}">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/></svg>
+    <span data-t="nav_sos">SOS</span>
+  </a>
 </nav>
 
 <div class="pb">{% block content %}{% endblock %}</div>
@@ -83,6 +81,7 @@
     <a href="/chat" data-t="nav_chat">Symptom Check</a>
     <a href="/hospitals" data-t="nav_hospitals">Hospitals</a>
     <a href="/medicines" data-t="nav_medicines">Medicines</a>
+    <a href="/prescription" data-t="nav_prx">Prescription</a>
     <a href="/emergency" data-t="nav_sos">Emergency</a>
   </div>
   <p data-t="footer_copy">AarogyaBot provides general health guidance only. Always consult a qualified doctor.</p>
@@ -93,21 +92,17 @@
 <button class="chat-fab" id="chatFab" onclick="toggleChatPopup()" title="Quick chat">
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
 </button>
-
 <div class="chat-popup" id="chatPopup">
   <div class="cp-bar">
     <div class="chat-av"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg><span class="odot"></span></div>
     <div><div class="cb-name">AarogyaBot</div><div class="cb-sub">Quick chat</div></div>
-    <button class="cp-close" onclick="toggleChatPopup()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-   <button id="cpTtsStop" class="tts-stop-b" onclick="stopSpeak()" title="Stop speaking">
-  <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
-</button>
+    <button id="cpTtsStop" class="tts-stop-b" onclick="stopSpeak()" title="Stop speaking"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"/></svg></button>
+    <button class="cp-close" onclick="toggleChatPopup()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
   <div class="cp-body" id="cpBody">
     <div class="msg bot">
       <div class="m-av"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/></svg></div>
-      <div class="m-bub">Hi! Describe your symptoms and I'll help. For the full experience, open the <a href="/chat" style="color:var(--pri);font-weight:700">Symptom Checker</a>.<div class="m-foot"><span class="m-time">Now</span></div></div>
+      <div class="m-bub">Hi! Describe your symptoms and I'll help. For the full experience open the <a href="/chat" style="color:var(--pri);font-weight:700">Symptom Checker</a>.<div class="m-foot"><span class="m-time">Now</span></div></div>
     </div>
   </div>
   <div class="cp-input-bar">
@@ -118,13 +113,8 @@
 {% endif %}
 
 <div class="install-toast" id="installToast">
-  <div class="install-toast-ic">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-  </div>
-  <div class="install-toast-text">
-    <strong>Install AarogyaBot</strong>
-    <span>Get faster access, works offline</span>
-  </div>
+  <div class="install-toast-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+  <div class="install-toast-text"><strong>Install AarogyaBot</strong><span>Works offline · Faster access</span></div>
   <div class="install-toast-btns">
     <button class="it-install" onclick="installApp()">Install</button>
     <button class="it-dismiss" onclick="dismissInstallToast()">✕</button>
