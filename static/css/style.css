@@ -691,6 +691,17 @@ svg{display:block}
 .send-btn:active{transform:scale(.92)}
 .chat-disclaimer{text-align:center;font-size:.62rem;color:var(--t4);padding:6px 14px 8px;flex-shrink:0;background:var(--surf)}
 
+
+/* Remove old chat-layout grid styles when on /chat */
+.chat-layout{display:none}
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;backdrop-filter:blur(2px)}
+.drawer-overlay.show{display:block}
+.drawer-header{display:flex;align-items:center;justify-content:space-between;padding:0 0 16px;border-bottom:1px solid var(--border);margin-bottom:8px}
+.drawer-close{background:none;border:none;color:var(--t2);cursor:pointer;padding:6px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.drawer-close:hover{background:var(--surf2);color:var(--t1)}
+.drawer-section-label{font-size:.68rem;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.6px;padding:8px 0 4px}
+.dr-sos{font-weight:700}
+
 /* Chat toast */
 .chat-toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--t1);color:var(--bg);padding:9px 18px;border-radius:var(--rf);font-size:.78rem;font-weight:700;opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);z-index:999;pointer-events:none;white-space:nowrap;box-shadow:var(--s2)}
 .chat-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -713,12 +724,3 @@ svg{display:block}
   .chat-quick-row{padding:6px 10px}
 }
 
-/* Remove old chat-layout grid styles when on /chat */
-.chat-layout{display:none}
-.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;backdrop-filter:blur(2px)}
-.drawer-overlay.show{display:block}
-.drawer-header{display:flex;align-items:center;justify-content:space-between;padding:0 0 16px;border-bottom:1px solid var(--border);margin-bottom:8px}
-.drawer-close{background:none;border:none;color:var(--t2);cursor:pointer;padding:6px;border-radius:8px;display:flex;align-items:center;justify-content:center}
-.drawer-close:hover{background:var(--surf2);color:var(--t1)}
-.drawer-section-label{font-size:.68rem;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.6px;padding:8px 0 4px}
-.dr-sos{font-weight:700}
