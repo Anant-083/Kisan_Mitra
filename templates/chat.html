@@ -17,12 +17,12 @@
     <div class="sb anim-l d1">
       <div class="sb-hd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg> Language</div>
       <div class="lang-grid">
-        <button class="lpill on" onclick="setLang(this,'auto')">Auto</button>
-        <button class="lpill" onclick="setLang(this,'en')">EN</button>
-        <button class="lpill" onclick="setLang(this,'hi')">हिंदी</button>
-        <button class="lpill" onclick="setLang(this,'bn')">বাংলা</button>
-        <button class="lpill" onclick="setLang(this,'ta')">தமிழ்</button>
-        <button class="lpill" onclick="setLang(this,'te')">తెలుగు</button>
+        <button class="lpill on" id="pill_auto" onclick="setLang(this,'auto')">Auto</button>
+        <button class="lpill" id="pill_en" onclick="setLang(this,'en')">EN</button>
+        <button class="lpill" id="pill_hi" onclick="setLang(this,'hi')">हिंदी</button>
+        <button class="lpill" id="pill_bn" onclick="setLang(this,'bn')">বাংলা</button>
+        <button class="lpill" id="pill_ta" onclick="setLang(this,'ta')">தமிழ்</button>
+        <button class="lpill" id="pill_te" onclick="setLang(this,'te')">తెలుగు</button>
       </div>
     </div>
     <div class="sb anim-l d2">
@@ -45,9 +45,9 @@
       <div class="sb-hd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Actions</div>
       <div class="act-list">
         <button class="act" onclick="copyChat()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy chat</button>
-        <button class="act" onclick="downloadChat()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download .txt</button>
+        <button class="act" onclick="downloadChat()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download</button>
         <button class="act" onclick="shareChat()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share</button>
-        <button class="act del" onclick="clearChat()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg> Clear chat</button>
+        <button class="act del" onclick="clearChat()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg> Clear</button>
       </div>
     </div>
     <div class="sb tip-sb anim-l d5">
@@ -80,7 +80,7 @@
           <div class="m-bub">
             <strong>Namaste! 🙏</strong> I'm <strong>AarogyaBot</strong> — your free AI health assistant.<br><br>
             🎤 <strong>Tap the mic</strong> and speak your symptoms, or type below.<br>
-            🌐 I understand <strong>Hindi, Bengali, Tamil, Telugu, Marathi and English</strong> automatically.
+            🌐 I reply in <strong>your selected language</strong> automatically.
             <div class="m-foot"><span class="m-time">Just now</span></div>
           </div>
         </div>
@@ -92,20 +92,24 @@
       </div>
 
       <div class="quick-row">
-        <span class="qc" onclick="qs('I have fever and headache since 2 days')">Fever</span>
-        <span class="qc" onclick="qs('stomach pain and vomiting')">Stomach</span>
-        <span class="qc" onclick="qs('dry cough and sore throat')">Cough</span>
-        <span class="qc" onclick="qs('chest pain and breathlessness')">Chest</span>
-        <span class="qc" onclick="qs('skin rash and itching body')">Rash</span>
-        <span class="qc" onclick="qs('body weakness and fatigue')">Fatigue</span>
-        <span class="qc" onclick="qs('back pain since 3 days')">Back</span>
-        <span class="qc" onclick="qs('high blood pressure headache')">BP</span>
+        <span class="qc" onclick="qs('I have fever and headache since 2 days')">🌡️ Fever</span>
+        <span class="qc" onclick="qs('stomach pain and vomiting')">🤢 Stomach</span>
+        <span class="qc" onclick="qs('dry cough and sore throat')">😷 Cough</span>
+        <span class="qc" onclick="qs('chest pain and breathlessness')">❤️ Chest</span>
+        <span class="qc" onclick="qs('skin rash and itching body')">🩹 Rash</span>
+        <span class="qc" onclick="qs('body weakness and fatigue')">😴 Fatigue</span>
+        <span class="qc" onclick="qs('back pain since 3 days')">🦴 Back</span>
+        <span class="qc" onclick="qs('high blood pressure headache')">💊 BP</span>
       </div>
 
       <div class="chat-input-bar">
-        <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Speak"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4m-4 0h8"/></svg></button>
+        <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Speak">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4m-4 0h8"/></svg>
+        </button>
         <textarea class="chat-ta" id="msgInput" rows="1" placeholder="Type symptoms… / लक्षण लिखें… / উপসর্গ লিখুন…"></textarea>
-        <button class="send-btn" onclick="sendMsg()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+        <button class="send-btn" onclick="sendMsg()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
       </div>
 
       <div class="voice-bar" id="voiceBar" style="display:none">
@@ -139,7 +143,7 @@
         <div class="sym" onclick="qs('blood pressure high')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>High BP</div>
         <div class="sym" onclick="qs('diabetes sugar level high')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69s-5 5.5-5 9.69a5 5 0 0010 0c0-4.19-5-9.69-5-9.69z"/></svg>Sugar</div>
         <div class="sym" onclick="qs('anxiety stress panic')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 15s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>Anxiety</div>
-        <div class="sym" onclick="qs('cold and runny nose')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2"/></svg>Cold</div>
+        <div class="sym" onclick="qs('cold and runny nose')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1114 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2"/></svg>Cold</div>
         <div class="sym" onclick="qs('urinary burning pain')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69s-5 5.5-5 9.69a5 5 0 0010 0c0-4.19-5-9.69-5-9.69z"/></svg>UTI</div>
       </div>
     </div>
@@ -154,23 +158,62 @@
   </aside>
 </div>
 
-<button class="float-mic" id="floatMic" onclick="toggleVoice()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4m-4 0h8"/></svg></button>
+<button class="float-mic" id="floatMic" onclick="toggleVoice()">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4m-4 0h8"/></svg>
+</button>
 {% endblock %}
 {% block scripts %}
 <script>
-let hist=[],lang='auto',sev='mild',recog=null,listening=false;
+let hist=[],sev='mild',recog=null,listening=false;
+// KEY FIX: lang always syncs with nav-selected language
+let lang = 'auto';
+
 const TIPS=["Drink 8 glasses of water daily.","Wash hands 20 seconds before eating.","Sleep 7–8 hours for strong immunity.","Eat 5 coloured vegetables daily.","Walk 30 minutes for heart health.","Never skip breakfast.","Check BP regularly after age 30.","Avoid self-medication always.","Deep breathing reduces stress.","Honey soothes sore throat naturally."];
-const LMAP={auto:'Auto',en:'English',hi:'Hindi',bn:'Bengali',ta:'Tamil',te:'Telugu'};
+const LMAP={auto:'Auto',en:'EN',hi:'HI',bn:'BN',ta:'TA',te:'TE',mr:'MR',gu:'GU',kn:'KN',ml:'ML',pa:'PA',or:'OR',as:'AS',ur:'UR',ne:'NE',sa:'SA',kok:'KOK',doi:'DOI',mni:'MNI',sat:'SAT',mai:'MAI',bho:'BHO',ks:'KS',sd:'SD'};
 const FOLLOW={
   en:['What medicine can I take?','Is this serious?','When to see a doctor?','What food to avoid?','Any home remedy?'],
-  hi:['कौन सी दवाई लूं?','क्या यह गंभीर है?','डॉक्टर कब दिखाएं?','क्या नहीं खाएं?'],
-  bn:['কোন ওষুধ খাব?','এটা কি গুরুতর?','কখন ডাক্তার দেখাব?'],
-  ta:['என்ன மருந்து எடுக்கலாம்?','இது தீவிரமா?'],
-  te:['ఏ మందు తీసుకోవచ్చు?','ఇది తీవ్రమా?'],
+  hi:['कौन सी दवाई लूं?','क्या यह गंभीर है?','डॉक्टर कब दिखाएं?','क्या नहीं खाएं?','घरेलू उपाय?'],
+  bn:['কোন ওষুধ খাব?','এটা কি গুরুতর?','কখন ডাক্তার দেখাব?','কী খাব না?'],
+  ta:['என்ன மருந்து எடுக்கலாம்?','இது தீவிரமா?','எப்போது டாக்டரை பார்க்கணும்?'],
+  te:['ఏ మందు తీసుకోవచ్చు?','ఇది తీవ్రమా?','డాక్టర్ ఎప్పుడు చూపించాలి?'],
+  mr:['कोणती औषधे घ्यावी?','हे गंभीर आहे का?','डॉक्टरकडे कधी जावे?'],
 };
-window.addEventListener('load',()=>{ rotateTip();setInterval(rotateTip,10000); setupSpeech();loadHist(); });
-function rotateTip(){const el=document.getElementById('tipText');if(!el)return;el.style.opacity='0';setTimeout(()=>{el.textContent=TIPS[Math.floor(Math.random()*TIPS.length)];el.style.opacity='1';},380);}
-function setLang(btn,l){document.querySelectorAll('.lpill').forEach(b=>b.classList.remove('on'));btn.classList.add('on');lang=l;document.getElementById('langTag').textContent=LMAP[l]||l;}
+
+// This function is called from main.js when nav language changes
+window.syncChatLang = function(newLang){
+  lang = newLang;
+  document.getElementById('langTag').textContent = LMAP[newLang]||newLang.toUpperCase();
+  // Update the pill UI
+  document.querySelectorAll('.lpill').forEach(b=>b.classList.remove('on'));
+  const pill = document.getElementById('pill_'+newLang);
+  if(pill) pill.classList.add('on');
+  else document.getElementById('pill_auto')?.classList.add('on');
+};
+
+window.addEventListener('load',()=>{
+  rotateTip();
+  setInterval(rotateTip,10000);
+  setupSpeech();
+  loadHist();
+  // Sync with currently selected nav language on load
+  if(typeof currentLang!=='undefined' && currentLang !== 'en'){
+    lang = currentLang;
+    document.getElementById('langTag').textContent = LMAP[currentLang]||currentLang.toUpperCase();
+    const pill = document.getElementById('pill_'+currentLang);
+    if(pill){document.querySelectorAll('.lpill').forEach(b=>b.classList.remove('on'));pill.classList.add('on');}
+  }
+});
+
+function rotateTip(){
+  const el=document.getElementById('tipText');if(!el)return;
+  el.style.opacity='0';
+  setTimeout(()=>{el.textContent=TIPS[Math.floor(Math.random()*TIPS.length)];el.style.opacity='1';},380);
+}
+function setLang(btn,l){
+  document.querySelectorAll('.lpill').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');lang=l;
+  document.getElementById('langTag').textContent=LMAP[l]||l;
+}
 function setSev(btn,s){
   document.querySelectorAll('.sv').forEach(b=>b.classList.remove('on'));btn.classList.add('on');sev=s;
   const t=document.getElementById('sevTag');
@@ -181,17 +224,19 @@ async function sendMsg(){
   const inp=document.getElementById('msgInput');const txt=inp.value.trim();if(!txt)return;
   appendMsg(txt,'usr');inp.value='';inp.style.height='auto';
   hideSug();showTyping();saveHist(txt);
+  // Always use the current language — nav lang takes priority, then pill lang
+  const effectiveLang = lang !== 'auto' ? lang : (typeof currentLang!=='undefined' ? currentLang : undefined);
   try{
     const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({message:`[Severity:${sev}] ${txt}`,history:hist,lang:lang!=='auto'?lang:undefined})});
+      body:JSON.stringify({message:`[Severity:${sev}] ${txt}`,history:hist,lang:effectiveLang})});
     const d=await r.json();removeTyping();appendMsg(d.reply,'bot',d.lang);
     hist.push({role:'user',content:txt});hist.push({role:'assistant',content:d.reply});
     if(lang==='auto')document.getElementById('langTag').textContent=LMAP[d.lang]||d.lang;
     if(document.getElementById('autoVoice').checked)speak(d.reply,d.lang);
     if(document.getElementById('showSug').checked)showSug(d.lang);
-  }catch(e){removeTyping();appendMsg('Connection error. Please try again.','bot')}
+  }catch(e){removeTyping();appendMsg('Connection error. Please try again.','bot');}
 }
-function qs(t){document.getElementById('msgInput').value=t;sendMsg()}
+function qs(t){document.getElementById('msgInput').value=t;sendMsg();}
 function appendMsg(text,role,lang){
   const body=document.getElementById('chatBody');const div=document.createElement('div');div.className=`msg ${role}`;
   const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
@@ -200,15 +245,10 @@ function appendMsg(text,role,lang){
   let ttsBtn='';
   if(role==='bot'){
     const msgId='m'+Date.now()+Math.floor(Math.random()*1000);
-    ttsBtn=`<div class="tts-controls-msg">
-      <button class="tts-b" id="${msgId}" onclick="speak('${encodeURIComponent(text)}','${lang||'en'}',1,document.getElementById('${msgId}'))" title="Play">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/></svg>
-      </button>
-    </div>`;
+    ttsBtn=`<div class="tts-controls-msg"><button class="tts-b" id="${msgId}" onclick="speak('${encodeURIComponent(text)}','${lang||'en'}',1,document.getElementById('${msgId}'))" title="Play"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/></svg></button></div>`;
   }
-  const bodyHtml = role==='bot' ? mdToHtml(text) : text.replace(/\n/g,'<br>');
-  div.innerHTML=`<div class="m-av">${role==='bot'?botIcon:userIcon}</div>
-    <div class="m-bub">${bodyHtml}<div class="m-foot"><span class="m-time">${now}</span>${ttsBtn}</div></div>`;
+  const bodyHtml=role==='bot'?mdToHtml(text):text.replace(/\n/g,'<br>');
+  div.innerHTML=`<div class="m-av">${role==='bot'?botIcon:userIcon}</div><div class="m-bub">${bodyHtml}<div class="m-foot"><span class="m-time">${now}</span>${ttsBtn}</div></div>`;
   body.appendChild(div);body.scrollTop=body.scrollHeight;
 }
 function showTyping(){
@@ -216,35 +256,36 @@ function showTyping(){
   div.innerHTML=`<div class="m-av"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/></svg></div><div class="typing-bub"><span class="td"></span><span class="td"></span><span class="td"></span><span class="typing-label">Analyzing…</span></div>`;
   body.appendChild(div);body.scrollTop=body.scrollHeight;
 }
-function removeTyping(){const t=document.getElementById('typRow');if(t)t.remove()}
+function removeTyping(){const t=document.getElementById('typRow');if(t)t.remove();}
 function showSug(l){
   const opts=FOLLOW[l]||FOLLOW.en;const pick=opts.sort(()=>Math.random()-.5).slice(0,3);
   document.getElementById('sugChips').innerHTML=pick.map(s=>`<span class="sch" onclick="qs('${s.replace(/'/g,"\\'")}')">${s}</span>`).join('');
   document.getElementById('sugRow').style.display='flex';
 }
-function hideSug(){document.getElementById('sugRow').style.display='none'}
+function hideSug(){document.getElementById('sugRow').style.display='none';}
 function setupSpeech(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
   recog=new SR();recog.continuous=false;recog.interimResults=true;
   recog.onresult=e=>{
     const t=Array.from(e.results).map(r=>r[0].transcript).join('');
     document.getElementById('msgInput').value=t;
-    if(e.results[0].isFinal){stopVoice();if(document.getElementById('autoSend').checked)setTimeout(sendMsg,300)}
+    if(e.results[0].isFinal){stopVoice();if(document.getElementById('autoSend').checked)setTimeout(sendMsg,300);}
   };
   recog.onerror=()=>stopVoice();recog.onend=()=>stopVoice();
 }
 function toggleVoice(){
-  if(listening){stopVoice();return}
-  if(!recog){toast('Voice needs Chrome browser');return}
+  if(listening){stopVoice();return;}
+  if(!recog){toast('Voice needs Chrome browser');return;}
   listening=true;
-  recog.lang={auto:'hi-IN',en:'en-IN',hi:'hi-IN',bn:'bn-IN',ta:'ta-IN',te:'te-IN'}[lang]||'hi-IN';
-  try{recog.start()}catch(e){stopVoice();return}
+  const speechLang=typeof SPEECH_LANGS!=='undefined'?(SPEECH_LANGS[lang]||SPEECH_LANGS[currentLang]||'hi-IN'):'hi-IN';
+  recog.lang=speechLang;
+  try{recog.start();}catch(e){stopVoice();return;}
   document.getElementById('voiceBar').style.display='flex';
   document.getElementById('micBtn').classList.add('on');
-  const fm=document.getElementById('floatMic');fm.classList.add('on');
+  document.getElementById('floatMic').classList.add('on');
 }
 function stopVoice(){
-  listening=false;if(recog)try{recog.stop()}catch(e){}
+  listening=false;if(recog)try{recog.stop();}catch(e){}
   document.getElementById('voiceBar').style.display='none';
   document.getElementById('micBtn').classList.remove('on');
   document.getElementById('floatMic').classList.remove('on');
@@ -254,7 +295,7 @@ function saveHist(txt){
     const f=h.filter(x=>x!==item);f.unshift(item);if(f.length>6)f.pop();
     localStorage.setItem(k,JSON.stringify(f));renderHist(f);}catch(e){}
 }
-function loadHist(){try{const h=JSON.parse(localStorage.getItem('ab_h')||'[]');if(h.length)renderHist(h)}catch(e){}}
+function loadHist(){try{const h=JSON.parse(localStorage.getItem('ab_h')||'[]');if(h.length)renderHist(h);}catch(e){}}
 function renderHist(items){
   const el=document.getElementById('histList');if(!el)return;
   el.innerHTML=items.map(t=>`<div class="hi" onclick="qs('${t.replace(/'/g,"\\'")}')">${t}</div>`).join('');
@@ -269,15 +310,15 @@ function downloadChat(){
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`aarogyabot-${Date.now()}.txt`;a.click();toast('Downloaded!');
 }
 function shareChat(){
-  if(navigator.share){navigator.share({title:'AarogyaBot',text:'Free AI health assistant for rural India!',url:location.href}).catch(()=>{})}
-  else{navigator.clipboard.writeText(location.href).then(()=>toast('Link copied!'))}
+  if(navigator.share){navigator.share({title:'AarogyaBot',text:'Free AI health assistant for rural India!',url:location.href}).catch(()=>{});}
+  else{navigator.clipboard.writeText(location.href).then(()=>toast('Link copied!'));}
 }
 function clearChat(){if(!confirm('Clear this conversation?'))return;document.getElementById('chatBody').innerHTML='';hist=[];hideSug();toast('Cleared');}
 function toast(msg){
   const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);
-  requestAnimationFrame(()=>t.classList.add('show'));setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300)},2500);
+  requestAnimationFrame(()=>t.classList.add('show'));setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},2500);
 }
-document.getElementById('msgInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg()}});
-document.getElementById('msgInput').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'});
+document.getElementById('msgInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
+document.getElementById('msgInput').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';});
 </script>
 {% endblock %}
