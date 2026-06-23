@@ -97,8 +97,8 @@ svg{display:block}
 .nav-controls{margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0;min-width:0}
 
 @media(max-width:680px){
-  .mode-lang-group{max-width:130px}
-  .mode-lang-group .lang-select{max-width:70px;font-size:.66rem;padding:6px 16px 6px 6px}
+  .mode-lang-group{max-width:160px}
+  .mode-lang-group .lang-select{max-width:100px;font-size:.66rem;padding:6px 20px 6px 6px}
 }
 .nav-sos{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--rd),var(--rd-l));color:#fff;padding:8px 15px;border-radius:var(--rf);font-size:.78rem;font-weight:800;box-shadow:0 4px 14px rgba(239,67,96,.3);transition:all .18s;flex-shrink:0}
 .nav-sos:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 8px 22px rgba(239,67,96,.45)}
