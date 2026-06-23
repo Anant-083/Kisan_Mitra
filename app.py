@@ -2,11 +2,16 @@ from flask import Flask, render_template, request, jsonify, send_file, send_from
 from groq import Groq
 from langdetect import detect
 from gtts import gTTS
-import os, io, requests, base64
+import os, io, requests, base64, time
 
 app = Flask(__name__)
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 WEATHER_KEY = os.environ.get("OPENWEATHER_KEY", "")
+
+# ── Cache-bust version: auto timestamp on every deploy ──
+@app.context_processor
+def inject_version():
+    return {'ver': int(time.time())}
 
 HOSPITALS = {
     "Andhra Pradesh": {
@@ -276,7 +281,6 @@ def api_hospitals_nearby():
     if not lat or not lon:
         return jsonify({"error": "location required"}), 400
 
-    # Comprehensive query including Indian PHC/CHC/dispensary tags
     overpass_query = f"""
     [out:json][timeout:25];
     (
@@ -315,7 +319,6 @@ def api_hospitals_nearby():
             if not elat or not elon:
                 continue
 
-            # Determine type
             op = tags.get("operator:type", "")
             ftype = tags.get("health_facility:type", "")
             name_lower = name.lower()
