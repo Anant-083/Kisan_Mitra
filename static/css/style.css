@@ -531,3 +531,44 @@ svg{display:block}
   .hosp-type-row{gap:6px}
   .htype-btn{font-size:.74rem;padding:8px 10px}
 }
+/* ============ MEDICINE TEXT BOLD FIX ============ */
+.med-text{font-size:.86rem;line-height:1.75;color:var(--t2)}
+.med-text strong{color:var(--t1);font-weight:800;font-size:.88rem}
+.med-text .md-h{color:var(--pri);font-weight:800;font-size:.9rem;margin:16px 0 6px;border-bottom:1px solid var(--border);padding-bottom:4px}
+.med-text .md-p{color:var(--t2);margin-bottom:8px;line-height:1.7}
+.med-text .md-list{margin:6px 0 14px 18px}
+.med-text .md-list li{color:var(--t2);line-height:1.65;margin-bottom:4px}
+.med-text .md-list li strong{color:var(--t1);font-weight:800}
+
+/* ============ PRESCRIPTION PAGE ============ */
+.prx-wrap{max-width:720px;margin:0 auto;padding:8px 16px 40px;display:flex;flex-direction:column;gap:18px}
+.prx-upload-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r20);padding:22px;box-shadow:var(--s1)}
+.prx-upload-area{border:2px dashed var(--border);border-radius:var(--r16);padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:12px;min-height:160px;justify-content:center}
+.prx-upload-area:hover{border-color:var(--acc-l);background:var(--acc-t)}
+.prx-upload-icon{width:72px;height:72px;background:var(--acc-t);border-radius:var(--r20);display:flex;align-items:center;justify-content:center}
+.prx-upload-text strong{display:block;font-size:.95rem;font-weight:800;color:var(--t1);margin-bottom:4px}
+.prx-upload-text span{font-size:.78rem;color:var(--t3)}
+.prx-btn-row{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap}
+.prx-btn-row .btn{flex:1;justify-content:center;min-width:100px}
+.prx-result-card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r20);padding:22px;box-shadow:var(--s2)}
+.prx-result-hd{display:flex;align-items:center;gap:11px;margin-bottom:16px;padding-bottom:13px;border-bottom:1px solid var(--border)}
+.prx-tips{background:var(--surf);border:1px solid var(--border);border-radius:var(--r20);padding:20px}
+.prx-tips-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.prx-tip{display:flex;gap:10px;align-items:flex-start;padding:11px;background:var(--surf2);border-radius:var(--r12)}
+.prx-tip span{font-size:1.4rem;flex-shrink:0;margin-top:2px}
+.prx-tip strong{display:block;font-size:.8rem;font-weight:800;color:var(--t1);margin-bottom:3px}
+.prx-tip p{font-size:.73rem;color:var(--t3);line-height:1.5;margin:0}
+
+/* ============ HOSPITAL TYPE TOGGLE ============ */
+.hosp-type-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.htype-btn{flex:1;padding:10px 14px;border-radius:var(--rf);font-size:.8rem;font-weight:700;color:var(--t3);background:var(--surf);border:1.5px solid var(--border);cursor:pointer;transition:all .18s;min-width:90px}
+.htype-btn.on{background:var(--pri-t);color:var(--pri);border-color:var(--pri)}
+.htype-btn:hover:not(.on){border-color:var(--pri);color:var(--pri)}
+.hcard-body{flex:1;min-width:0}
+
+@media(max-width:480px){
+  .prx-tips-grid{grid-template-columns:1fr}
+  .prx-btn-row .btn{min-width:unset;font-size:.78rem;padding:10px 12px}
+  .hosp-type-row{gap:5px}
+  .htype-btn{font-size:.72rem;padding:8px 8px;min-width:70px}
+}
