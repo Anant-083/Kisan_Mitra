@@ -428,4 +428,30 @@ window.addEventListener('DOMContentLoaded',()=>{
   const cpInput=document.getElementById('cpInput');
   if(cpInput)cpInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendCpMsg();}});
   setTimeout(showInstallToast,2500);
-});
+// Dynamic welcome message based on language
+const WELCOME = {
+  hi: '<strong>नमस्ते! 🙏</strong> मैं <strong>AarogyaBot</strong> हूं — ग्रामीण भारत के लिए आपका मुफ्त AI स्वास्थ्य सहायक।<br><br>🎤 माइक बटन दबाएं और अपने लक्षण बोलें।<br>💬 या नीचे टाइप करें।',
+  bn: '<strong>নমস্কার! 🙏</strong> আমি <strong>AarogyaBot</strong> — গ্রামীণ ভারতের জন্য আপনার বিনামূল্যে AI স্বাস্থ্য সহায়ক।<br><br>🎤 মাইক বোতাম চাপুন এবং আপনার লক্ষণ বলুন।<br>💬 বা নিচে টাইপ করুন।',
+  ta: '<strong>வணக்கம்! 🙏</strong> நான் <strong>AarogyaBot</strong> — கிராமப்புற இந்தியாவிற்கான உங்கள் இலவச AI சுகாதார உதவியாளர்।<br><br>🎤 மைக் பொத்தானை அழுத்தி உங்கள் அறிகுறிகளை சொல்லுங்கள்।<br>💬 அல்லது கீழே தட்டச்சு செய்யுங்கள்।',
+  te: '<strong>నమస్కారం! 🙏</strong> నేను <strong>AarogyaBot</strong> — గ్రామీణ భారతదేశం కోసం మీ ఉచిత AI ఆరోగ్య సహాయకుడు।<br><br>🎤 మైక్ బటన్ నొక్కి మీ లక్షణాలు చెప్పండి।<br>💬 లేదా క్రింద టైప్ చేయండి।',
+  mr: '<strong>नमस्कार! 🙏</strong> मी <strong>AarogyaBot</strong> — ग्रामीण भारतासाठी तुमचा मोफत AI आरोग्य सहाय्यक।<br><br>🎤 मायक्रोफोन बटण दाबा आणि लक्षणे सांगा।<br>💬 किंवा खाली टाइप करा।',
+  gu: '<strong>નમસ્તે! 🙏</strong> હું <strong>AarogyaBot</strong> — ગ્રામીણ ભારત માટે તમારો મફત AI સ્વાસ્થ્ય સહાયક।<br><br>🎤 માઇક બટન દબાવો અને તમારા લક્ષણો કહો।<br>💬 અથવા નીચે ટાઇપ કરો।',
+  kn: '<strong>ನಮಸ್ಕಾರ! 🙏</strong> ನಾನು <strong>AarogyaBot</strong> — ಗ್ರಾಮೀಣ ಭಾರತಕ್ಕಾಗಿ ನಿಮ್ಮ ಉಚಿತ AI ಆರೋಗ್ಯ ಸಹಾಯಕ।<br><br>🎤 ಮೈಕ್ ಬಟನ್ ಒತ್ತಿ ನಿಮ್ಮ ರೋಗಲಕ್ಷಣಗಳನ್ನು ಹೇಳಿ।<br>💬 ಅಥವಾ ಕೆಳಗೆ ಟೈಪ್ ಮಾಡಿ।',
+  ml: '<strong>നമസ്കാരം! 🙏</strong> ഞാൻ <strong>AarogyaBot</strong> — ഗ്രാമീണ ഇന്ത്യയ്ക്കായുള്ള നിങ്ങളുടെ സൗജന്യ AI ആരോഗ്യ സഹായി।<br><br>🎤 മൈക്ക് ബട്ടൺ അമർത്തി നിങ്ങളുടെ ലക്ഷണങ്ങൾ പറയൂ।<br>💬 അല്ലെങ്കിൽ താഴെ ടൈപ്പ് ചെയ്യൂ।',
+  pa: '<strong>ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! 🙏</strong> ਮੈਂ <strong>AarogyaBot</strong> ਹਾਂ — ਪੇਂਡੂ ਭਾਰਤ ਲਈ ਤੁਹਾਡਾ ਮੁਫ਼ਤ AI ਸਿਹਤ ਸਹਾਇਕ।<br><br>🎤 ਮਾਈਕ ਬਟਨ ਦਬਾਓ ਅਤੇ ਆਪਣੇ ਲੱਛਣ ਦੱਸੋ।<br>💬 ਜਾਂ ਹੇਠਾਂ ਟਾਈਪ ਕਰੋ।',
+  ne: '<strong>नमस्ते! 🙏</strong> म <strong>AarogyaBot</strong> हुँ — ग्रामीण भारतको लागि तपाईंको निःशुल्क AI स्वास्थ्य सहायक।<br><br>🎤 माइक बटन थिच्नुहोस् र आफ्ना लक्षणहरू भन्नुहोस्।<br>💬 वा तल टाइप गर्नुहोस्।',
+  ur: '<strong>السلام علیکم! 🙏</strong> میں <strong>AarogyaBot</strong> ہوں — دیہی ہندوستان کے لیے آپ کا مفت AI صحت معاون۔<br><br>🎤 مائیک بٹن دبائیں اور اپنی علامات بتائیں۔<br>💬 یا نیچے ٹائپ کریں۔',
+};
+function updateWelcome(l){
+  const el = document.getElementById('welcomeBubble');
+  if(el && WELCOME[l]) el.innerHTML = WELCOME[l];
+}
+if(typeof currentLang !== 'undefined' && currentLang !== 'en') updateWelcome(currentLang);
+
+// Also hook into syncChatLang so it updates on language change
+const _origSyncChatLang = window.syncChatLang;
+window.syncChatLang = function(newLang){
+  if(_origSyncChatLang) _origSyncChatLang(newLang);
+  updateWelcome(newLang);
+};
+);
