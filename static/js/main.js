@@ -1,9 +1,14 @@
 /* ── NAV / DRAWER ── */
-function toggleNav(){document.getElementById('drawer').classList.toggle('open')}
-function closeNav(){document.getElementById('drawer').classList.remove('open')}
-document.addEventListener('click',function(e){
+function toggleNav(){
   const d=document.getElementById('drawer');
-  const h=document.querySelector('.nav-ham');
+  const o=document.getElementById('drawerOverlay');
+  const open=d.classList.toggle('open');
+  o.classList.toggle('show', open);
+}
+function closeNav(){
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('show');
+}
   if(d&&h&&!d.contains(e.target)&&!h.contains(e.target))d.classList.remove('open');
 });
 
