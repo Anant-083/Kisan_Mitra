@@ -715,3 +715,10 @@ svg{display:block}
 
 /* Remove old chat-layout grid styles when on /chat */
 .chat-layout{display:none}
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;backdrop-filter:blur(2px)}
+.drawer-overlay.show{display:block}
+.drawer-header{display:flex;align-items:center;justify-content:space-between;padding:0 0 16px;border-bottom:1px solid var(--border);margin-bottom:8px}
+.drawer-close{background:none;border:none;color:var(--t2);cursor:pointer;padding:6px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.drawer-close:hover{background:var(--surf2);color:var(--t1)}
+.drawer-section-label{font-size:.68rem;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:.6px;padding:8px 0 4px}
+.dr-sos{font-weight:700}
