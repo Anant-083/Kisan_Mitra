@@ -12,8 +12,8 @@ function closeNav(){
 }
 document.addEventListener('click', function(e) {
   const d = document.getElementById('drawer');
-  const h = document.getElementById('header'); // assuming you have a header
-  if (d && h && !d.contains(e.target) && !h.contains(e.target)) {
+  const hamBtn = document.querySelector('.nav-ham');
+  if (d && d.classList.contains('open') && !d.contains(e.target) && !hamBtn.contains(e.target)) {
     d.classList.remove('open');
     document.getElementById('drawerOverlay').classList.remove('show');
   }
