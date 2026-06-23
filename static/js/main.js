@@ -31,26 +31,46 @@ function toggleTheme(){
 }
 
 /* ── MARKDOWN RENDERER ── */
+/* ── MARKDOWN RENDERER ── */
 function mdToHtml(text){
-  if(!text)return'';
-  let html=text
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/^### (.*$)/gim,'<h4 class="md-h">$1</h4>')
-    .replace(/^## (.*$)/gim,'<h3 class="md-h">$1</h3>')
-    .replace(/^# (.*$)/gim,'<h2 class="md-h">$1</h2>')
-    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g,'<em>$1</em>');
-  const lines=html.split('\n');
-  let out=[],inList=false;
-  for(let line of lines){
-    const m=line.match(/^[-•]\s+(.*)/);
-    if(m){if(!inList){out.push('<ul class="md-list">');inList=true;}out.push(`<li>${m[1]}</li>`);}
-    else{if(inList){out.push('</ul>');inList=false;}if(line.trim()!=='')out.push(`<p class="md-p">${line}</p>`);}
+  if(!text) return '';
+
+  let html = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/^### (.*$)/gim, '<h4 class="md-h">$1</h4>')
+    .replace(/^## (.*$)/gim, '<h3 class="md-h">$1</h3>')
+    .replace(/^# (.*$)/gim, '<h2 class="md-h">$1</h2>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+  const lines = html.split('\n');
+  let out = [];
+  let inList = false;
+
+  for (let line of lines) {
+    const m = line.match(/^[-•]\s+(.*)/);
+    if (m) {
+      if (!inList) {
+        out.push('<ul class="md-list">');
+        inList = true;
+      }
+      out.push(`<li>${m[1]}</li>`);
+    } else {
+      if (inList) {
+        out.push('</ul>');
+        inList = false;
+      }
+      if (line.trim() !== '') {
+        out.push(`<p class="md-p">${line}</p>`);
+      }
+    }
   }
-  if(inList)out.push('</ul>');
+  if (inList) out.push('</ul>');
+
   return out.join('');
 }
-
 function cleanTextForSpeech(text){
   return text
     .replace(/[\u{1F000}-\u{1FFFF}]/gu,'')
