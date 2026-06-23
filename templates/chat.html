@@ -1,231 +1,218 @@
 {% extends "base.html" %}
 {% block title %} · Symptom Check{% endblock %}
 {% block content %}
-<div class="pg-hdr">
-  <div class="pg-hdr-inner anim-up">
-    <div class="pg-hdr-ic ig"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-    <div><h1 data-t="pg_chat_title">Symptom Checker</h1><p data-t="pg_chat_sub">Voice or text · Auto language detection · AI-powered</p></div>
-    <div class="pg-hdr-meta">
-      <div class="pg-tag"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg> Voice On</div>
-      <div class="pg-tag"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Groq AI</div>
-    </div>
-  </div>
-</div>
 
-<div class="chat-layout">
-  <aside class="chat-left">
-    <div class="sb anim-l d1">
-      <div class="sb-hd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg> Language</div>
-      <div class="lang-grid">
+<div class="chat-app">
+  <!-- Sidebar -->
+  <aside class="chat-sidebar" id="chatSidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Language</div>
+      <div class="lang-pills">
         <button class="lpill on" id="pill_auto" onclick="setLang(this,'auto')">Auto</button>
         <button class="lpill" id="pill_en" onclick="setLang(this,'en')">EN</button>
-        <button class="lpill" id="pill_hi" onclick="setLang(this,'hi')">हिंदी</button>
-        <button class="lpill" id="pill_bn" onclick="setLang(this,'bn')">বাংলা</button>
-        <button class="lpill" id="pill_ta" onclick="setLang(this,'ta')">தமிழ்</button>
-        <button class="lpill" id="pill_te" onclick="setLang(this,'te')">తెలుగు</button>
+        <button class="lpill" id="pill_hi" onclick="setLang(this,'hi')">हिं</button>
+        <button class="lpill" id="pill_bn" onclick="setLang(this,'bn')">বাং</button>
+        <button class="lpill" id="pill_ta" onclick="setLang(this,'ta')">தமி</button>
+        <button class="lpill" id="pill_te" onclick="setLang(this,'te')">తెలు</button>
+        <button class="lpill" id="pill_mr" onclick="setLang(this,'mr')">मरा</button>
       </div>
     </div>
-    <div class="sb anim-l d2">
-      <div class="sb-hd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg> Severity</div>
-      <div class="sev-row">
-        <button class="sv sm on" onclick="setSev(this,'mild')"><span class="sv-dot"></span> Mild</button>
-        <button class="sv md" onclick="setSev(this,'moderate')"><span class="sv-dot"></span> Moderate</button>
-        <button class="sv hd" onclick="setSev(this,'severe')"><span class="sv-dot"></span> Severe</button>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Severity</div>
+      <div class="sev-pills">
+        <button class="sev-pill on" onclick="setSev(this,'mild')"><span class="sev-dot" style="background:var(--pri)"></span>Mild</button>
+        <button class="sev-pill" onclick="setSev(this,'moderate')"><span class="sev-dot" style="background:var(--am)"></span>Moderate</button>
+        <button class="sev-pill" onclick="setSev(this,'severe')"><span class="sev-dot" style="background:var(--rd)"></span>Severe</button>
       </div>
     </div>
-    <div class="sb anim-l d3">
-      <div class="sb-hd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 005 14.6a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.2.42.6.7 1.51.7H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg> Settings</div>
-      <div style="display:flex;flex-direction:column;gap:9px">
-        <label class="tog"><input type="checkbox" id="autoVoice" checked><span class="tog-track"><span class="tog-thumb"></span></span><span class="tog-lbl"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg> Speak replies</span></label>
-        <label class="tog"><input type="checkbox" id="autoSend" checked><span class="tog-track"><span class="tog-thumb"></span></span><span class="tog-lbl"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Auto-send voice</span></label>
-        <label class="tog"><input type="checkbox" id="showSug" checked><span class="tog-track"><span class="tog-thumb"></span></span><span class="tog-lbl"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/></svg> Suggestions</span></label>
-      </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Settings</div>
+      <label class="tog"><input type="checkbox" id="autoVoice" checked><span class="tog-track"><span class="tog-thumb"></span></span><span class="tog-lbl" style="font-size:.76rem">Speak replies</span></label>
+      <label class="tog" style="margin-top:8px"><input type="checkbox" id="autoSend" checked><span class="tog-track"><span class="tog-thumb"></span></span><span class="tog-lbl" style="font-size:.76rem">Auto-send voice</span></label>
     </div>
-    <div class="sb anim-l d4">
-      <div class="sb-hd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Actions</div>
-      <div class="act-list">
-        <button class="act" onclick="copyChat()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy chat</button>
-        <button class="act" onclick="downloadChat()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download</button>
-        <button class="act" onclick="shareChat()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share</button>
-        <button class="act del" onclick="clearChat()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg> Clear</button>
-      </div>
-    </div>
-    <div class="sb tip-sb anim-l d5">
-      <div class="sb-hd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/></svg> Health Tip</div>
-      <div class="tip-body" id="tipText">Drink 8 glasses of water daily.</div>
-    </div>
-    <div class="sb hist-sb anim-l d6">
-      <div class="sb-hd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Recent</div>
-      <div class="hist-list" id="histList"><div style="font-size:.74rem;color:var(--t4)">No history yet</div></div>
-    </div>
-  </aside>
-
-  <div class="chat-main anim-up">
-    <div class="chat-shell">
-      <div class="chat-bar">
-        <div class="chat-av"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg><span class="odot"></span></div>
-        <div><div class="cb-name">AarogyaBot</div><div class="cb-sub">● Online · Groq AI · Free</div></div>
-        <div class="cb-right">
-          <button id="globalTtsStop" class="tts-stop-b" onclick="stopSpeak()" title="Stop speaking">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
-          </button>
-          <div class="lang-tag" id="langTag">Auto</div>
-          <div class="sev-tag" id="sevTag">Mild</div>
-        </div>
-      </div>
-
-      <div class="chat-body" id="chatBody">
-        <div class="msg bot">
-          <div class="m-av"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg></div>
-          <div class="m-bub">
-            <strong>Namaste! 🙏</strong> I'm <strong>AarogyaBot</strong> — your free AI health assistant.<br><br>
-            🎤 <strong>Tap the mic</strong> and speak your symptoms, or type below.<br>
-            🌐 I reply in <strong>your selected language</strong> automatically.
-            <div class="m-foot"><span class="m-time">Just now</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="sug-row" id="sugRow" style="display:none">
-        <span class="sug-lbl">Ask:</span>
-        <div class="sug-chips" id="sugChips"></div>
-      </div>
-
-      <div class="quick-row">
-        <span class="qc" onclick="qs('I have fever and headache since 2 days')">🌡️ Fever</span>
-        <span class="qc" onclick="qs('stomach pain and vomiting')">🤢 Stomach</span>
-        <span class="qc" onclick="qs('dry cough and sore throat')">😷 Cough</span>
-        <span class="qc" onclick="qs('chest pain and breathlessness')">❤️ Chest</span>
-        <span class="qc" onclick="qs('skin rash and itching body')">🩹 Rash</span>
-        <span class="qc" onclick="qs('body weakness and fatigue')">😴 Fatigue</span>
-        <span class="qc" onclick="qs('back pain since 3 days')">🦴 Back</span>
-        <span class="qc" onclick="qs('high blood pressure headache')">💊 BP</span>
-      </div>
-
-      <div class="chat-input-bar">
-        <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Speak">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4m-4 0h8"/></svg>
-        </button>
-        <textarea class="chat-ta" id="msgInput" rows="1" placeholder="Type symptoms… / लक्षण लिखें… / উপসর্গ লিখুন…"></textarea>
-        <button class="send-btn" onclick="sendMsg()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
-      </div>
-
-      <div class="voice-bar" id="voiceBar" style="display:none">
-        <div class="vanim"><span class="vb"></span><span class="vb"></span><span class="vb"></span><span class="vb"></span><span class="vb"></span></div>
-        <span id="voiceSt">Listening… speak your symptoms</span>
-        <button onclick="stopVoice()">✕ Stop</button>
-      </div>
-    </div>
-  </div>
-
-  <aside class="chat-right">
-    <div class="sb anim-r d1">
-      <div class="sb-hd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> Body Area</div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Body Area</div>
       <div class="body-grid">
-        <div class="bp" onclick="qs('head pain and dizziness')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9h.01M15 9h.01M8 14a4 4 0 008 0"/></svg>Head</div>
-        <div class="bp" onclick="qs('chest pain palpitations')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Chest</div>
-        <div class="bp" onclick="qs('stomach pain digestion')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>Stomach</div>
-        <div class="bp" onclick="qs('throat pain swallowing')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V5a3 3 0 016 0v4M6 9a3 3 0 003 3M6 9H4a2 2 0 00-2 2v2a2 2 0 002 2h2"/></svg>Throat</div>
-        <div class="bp" onclick="qs('knee and leg joint pain')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v8l-3 10h4l2-7 2 7h4l-3-10V3"/></svg>Legs</div>
-        <div class="bp" onclick="qs('skin rash itching')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11.5a6.5 6.5 0 01-13 0c0-4 3-7 6.5-11 3.5 4 6.5 7 6.5 11z"/></svg>Skin</div>
-        <div class="bp" onclick="qs('eye redness itching')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Eyes</div>
-        <div class="bp" onclick="qs('ear pain blocked')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1112 0c0 4-2 5-2 8a3 3 0 01-6 0"/><path d="M10 12a2 2 0 104 0"/></svg>Ears</div>
+        <div class="bp" onclick="qs('head pain and dizziness')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/></svg>Head</div>
+        <div class="bp" onclick="qs('chest pain palpitations')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l8.84 8.84 8.84-8.84a5.5 5.5 0 000-7.78z"/></svg>Chest</div>
+        <div class="bp" onclick="qs('stomach pain digestion')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>Stomach</div>
+        <div class="bp" onclick="qs('throat pain swallowing')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 00-7 7v2h14V9a7 7 0 00-7-7z"/></svg>Throat</div>
+        <div class="bp" onclick="qs('knee and leg joint pain')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v8l-3 10h12l-3-10V3"/></svg>Legs</div>
+        <div class="bp" onclick="qs('skin rash itching')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11.5a6.5 6.5 0 01-13 0c0-4 3-7 6.5-11 3.5 4 6.5 7 6.5 11z"/></svg>Skin</div>
+        <div class="bp" onclick="qs('eye redness itching')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Eyes</div>
+        <div class="bp" onclick="qs('ear pain blocked')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1112 0c0 4-2 5-2 8a3 3 0 01-6 0"/></svg>Ears</div>
       </div>
     </div>
-    <div class="sb anim-r d2">
-      <div class="sb-hd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Common</div>
-      <div class="sym-list">
-        <div class="sym" onclick="qs('high fever 103F')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg>High Fever</div>
-        <div class="sym" onclick="qs('severe headache nausea')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9h.01M15 9h.01"/></svg>Headache</div>
-        <div class="sym" onclick="qs('loose motion dehydration')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69s-5 5.5-5 9.69a5 5 0 0010 0c0-4.19-5-9.69-5-9.69z"/></svg>Diarrhoea</div>
-        <div class="sym" onclick="qs('blood pressure high')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>High BP</div>
-        <div class="sym" onclick="qs('diabetes sugar level high')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69s-5 5.5-5 9.69a5 5 0 0010 0c0-4.19-5-9.69-5-9.69z"/></svg>Sugar</div>
-        <div class="sym" onclick="qs('anxiety stress panic')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 15s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>Anxiety</div>
-        <div class="sym" onclick="qs('cold and runny nose')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1114 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2"/></svg>Cold</div>
-        <div class="sym" onclick="qs('urinary burning pain')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69s-5 5.5-5 9.69a5 5 0 0010 0c0-4.19-5-9.69-5-9.69z"/></svg>UTI</div>
-      </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Actions</div>
+      <button class="sidebar-action" onclick="copyChat()">Copy chat</button>
+      <button class="sidebar-action" onclick="downloadChat()">Download</button>
+      <button class="sidebar-action" onclick="shareChat()">Share</button>
+      <button class="sidebar-action danger" onclick="clearChat()">Clear chat</button>
     </div>
-    <div class="sb sos-panel anim-r d3">
-      <div class="sb-hd" style="color:var(--rd)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/></svg> Quick SOS</div>
-      <div class="sos-links">
-        <a href="tel:108" class="sos-link" style="background:var(--rd)">108 — Ambulance</a>
-        <a href="tel:112" class="sos-link" style="background:#ea580c">112 — Emergency</a>
-        <a href="tel:104" class="sos-link" style="background:var(--pri)">104 — Health Line</a>
-      </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">SOS</div>
+      <a href="tel:108" class="sos-link" style="background:var(--rd)">108 — Ambulance</a>
+      <a href="tel:112" class="sos-link" style="background:#ea580c;margin-top:6px">112 — Emergency</a>
+      <a href="tel:104" class="sos-link" style="background:var(--pri-d);margin-top:6px">104 — Health Line</a>
     </div>
   </aside>
+
+  <!-- Main chat area -->
+  <div class="chat-main-panel">
+    <!-- Chat header -->
+    <div class="chat-header">
+      <button class="chat-sidebar-toggle" onclick="toggleSidebar()" title="Toggle panel">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="chat-header-av">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>
+        <span class="chat-header-odot"></span>
+      </div>
+      <div class="chat-header-info">
+        <div class="chat-header-name">AarogyaBot</div>
+        <div class="chat-header-sub">
+          <span class="chat-status-dot"></span>
+          Online · Groq AI · Free
+        </div>
+      </div>
+      <div class="chat-header-right">
+        <button id="globalTtsStop" class="tts-stop-b" onclick="stopSpeak()" title="Stop speaking">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
+        </button>
+        <div class="chat-badges">
+          <span class="chat-badge-lang" id="langTag">Auto</span>
+          <span class="chat-badge-sev" id="sevTag">Mild</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-messages" id="chatBody">
+      <div class="chat-day-divider">Today</div>
+      <div class="msg bot">
+        <div class="msg-av bot-av">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>
+        </div>
+        <div class="msg-content">
+          <div class="msg-bubble">
+            <strong>Namaste! 🙏</strong> I'm <strong>AarogyaBot</strong> — your free AI health assistant for rural India.<br><br>
+            🎤 Tap the <strong>mic button</strong> and speak your symptoms in your language.<br>
+            💬 Or type below — I respond in your selected language.
+          </div>
+          <div class="msg-meta"><span class="msg-time">Just now</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Suggestions row -->
+    <div class="chat-suggestions" id="sugRow" style="display:none">
+      <div class="sug-chips" id="sugChips"></div>
+    </div>
+
+    <!-- Quick symptoms -->
+    <div class="chat-quick-row">
+      <span class="qc" onclick="qs('I have fever and headache since 2 days')">🌡️ Fever</span>
+      <span class="qc" onclick="qs('stomach pain and vomiting')">🤢 Stomach</span>
+      <span class="qc" onclick="qs('dry cough and sore throat')">😷 Cough</span>
+      <span class="qc" onclick="qs('chest pain and breathlessness')">❤️ Chest</span>
+      <span class="qc" onclick="qs('skin rash and itching body')">🩹 Rash</span>
+      <span class="qc" onclick="qs('body weakness and fatigue')">😴 Fatigue</span>
+      <span class="qc" onclick="qs('back pain since 3 days')">🦴 Back</span>
+      <span class="qc" onclick="qs('high blood pressure headache')">💊 BP</span>
+    </div>
+
+    <!-- Voice bar -->
+    <div class="voice-bar" id="voiceBar" style="display:none">
+      <div class="vanim"><span class="vb"></span><span class="vb"></span><span class="vb"></span><span class="vb"></span><span class="vb"></span></div>
+      <span id="voiceSt">Listening… speak your symptoms</span>
+      <button onclick="stopVoice()">✕ Stop</button>
+    </div>
+
+    <!-- Input bar -->
+    <div class="chat-input-area">
+      <button class="mic-btn" id="micBtn" onclick="toggleVoice()" title="Speak">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4m-4 0h8"/></svg>
+      </button>
+      <div class="chat-input-wrap">
+        <textarea class="chat-ta" id="msgInput" rows="1" placeholder="Type symptoms… / लक्षण लिखें… / উপসর্গ লিখুন…"></textarea>
+      </div>
+      <button class="send-btn" onclick="sendMsg()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+
+    <div class="chat-disclaimer">AarogyaBot provides general guidance only — not a medical diagnosis. Always consult a doctor for serious symptoms.</div>
+  </div>
 </div>
 
 <button class="float-mic" id="floatMic" onclick="toggleVoice()">
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2M12 19v4m-4 0h8"/></svg>
 </button>
+
+<div class="chat-toast" id="chatToast"></div>
 {% endblock %}
 {% block scripts %}
 <script>
 let hist=[],sev='mild',recog=null,listening=false;
-// KEY FIX: lang always syncs with nav-selected language
-let lang = 'auto';
+let lang='auto';
+let sidebarOpen=window.innerWidth>860;
 
-const TIPS=["Drink 8 glasses of water daily.","Wash hands 20 seconds before eating.","Sleep 7–8 hours for strong immunity.","Eat 5 coloured vegetables daily.","Walk 30 minutes for heart health.","Never skip breakfast.","Check BP regularly after age 30.","Avoid self-medication always.","Deep breathing reduces stress.","Honey soothes sore throat naturally."];
+const TIPS=["Drink 8 glasses of water daily.","Wash hands before eating.","Sleep 7–8 hours for immunity.","Eat 5 coloured vegetables daily.","Walk 30 minutes for heart health.","Check BP regularly after age 30.","Avoid self-medication.","Deep breathing reduces stress."];
 const LMAP={auto:'Auto',en:'EN',hi:'HI',bn:'BN',ta:'TA',te:'TE',mr:'MR',gu:'GU',kn:'KN',ml:'ML',pa:'PA',or:'OR',as:'AS',ur:'UR',ne:'NE',sa:'SA',kok:'KOK',doi:'DOI',mni:'MNI',sat:'SAT',mai:'MAI',bho:'BHO',ks:'KS',sd:'SD'};
 const FOLLOW={
-  en:['What medicine can I take?','Is this serious?','When to see a doctor?','What food to avoid?','Any home remedy?'],
-  hi:['कौन सी दवाई लूं?','क्या यह गंभीर है?','डॉक्टर कब दिखाएं?','क्या नहीं खाएं?','घरेलू उपाय?'],
-  bn:['কোন ওষুধ খাব?','এটা কি গুরুতর?','কখন ডাক্তার দেখাব?','কী খাব না?'],
-  ta:['என்ன மருந்து எடுக்கலாம்?','இது தீவிரமா?','எப்போது டாக்டரை பார்க்கணும்?'],
-  te:['ఏ మందు తీసుకోవచ్చు?','ఇది తీవ్రమా?','డాక్టర్ ఎప్పుడు చూపించాలి?'],
-  mr:['कोणती औषधे घ्यावी?','हे गंभीर आहे का?','डॉक्टरकडे कधी जावे?'],
+  en:['What medicine can I take?','Is this serious?','When to see a doctor?','Any home remedy?'],
+  hi:['कौन सी दवाई लूं?','क्या यह गंभीर है?','डॉक्टर कब दिखाएं?','घरेलू उपाय?'],
+  bn:['কোন ওষুধ খাব?','এটা কি গুরুতর?','ডাক্তার কখন?'],
+  ta:['என்ன மருந்து?','இது தீவிரமா?'],
+  te:['ఏ మందు?','ఇది తీవ్రమా?'],
+  mr:['कोणती औषधे?','गंभीर आहे का?'],
 };
 
-// This function is called from main.js when nav language changes
-window.syncChatLang = function(newLang){
-  lang = newLang;
-  document.getElementById('langTag').textContent = LMAP[newLang]||newLang.toUpperCase();
-  // Update the pill UI
+function toggleSidebar(){
+  sidebarOpen=!sidebarOpen;
+  document.getElementById('chatSidebar').classList.toggle('open',sidebarOpen);
+}
+
+window.syncChatLang=function(newLang){
+  lang=newLang;
+  document.getElementById('langTag').textContent=LMAP[newLang]||newLang.toUpperCase();
   document.querySelectorAll('.lpill').forEach(b=>b.classList.remove('on'));
-  const pill = document.getElementById('pill_'+newLang);
-  if(pill) pill.classList.add('on');
+  const pill=document.getElementById('pill_'+newLang);
+  if(pill)pill.classList.add('on');
   else document.getElementById('pill_auto')?.classList.add('on');
 };
 
 window.addEventListener('load',()=>{
-  rotateTip();
-  setInterval(rotateTip,10000);
-  setupSpeech();
-  loadHist();
-  // Sync with currently selected nav language on load
-  if(typeof currentLang!=='undefined' && currentLang !== 'en'){
-    lang = currentLang;
-    document.getElementById('langTag').textContent = LMAP[currentLang]||currentLang.toUpperCase();
-    const pill = document.getElementById('pill_'+currentLang);
+  if(window.innerWidth>860){
+    document.getElementById('chatSidebar').classList.add('open');
+  }
+  setupSpeech();loadHist();
+  if(typeof currentLang!=='undefined'&&currentLang!=='en'){
+    lang=currentLang;
+    document.getElementById('langTag').textContent=LMAP[currentLang]||currentLang.toUpperCase();
+    const pill=document.getElementById('pill_'+currentLang);
     if(pill){document.querySelectorAll('.lpill').forEach(b=>b.classList.remove('on'));pill.classList.add('on');}
   }
 });
 
-function rotateTip(){
-  const el=document.getElementById('tipText');if(!el)return;
-  el.style.opacity='0';
-  setTimeout(()=>{el.textContent=TIPS[Math.floor(Math.random()*TIPS.length)];el.style.opacity='1';},380);
-}
 function setLang(btn,l){
   document.querySelectorAll('.lpill').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');lang=l;
   document.getElementById('langTag').textContent=LMAP[l]||l;
 }
 function setSev(btn,s){
-  document.querySelectorAll('.sv').forEach(b=>b.classList.remove('on'));btn.classList.add('on');sev=s;
+  document.querySelectorAll('.sev-pill').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');sev=s;
   const t=document.getElementById('sevTag');
-  const cfg={mild:['Mild','var(--pri-t)','var(--pri)'],moderate:['Moderate','var(--am-t)','var(--am)'],severe:['Severe','var(--rd-t)','var(--rd)']};
-  t.textContent=cfg[s][0];t.style.background=cfg[s][1];t.style.color=cfg[s][2];
+  const cfg={mild:['Mild','var(--pri)'],moderate:['Moderate','var(--am)'],severe:['Severe','var(--rd)']};
+  t.textContent=cfg[s][0];t.style.background=cfg[s][1]+'20';t.style.color=cfg[s][1];
 }
 async function sendMsg(){
   const inp=document.getElementById('msgInput');const txt=inp.value.trim();if(!txt)return;
   appendMsg(txt,'usr');inp.value='';inp.style.height='auto';
   hideSug();showTyping();saveHist(txt);
-  // Always use the current language — nav lang takes priority, then pill lang
-  const effectiveLang = lang !== 'auto' ? lang : (typeof currentLang!=='undefined' ? currentLang : undefined);
+  const effectiveLang=lang!=='auto'?lang:(typeof currentLang!=='undefined'?currentLang:undefined);
   try{
     const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({message:`[Severity:${sev}] ${txt}`,history:hist,lang:effectiveLang})});
@@ -233,27 +220,31 @@ async function sendMsg(){
     hist.push({role:'user',content:txt});hist.push({role:'assistant',content:d.reply});
     if(lang==='auto')document.getElementById('langTag').textContent=LMAP[d.lang]||d.lang;
     if(document.getElementById('autoVoice').checked)speak(d.reply,d.lang);
-    if(document.getElementById('showSug').checked)showSug(d.lang);
+    if(true)showSug(d.lang);
   }catch(e){removeTyping();appendMsg('Connection error. Please try again.','bot');}
 }
 function qs(t){document.getElementById('msgInput').value=t;sendMsg();}
-function appendMsg(text,role,lang){
-  const body=document.getElementById('chatBody');const div=document.createElement('div');div.className=`msg ${role}`;
+
+const ICON_SPEAK_SMALL='<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>';
+
+function appendMsg(text,role,msgLang){
+  const body=document.getElementById('chatBody');
+  const div=document.createElement('div');div.className=`msg ${role}`;
   const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  const botIcon='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>';
-  const userIcon='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+  const botAv=`<div class="msg-av bot-av"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg></div>`;
+  const usrAv=`<div class="msg-av usr-av"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>`;
+  const bodyHtml=role==='bot'?mdToHtml(text):text.replace(/\n/g,'<br>');
   let ttsBtn='';
   if(role==='bot'){
     const msgId='m'+Date.now()+Math.floor(Math.random()*1000);
-    ttsBtn=`<div class="tts-controls-msg"><button class="tts-b" id="${msgId}" onclick="speak('${encodeURIComponent(text)}','${lang||'en'}',1,document.getElementById('${msgId}'))" title="Play"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/></svg></button></div>`;
+    ttsBtn=`<button class="tts-b msg-tts" id="${msgId}" onclick="speak('${encodeURIComponent(text)}','${msgLang||'en'}',1,document.getElementById('${msgId}'))" title="Play">${ICON_SPEAK_SMALL}</button>`;
   }
-  const bodyHtml=role==='bot'?mdToHtml(text):text.replace(/\n/g,'<br>');
-  div.innerHTML=`<div class="m-av">${role==='bot'?botIcon:userIcon}</div><div class="m-bub">${bodyHtml}<div class="m-foot"><span class="m-time">${now}</span>${ttsBtn}</div></div>`;
+  div.innerHTML=`${role==='bot'?botAv:usrAv}<div class="msg-content"><div class="msg-bubble">${bodyHtml}</div><div class="msg-meta"><span class="msg-time">${now}</span>${ttsBtn}</div></div>`;
   body.appendChild(div);body.scrollTop=body.scrollHeight;
 }
 function showTyping(){
   const body=document.getElementById('chatBody');const div=document.createElement('div');div.className='msg bot';div.id='typRow';
-  div.innerHTML=`<div class="m-av"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/></svg></div><div class="typing-bub"><span class="td"></span><span class="td"></span><span class="td"></span><span class="typing-label">Analyzing…</span></div>`;
+  div.innerHTML=`<div class="msg-av bot-av"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/></svg></div><div class="msg-content"><div class="msg-bubble typing-bub"><span class="td"></span><span class="td"></span><span class="td"></span></div></div>`;
   body.appendChild(div);body.scrollTop=body.scrollHeight;
 }
 function removeTyping(){const t=document.getElementById('typRow');if(t)t.remove();}
@@ -293,32 +284,38 @@ function stopVoice(){
 function saveHist(txt){
   try{const k='ab_h';const h=JSON.parse(localStorage.getItem(k)||'[]');const item=txt.slice(0,40);
     const f=h.filter(x=>x!==item);f.unshift(item);if(f.length>6)f.pop();
-    localStorage.setItem(k,JSON.stringify(f));renderHist(f);}catch(e){}
+    localStorage.setItem(k,JSON.stringify(f));}catch(e){}
 }
-function loadHist(){try{const h=JSON.parse(localStorage.getItem('ab_h')||'[]');if(h.length)renderHist(h);}catch(e){}}
-function renderHist(items){
-  const el=document.getElementById('histList');if(!el)return;
-  el.innerHTML=items.map(t=>`<div class="hi" onclick="qs('${t.replace(/'/g,"\\'")}')">${t}</div>`).join('');
-}
+function loadHist(){}
 function copyChat(){
-  const msgs=[...document.querySelectorAll('.m-bub')].map(b=>{const r=b.closest('.msg').classList.contains('bot')?'AarogyaBot':'You';return `${r}: ${b.innerText.replace(/\n+/g,' ').trim()}`;}).join('\n\n');
+  const msgs=[...document.querySelectorAll('.msg-bubble:not(.typing-bub)')].map((b,i)=>{
+    const role=b.closest('.msg').classList.contains('bot')?'AarogyaBot':'You';
+    return`${role}: ${b.innerText.replace(/\n+/g,' ').trim()}`;
+  }).join('\n\n');
   navigator.clipboard.writeText(msgs).then(()=>toast('Copied!'));
 }
 function downloadChat(){
-  const msgs=[...document.querySelectorAll('.m-bub')].map(b=>{const r=b.closest('.msg').classList.contains('bot')?'AarogyaBot':'You';return `${r}: ${b.innerText.trim()}`;}).join('\n\n');
+  const msgs=[...document.querySelectorAll('.msg-bubble:not(.typing-bub)')].map(b=>{
+    const role=b.closest('.msg').classList.contains('bot')?'AarogyaBot':'You';
+    return`${role}: ${b.innerText.trim()}`;
+  }).join('\n\n');
   const blob=new Blob([`AarogyaBot Chat — ${new Date().toLocaleString()}\n${'─'.repeat(40)}\n\n${msgs}`],{type:'text/plain'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`aarogyabot-${Date.now()}.txt`;a.click();toast('Downloaded!');
 }
 function shareChat(){
-  if(navigator.share){navigator.share({title:'AarogyaBot',text:'Free AI health assistant for rural India!',url:location.href}).catch(()=>{});}
+  if(navigator.share){navigator.share({title:'AarogyaBot',url:location.href}).catch(()=>{});}
   else{navigator.clipboard.writeText(location.href).then(()=>toast('Link copied!'));}
 }
-function clearChat(){if(!confirm('Clear this conversation?'))return;document.getElementById('chatBody').innerHTML='';hist=[];hideSug();toast('Cleared');}
+function clearChat(){
+  if(!confirm('Clear this conversation?'))return;
+  document.getElementById('chatBody').innerHTML='<div class="chat-day-divider">Today</div>';
+  hist=[];hideSug();toast('Cleared');
+}
 function toast(msg){
-  const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);
-  requestAnimationFrame(()=>t.classList.add('show'));setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},2500);
+  const t=document.getElementById('chatToast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
 }
 document.getElementById('msgInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
-document.getElementById('msgInput').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';});
+document.getElementById('msgInput').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';});
 </script>
 {% endblock %}
