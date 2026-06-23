@@ -6,18 +6,6 @@
   <!-- Sidebar -->
   <aside class="chat-sidebar" id="chatSidebar">
     <div class="sidebar-section">
-      <div class="sidebar-label">Language</div>
-      <div class="lang-pills">
-        <button class="lpill on" id="pill_auto" onclick="setLang(this,'auto')">Auto</button>
-        <button class="lpill" id="pill_en" onclick="setLang(this,'en')">EN</button>
-        <button class="lpill" id="pill_hi" onclick="setLang(this,'hi')">हिं</button>
-        <button class="lpill" id="pill_bn" onclick="setLang(this,'bn')">বাং</button>
-        <button class="lpill" id="pill_ta" onclick="setLang(this,'ta')">தமி</button>
-        <button class="lpill" id="pill_te" onclick="setLang(this,'te')">తెలు</button>
-        <button class="lpill" id="pill_mr" onclick="setLang(this,'mr')">मरा</button>
-      </div>
-    </div>
-    <div class="sidebar-section">
       <div class="sidebar-label">Severity</div>
       <div class="sev-pills">
         <button class="sev-pill on" onclick="setSev(this,'mild')"><span class="sev-dot" style="background:var(--pri)"></span>Mild</button>
@@ -95,7 +83,7 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 16h.01M16 16h.01"/></svg>
         </div>
         <div class="msg-content">
-          <div class="msg-bubble">
+          <div class="msg-bubble" id="welcomeBubble">
             <strong>Namaste! 🙏</strong> I'm <strong>AarogyaBot</strong> — your free AI health assistant for rural India.<br><br>
             🎤 Tap the <strong>mic button</strong> and speak your symptoms in your language.<br>
             💬 Or type below — I respond in your selected language.
