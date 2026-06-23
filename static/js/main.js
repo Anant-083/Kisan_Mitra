@@ -13,7 +13,7 @@ function closeNav(){
 document.addEventListener('click', function(e) {
   const d = document.getElementById('drawer');
   const hamBtn = document.querySelector('.nav-ham');
-  if (d && d.classList.contains('open') && !d.contains(e.target) && !hamBtn.contains(e.target)) {
+  if (d && d.classList.contains('open') && hamBtn && !d.contains(e.target) && !hamBtn.contains(e.target)) {
     d.classList.remove('open');
     document.getElementById('drawerOverlay').classList.remove('show');
   }
