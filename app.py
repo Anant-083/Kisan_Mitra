@@ -8,19 +8,16 @@ app = Flask(__name__)
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 WEATHER_KEY = os.environ.get("OPENWEATHER_KEY", "")
 
-# ── Cache-bust version: auto timestamp on every deploy ──
 @app.context_processor
 def inject_version():
     return {'ver': int(time.time())}
 
 @app.after_request
 def add_headers(response):
-    # Never cache sw.js so new service worker always loads
     if request.path == '/sw.js':
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         response.headers['Pragma'] = 'no-cache'
         response.headers['Expires'] = '0'
-    # Never cache HTML pages
     elif request.path.endswith('.html') or request.path in ['/', '/chat', '/hospitals', '/medicines', '/emergency', '/prescription']:
         response.headers['Cache-Control'] = 'no-cache, must-revalidate'
     return response
@@ -241,23 +238,47 @@ def api_prescription():
     if not image_b64:
         return jsonify({"error": "no image provided"}), 400
     lang_name = LANG_NAMES.get(lang, "English")
-    prompt = f"""You are a medical assistant helping rural Indian patients understand their prescriptions.
-Look at this prescription image and explain it in simple {lang_name} language that a person with no medical background can understand.
+    prompt = f"""You are an expert medical assistant helping rural Indian patients understand their doctor's prescriptions.
+The image may contain a handwritten or printed Indian prescription (doctor's note / hospital slip).
 
-Please provide:
-1. List of medicines prescribed (name + simple explanation of what it treats)
-2. Dosage instructions in simple words (e.g. "1 tablet after breakfast")
-3. Important warnings or things to avoid
-4. How many days to take each medicine
-5. Any follow-up instructions mentioned
+STEP 1 — READ CAREFULLY:
+- Look for medicine names (Tab., Cap., Syp., Inj., Oint., Drops)
+- Dosage shortcuts used in India: OD=once daily, BD=twice daily, TDS=three times daily, QID=four times daily, SOS=when needed, AC=before food, PC=after food, HS=at bedtime, A.D.=as directed
+- Strength (mg, ml, mcg), duration (days, weeks), and quantity
+- If handwriting is unclear, make your best attempt and note uncertainty
 
-Use very simple, clear language. Avoid medical jargon. Be warm and helpful.
-If you cannot read parts of the prescription clearly, mention that.
-End with a reminder to follow the doctor's instructions and ask questions if unsure."""
+STEP 2 — EXPLAIN IN {lang_name.upper()}:
+Respond ENTIRELY in {lang_name} language (use correct script).
 
+Structure your response as:
+
+**1. दवाइयों की सूची / Medicines Prescribed**
+For each medicine: name → what it treats (simple explanation) → strength if visible
+
+**2. कैसे लें / How to Take**
+Convert medical shorthand to plain words:
+- OD = दिन में एक बार / once a day
+- BD = दिन में दो बार / twice a day  
+- TDS = दिन में तीन बार / three times a day
+- AC = खाने से पहले / before food
+- PC = खाने के बाद / after food
+
+**3. कितने दिन / Duration**
+How many days each medicine should be taken
+
+**4. सावधानियां / Warnings**
+Important things to avoid or watch out for
+
+**5. डॉक्टर से पूछें / Ask Your Doctor**
+Any unclear items or follow-up instructions
+
+Use very simple language a village patient can understand. Be warm and reassuring.
+If something is completely unreadable, say so honestly rather than guessing wrongly.
+End with: "Always follow your doctor's exact instructions. Show this to your pharmacist if unsure about any medicine."
+"""
     try:
         resp = client.chat.completions.create(
-           model="meta-llama/llama-4-scout-17b-16e-instruct",
+            model="meta-llama/llama-4-scout-17b-16e-instruct",
             messages=[{
                 "role": "user",
                 "content": [
@@ -265,7 +286,7 @@ End with a reminder to follow the doctor's instructions and ask questions if uns
                     {"type": "text", "text": prompt}
                 ]
             }],
-            max_tokens=800,
+            max_tokens=1000,
         )
         return jsonify({"summary": resp.choices[0].message.content, "lang": lang})
     except Exception as e:
@@ -330,7 +351,6 @@ def api_hospitals_nearby():
             elon = el.get("lon") or el.get("center", {}).get("lon")
             if not elat or not elon:
                 continue
-
             op = tags.get("operator:type", "")
             ftype = tags.get("health_facility:type", "")
             name_lower = name.lower()
@@ -349,21 +369,15 @@ def api_hospitals_nearby():
                 continue
             if hosp_type == "private" and ptype != "Private":
                 continue
-
             results.append({
                 "name": name,
                 "lat": elat, "lon": elon,
-                "address": (tags.get("addr:full") or
-                            tags.get("addr:street") or
-                            tags.get("addr:city") or ""),
-                "phone": (tags.get("phone") or
-                          tags.get("contact:phone") or
-                          tags.get("contact:mobile") or ""),
+                "address": (tags.get("addr:full") or tags.get("addr:street") or tags.get("addr:city") or ""),
+                "phone": (tags.get("phone") or tags.get("contact:phone") or tags.get("contact:mobile") or ""),
                 "emergency": tags.get("emergency") == "yes",
                 "type": ptype,
                 "facility_type": ftype or tags.get("amenity") or tags.get("healthcare") or "",
             })
-
         def dist(h):
             return (h["lat"] - lat)**2 + (h["lon"] - lon)**2
         results.sort(key=dist)
@@ -386,9 +400,9 @@ def api_medicine():
         resp = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[
-                {"role": "system", "content": f"You are a clinical pharmacist. Always answer in {name} language."},
+                {"role": "system", "content": f"You are a clinical pharmacist. Always answer in {name} language only. Use the correct script for {name}."},
                 {"role": "user", "content": prompt}
-            ], max_tokens=450)
+            ], max_tokens=500)
         return jsonify({"info": resp.choices[0].message.content})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
