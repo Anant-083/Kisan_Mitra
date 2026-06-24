@@ -29,8 +29,6 @@ function applyTheme(t){
 function toggleTheme(){
   applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
 }
-
-/* ── MARKDOWN RENDERER ── */
 /* ── MARKDOWN RENDERER ── */
 function mdToHtml(text){
   if(!text) return '';
