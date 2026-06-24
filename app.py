@@ -13,6 +13,18 @@ WEATHER_KEY = os.environ.get("OPENWEATHER_KEY", "")
 def inject_version():
     return {'ver': int(time.time())}
 
+@app.after_request
+def add_headers(response):
+    # Never cache sw.js so new service worker always loads
+    if request.path == '/sw.js':
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    # Never cache HTML pages
+    elif request.path.endswith('.html') or request.path in ['/', '/chat', '/hospitals', '/medicines', '/emergency', '/prescription']:
+        response.headers['Cache-Control'] = 'no-cache, must-revalidate'
+    return response
+
 HOSPITALS = {
     "Andhra Pradesh": {
         "Visakhapatnam": [{"name": "King George Hospital", "address": "Visakhapatnam", "phone": "0891-2565051", "type": "Government"}],
