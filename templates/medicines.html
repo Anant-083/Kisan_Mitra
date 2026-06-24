@@ -12,7 +12,9 @@
   <div class="search-card anim-up">
     <div class="sbar">
       <input type="text" id="medInput" placeholder="Enter medicine — e.g. Paracetamol, Metformin, Dolo 650…"/>
-      <button onclick="searchMed()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search</button>
+      <button onclick="searchMed()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search
+      </button>
     </div>
     <div class="chips-lbl">Common medicines</div>
     <div class="chips">
@@ -39,26 +41,50 @@
 {% block scripts %}
 <script>
 async function searchMed(){
-  const med=document.getElementById('medInput').value.trim();if(!med)return;
-  const box=document.getElementById('medResult');
-  box.innerHTML=`<div class="state-box"><div class="spinner"></div>Looking up ${med}…</div>`;
-  try{
-    const r=await fetch('/api/medicine',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({medicine:med})});
-    const d=await r.json();
-    box.innerHTML=`
-      <div class="med-card">
+  const med = document.getElementById('medInput').value.trim();
+  if(!med) return;
+  const box = document.getElementById('medResult');
+  box.innerHTML = `<div class="state-box"><div class="spinner"></div><span>Looking up ${med}…</span></div>`;
+  try {
+    const r = await fetch('/api/medicine', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({medicine: med, lang: currentLang})
+    });
+    const d = await r.json();
+    if(d.error) {
+      box.innerHTML = `<div class="state-box"><span>Error: ${d.error}</span></div>`;
+      return;
+    }
+    const medId = 'med' + Date.now();
+    box.innerHTML = `
+      <div class="med-card anim-scale">
         <div class="med-card-hd">
-          <div class="med-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20H4a2 2 0 01-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 011.66.9l.82 1.2a2 2 0 001.66.9H20a2 2 0 012 2v3"/><circle cx="18" cy="18" r="3"/></svg></div>
-          <div><h3>${med}</h3><span>AI-generated · Reference only · Not a prescription</span></div>
+          <div class="med-ic">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20H4a2 2 0 01-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 011.66.9l.82 1.2a2 2 0 001.66.9H20a2 2 0 012 2v3"/><circle cx="18" cy="18" r="3"/><path d="M18 15v6M15 18h6"/></svg>
+          </div>
+          <div style="flex:1">
+            <h3>${med}</h3>
+            <span>AI-generated · Reference only · Not a prescription</span>
+          </div>
+          <button class="tts-b" id="${medId}" onclick="speak('${encodeURIComponent(d.info)}','${currentLang}',1,document.getElementById('${medId}'))" title="Listen">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+          </button>
+          <button class="tts-stop-b" id="stop_${medId}" onclick="stopSpeak()" title="Stop">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+          </button>
         </div>
         <div class="med-text">${mdToHtml(d.info)}</div>
-        <div class="med-warn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg> Always consult a licensed pharmacist or doctor before taking any medicine. Do not self-medicate.</div>
+        <div class="med-warn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+          Always consult a licensed pharmacist or doctor before taking any medicine. Do not self-medicate.
+        </div>
       </div>`;
-  }catch(e){
-    box.innerHTML=`<div class="state-box"><span>Error fetching info. Please try again.</span></div>`;
+  } catch(e) {
+    box.innerHTML = `<div class="state-box"><span>Connection error. Please try again.</span></div>`;
   }
 }
-function qm(name){document.getElementById('medInput').value=name;searchMed()}
-document.getElementById('medInput').addEventListener('keydown',e=>{if(e.key==='Enter')searchMed()});
+function qm(name){ document.getElementById('medInput').value = name; searchMed(); }
+document.getElementById('medInput').addEventListener('keydown', e => { if(e.key==='Enter') searchMed(); });
 </script>
 {% endblock %}
