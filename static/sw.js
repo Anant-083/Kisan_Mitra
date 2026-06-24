@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aarogyabot-v10';
+const CACHE_NAME = 'aarogyabot-v11';
 const STATIC = ['/offline.html', '/static/icons/icon-192.png', '/static/icons/icon-512.png'];
 
 self.addEventListener('install', event => {
