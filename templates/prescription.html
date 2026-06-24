@@ -18,57 +18,62 @@
 </div>
 
 <div class="prx-wrap">
+  <!-- Upload Card -->
   <div class="prx-upload-card anim-up">
     <div class="prx-upload-area" id="uploadArea" onclick="document.getElementById('rxFile').click()">
       <div class="prx-upload-icon" id="uploadIcon">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--acc-l)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--acc-l)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
       </div>
       <div class="prx-upload-text" id="uploadText">
         <strong>Tap to upload prescription</strong>
         <span>Photo · PDF · Screenshot · Any image</span>
       </div>
       <canvas id="pdfCanvas" style="display:none;max-width:100%;border-radius:var(--r12);margin-top:14px;pointer-events:none"></canvas>
-      <img id="previewImg" style="display:none;max-width:100%;max-height:260px;border-radius:var(--r12);margin-top:14px;object-fit:contain;pointer-events:none"/>
+      <img id="previewImg" style="display:none;max-width:100%;max-height:240px;border-radius:var(--r12);margin-top:14px;object-fit:contain;pointer-events:none"/>
     </div>
 
-    <!-- File input (no capture — opens file picker) -->
     <input type="file" id="rxFile"
       accept="image/*,image/jpeg,image/png,image/webp,image/heic,image/bmp,image/tiff,application/pdf,.pdf"
       style="display:none" onchange="handleFile(this)"/>
-
-    <!-- Camera input (capture="environment" — opens rear camera on mobile) -->
     <input type="file" id="rxCamera"
-      accept="image/*"
-      capture="environment"
+      accept="image/*" capture="environment"
       style="display:none" onchange="handleFile(this)"/>
 
     <div class="prx-btn-row">
       <button class="btn btn-o" onclick="document.getElementById('rxFile').click()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         Choose File
       </button>
       <button class="btn btn-o" onclick="document.getElementById('rxCamera').click()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
         Camera
       </button>
       <button class="btn btn-g" id="analyzeBtn" onclick="analyzeRx()" disabled>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         Explain Prescription
       </button>
     </div>
     <div id="fileNote" style="font-size:.72rem;color:var(--t3);text-align:center;margin-top:10px;min-height:18px"></div>
   </div>
 
+  <!-- Lang indicator badge -->
+  <div class="prx-lang-badge anim-up d1" id="prxLangBadge">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+    <span id="prxLangText">Explanation will be in English</span>
+    <span class="prx-lang-change" onclick="document.querySelector('.lang-select').focus()">Change →</span>
+  </div>
+
+  <!-- Result Card -->
   <div id="rxResult" style="display:none" class="prx-result-card anim-up">
     <div class="prx-result-hd">
-      <div class="pg-hdr-ic ip" style="width:38px;height:38px">
+      <div class="pg-hdr-ic ip" style="width:40px;height:40px;flex-shrink:0">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
       </div>
-      <div>
-        <div style="font-size:.9rem;font-weight:800;color:var(--t1)">Prescription Summary</div>
+      <div style="flex:1">
+        <div style="font-size:.92rem;font-weight:800;color:var(--t1)">Prescription Summary</div>
         <div style="font-size:.72rem;color:var(--t3)" id="rxLangNote">AI explanation in simple language</div>
       </div>
-      <button id="rxTtsBtn" class="tts-b" style="margin-left:auto;width:34px;height:34px" onclick="speakRx()" title="Listen">
+      <button id="rxTtsBtn" class="tts-b" style="width:36px;height:36px" onclick="speakRx()" title="Listen">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
       </button>
       <button class="tts-stop-b" id="rxStopBtn" onclick="stopSpeak()" title="Stop">
@@ -82,13 +87,34 @@
     </div>
   </div>
 
+  <!-- Tips -->
   <div class="prx-tips anim-up d2">
     <div class="sec-ey">Tips for best results</div>
     <div class="prx-tips-grid">
-      <div class="prx-tip"><span>📸</span><div><strong>Good lighting</strong><p>Bright light, no shadows on the prescription</p></div></div>
-      <div class="prx-tip"><span>📐</span><div><strong>Flat &amp; straight</strong><p>Place flat, shoot from directly above</p></div></div>
-      <div class="prx-tip"><span>🔍</span><div><strong>Full frame</strong><p>Entire prescription must be visible</p></div></div>
-      <div class="prx-tip"><span>📄</span><div><strong>PDF &amp; photos</strong><p>Both digital PDFs and photo prescriptions work</p></div></div>
+      <div class="prx-tip">
+        <div class="prx-tip-ic" style="background:var(--am-t);color:var(--am)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <div><strong>Good lighting</strong><p>Bright light, no shadows on the prescription</p></div>
+      </div>
+      <div class="prx-tip">
+        <div class="prx-tip-ic" style="background:var(--bl-t);color:var(--bl)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        </div>
+        <div><strong>Flat &amp; straight</strong><p>Place flat, shoot from directly above</p></div>
+      </div>
+      <div class="prx-tip">
+        <div class="prx-tip-ic" style="background:var(--pri-t);color:var(--pri)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <div><strong>Full frame</strong><p>Entire prescription must be visible</p></div>
+      </div>
+      <div class="prx-tip">
+        <div class="prx-tip-ic" style="background:var(--acc-t);color:var(--acc-l)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div><strong>PDF &amp; photos</strong><p>Both digital PDFs and photo prescriptions work</p></div>
+      </div>
     </div>
   </div>
 </div>
@@ -96,27 +122,40 @@
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
-let rxBase64=null,rxMime='image/jpeg',rxFullText='';
+let rxBase64=null, rxMime='image/jpeg', rxFullText='';
 
 if(typeof pdfjsLib!=='undefined'){
   pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 }
 
+// Update lang badge whenever lang changes
+function updatePrxLangBadge(){
+  const langNames={en:'English',hi:'Hindi',bn:'Bengali',ta:'Tamil',te:'Telugu',mr:'Marathi',
+    gu:'Gujarati',kn:'Kannada',ml:'Malayalam',pa:'Punjabi',or:'Odia',as:'Assamese',
+    ur:'Urdu',ne:'Nepali',sa:'Sanskrit',kok:'Konkani',doi:'Dogri',mni:'Manipuri',
+    sat:'Santali',mai:'Maithili',bho:'Bhojpuri',ks:'Kashmiri',sd:'Sindhi'};
+  const name = langNames[currentLang] || currentLang.toUpperCase();
+  const el = document.getElementById('prxLangText');
+  if(el) el.textContent = `Explanation will be in ${name}`;
+}
+// Hook into language changes
+const _origApplyLang = window.applyLang;
+document.addEventListener('DOMContentLoaded', ()=>{
+  updatePrxLangBadge();
+  document.querySelectorAll('.lang-select').forEach(s=>{
+    s.addEventListener('change', ()=> setTimeout(updatePrxLangBadge, 50));
+  });
+});
+
 function handleFile(input){
   const file=input.files[0];
   if(!file)return;
-  // Reset state
-  rxBase64=null;rxFullText='';
+  rxBase64=null; rxFullText='';
   document.getElementById('fileNote').textContent=`Processing: ${file.name}`;
   document.getElementById('analyzeBtn').disabled=true;
   document.getElementById('rxResult').style.display='none';
-
   const isPdf=file.type==='application/pdf'||file.name.toLowerCase().endsWith('.pdf');
-  if(isPdf){
-    handlePdf(file);
-  } else {
-    handleImage(file);
-  }
+  if(isPdf){ handlePdf(file); } else { handleImage(file); }
 }
 
 function handleImage(file){
@@ -162,31 +201,34 @@ function handlePdf(file){
       document.getElementById('analyzeBtn').disabled=false;
       document.getElementById('fileNote').textContent=`PDF ready — showing page 1 of ${pdf.numPages}`;
     }catch(err){
-      document.getElementById('fileNote').textContent='Could not render PDF. Try uploading a photo of the prescription instead.';
+      document.getElementById('fileNote').textContent='Could not render PDF. Try uploading a photo instead.';
     }
   };
-  reader.onerror=()=>{document.getElementById('fileNote').textContent='Could not read PDF. Try a photo instead.';};
+  reader.onerror=()=>{ document.getElementById('fileNote').textContent='Could not read PDF. Try a photo instead.'; };
   reader.readAsArrayBuffer(file);
 }
 
 async function analyzeRx(){
-  if(!rxBase64){document.getElementById('fileNote').textContent='Please select a file first.';return;}
+  if(!rxBase64){ document.getElementById('fileNote').textContent='Please select a file first.'; return; }
   const btn=document.getElementById('analyzeBtn');
   btn.disabled=true;
-  btn.innerHTML='<div class="spinner" style="width:16px;height:16px;border-width:2px;margin-right:6px"></div> Analyzing…';
+  btn.innerHTML='<div class="spinner" style="width:15px;height:15px;border-width:2px;margin-right:6px"></div> Analyzing…';
   document.getElementById('rxResult').style.display='none';
 
   const lang=typeof currentLang!=='undefined'?currentLang:'en';
-  const langNames={en:'English',hi:'Hindi',bn:'Bengali',ta:'Tamil',te:'Telugu',mr:'Marathi',gu:'Gujarati',kn:'Kannada',ml:'Malayalam',pa:'Punjabi',or:'Odia',as:'Assamese',ur:'Urdu',ne:'Nepali'};
+  const langNames={en:'English',hi:'Hindi',bn:'Bengali',ta:'Tamil',te:'Telugu',mr:'Marathi',
+    gu:'Gujarati',kn:'Kannada',ml:'Malayalam',pa:'Punjabi',or:'Odia',as:'Assamese',
+    ur:'Urdu',ne:'Nepali',sa:'Sanskrit',kok:'Konkani',doi:'Dogri',mni:'Manipuri',
+    sat:'Santali',mai:'Maithili',bho:'Bhojpuri',ks:'Kashmiri',sd:'Sindhi'};
   const langName=langNames[lang]||lang.toUpperCase();
 
   try{
     const r=await fetch('/api/prescription',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({image:rxBase64,mime:rxMime,lang})
+      body:JSON.stringify({image:rxBase64, mime:rxMime, lang})
     });
-    if(!r.ok){throw new Error(`Server error: ${r.status}`);}
+    if(!r.ok){ throw new Error(`Server error: ${r.status}`); }
     const d=await r.json();
     if(d.error){
       document.getElementById('fileNote').textContent='Error: '+d.error+'. Please try a clearer photo.';
@@ -196,20 +238,19 @@ async function analyzeRx(){
     document.getElementById('rxSummaryText').innerHTML=mdToHtml(d.summary);
     document.getElementById('rxLangNote').textContent=`Explanation in ${langName}`;
     document.getElementById('rxResult').style.display='block';
-    setTimeout(()=>document.getElementById('rxResult').scrollIntoView({behavior:'smooth',block:'start'}),100);
+    setTimeout(()=>document.getElementById('rxResult').scrollIntoView({behavior:'smooth',block:'start'}),150);
   }catch(e){
     document.getElementById('fileNote').textContent='Connection error: '+e.message+'. Please try again.';
   }finally{
     btn.disabled=false;
-    btn.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Explain Prescription';
+    btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Explain Prescription';
   }
 }
 
 function speakRx(){
-  const btn=document.getElementById('rxTtsBtn');
   if(!rxFullText)return;
   const lang=typeof currentLang!=='undefined'?currentLang:'en';
-  speak(encodeURIComponent(rxFullText),lang,1,btn);
+  speak(encodeURIComponent(rxFullText),lang,1,document.getElementById('rxTtsBtn'));
 }
 </script>
 {% endblock %}
