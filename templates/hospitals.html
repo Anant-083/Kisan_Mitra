@@ -152,7 +152,7 @@ function renderHospitals(hospitals, headerText, showDist=false) {
     const phone = h.phone || '';
     const mapsUrl = getMapsUrl(h);
     const careType = h.care_type && h.care_type !== 'Hospital' ? `<span class="htag">${h.care_type}</span>` : '';
-    const distBadge = showDist && h.distance_km ? `<span class="htag" style="background:var(--pri-t);color:var(--pri)">${h.distance_km} km</span>` : '';
+    const distBadge = showDist && h.distance_km ? `<span class="htag" style="background:var(--pri-t);color:var(--pri)">~${h.distance_km} km</span>` : '';
     html += `
       <div class="hcard" style="animation-delay:${i*0.04}s">
         <div class="hcard-ic">
