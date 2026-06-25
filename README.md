@@ -422,10 +422,8 @@ curl -X POST http://localhost:5000/api/medicine \
 
 ## 🗺️ Roadmap
 
-- [ ] Add Ladakh and missing districts to hospital data
 - [ ] Integrate ABDM Ayushman Bharat Digital Mission hospital API
 - [ ] Seasonal disease alerts based on location and weather
-- [ ] ASHA worker simplified mode for community health workers
 - [ ] WhatsApp Bot integration for feature phone users
 - [ ] Offline AI for basic symptoms using on-device model
 
