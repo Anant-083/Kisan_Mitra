@@ -138,16 +138,15 @@ const TRANSLATIONS={
 };
 
 const LANG_LIST=[
-  {code:'en',label:'🇬🇧 English'},{code:'hi',label:'🇮🇳 हिंदी'},{code:'bn',label:'🇧🇩 বাংলা'},
-  {code:'ta',label:'🇮🇳 தமிழ்'},{code:'te',label:'🇮🇳 తెలుగు'},{code:'mr',label:'🇮🇳 मराठी'},
-  {code:'gu',label:'🇮🇳 ગુજરાતી'},{code:'kn',label:'🇮🇳 ಕನ್ನಡ'},{code:'ml',label:'🇮🇳 മലയാളം'},
-  {code:'pa',label:'🇮🇳 ਪੰਜਾਬੀ'},{code:'or',label:'🇮🇳 ଓଡ଼ିଆ'},{code:'as',label:'🇮🇳 অসমীয়া'},
-  {code:'ur',label:'🇵🇰 اردو'},{code:'ne',label:'🇳🇵 नेपाली'},{code:'sa',label:'🇮🇳 संस्कृतम्'},
-  {code:'kok',label:'🇮🇳 कोंकणी'},{code:'doi',label:'🇮🇳 डोगरी'},{code:'mni',label:'🇮🇳 মৈতৈলোন্'},
-  {code:'sat',label:'🇮🇳 ᱥᱟᱱᱛᱟᱲᱤ'},{code:'mai',label:'🇮🇳 मैथिली'},{code:'bho',label:'🇮🇳 भोजपुरी'},
-  {code:'ks',label:'🇮🇳 كٲشُر'},{code:'sd',label:'🇮🇳 سنڌي'},
+  {code:'en',label:'English'},{code:'hi',label:'हिंदी'},{code:'bn',label:'বাংলা'},
+  {code:'ta',label:'தமிழ்'},{code:'te',label:'తెలుగు'},{code:'mr',label:'मराठी'},
+  {code:'gu',label:'ગુજરાતી'},{code:'kn',label:'ಕನ್ನಡ'},{code:'ml',label:'മലയാളം'},
+  {code:'pa',label:'ਪੰਜਾਬੀ'},{code:'or',label:'ଓଡ଼ିଆ'},{code:'as',label:'অসমীয়া'},
+  {code:'ur',label:'اردو'},{code:'ne',label:'नेपाली'},{code:'sa',label:'संस्कृतम्'},
+  {code:'kok',label:'कोंकणी'},{code:'doi',label:'डोगरी'},{code:'mni',label:'মৈতৈলোন্'},
+  {code:'sat',label:'ᱥᱟᱱᱛᱟᱲᱤ'},{code:'mai',label:'मैथिली'},{code:'bho',label:'भोजपुरी'},
+  {code:'ks',label:'كٲشُر'},{code:'sd',label:'سنڌي'},
 ];
-
 const SPEECH_LANGS={
   en:'en-IN',hi:'hi-IN',bn:'bn-IN',ta:'ta-IN',te:'te-IN',mr:'mr-IN',
   gu:'gu-IN',kn:'kn-IN',ml:'ml-IN',pa:'pa-IN',or:'or-IN',as:'as-IN',
