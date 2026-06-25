@@ -208,6 +208,12 @@ def api_hospitals():
     results = HOSPITALS_INDEX.get(state, {}).get(district, [])
     return jsonify({"hospitals": results})
 
+def is_valid_india_coord(lat, lon):
+    """Filter out obviously wrong coordinates outside India"""
+    return (lat and lon and 
+            6.5 <= lat <= 37.5 and 
+            68.0 <= lon <= 97.5)
+
 @app.route("/api/hospitals/nearby", methods=["POST"])
 def api_hospitals_nearby():
     data = request.get_json(silent=True) or {}
@@ -221,6 +227,8 @@ def api_hospitals_nearby():
         hlat = h.get("lat")
         hlon = h.get("lon")
         if not hlat or not hlon:
+            continue
+        if not is_valid_india_coord(hlat, hlon):
             continue
         dist = haversine_km(lat, lon, hlat, hlon)
         if dist <= radius_km:
