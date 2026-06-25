@@ -126,15 +126,21 @@ function findNearby() {
 }
 
 function getMapsUrl(hosp) {
-  if (hosp.lat && hosp.lon) {
+    // Always use name-based search for accuracy
+    // Wrong coordinates are worse than a good text search
+    const parts = [hosp.name];
+    if (hosp.address && hosp.address !== '0') parts.push(hosp.address);
+    if (hosp.district) parts.push(hosp.district);
+    if (hosp.state) parts.push(hosp.state);
+    parts.push('India');
+    const query = encodeURIComponent(parts.join(', '));
+    
     if (userLat && userLon) {
-      return `https://www.google.com/maps/dir/${userLat},${userLon}/${hosp.lat},${hosp.lon}`;
+        // Show directions from user location using name search
+        return `https://www.google.com/maps/dir/${userLat},${userLon}/${query}`;
     }
-    return `https://www.google.com/maps/search/?api=1&query=${hosp.lat},${hosp.lon}`;
-  }
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hosp.name + ' ' + hosp.district + ' ' + hosp.state)}`;
+    return `https://www.google.com/maps/search/?api=1&query=${query}`;
 }
-
 function renderHospitals(hospitals, headerText, showDist=false) {
   const box = document.getElementById('hospResult');
   if (!hospitals || hospitals.length === 0) {
