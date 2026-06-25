@@ -4,34 +4,43 @@
 <div class="pg-hdr">
   <div class="pg-hdr-inner anim-up">
     <div class="pg-hdr-ic ib"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg></div>
-    <div><h1 data-t="pg_hosp_title">Find Government Hospital</h1><p data-t="pg_hosp_sub">Select your state and district to find nearby hospitals</p></div>
-    <div class="pg-hdr-meta"><div class="pg-tag">Free OPD</div><div class="pg-tag">Tap to call</div></div>
+    <div><h1 data-t="pg_hosp_title">Find Government Hospital</h1><p data-t="pg_hosp_sub">Find hospitals near you or search by state & district</p></div>
+    <div class="pg-hdr-meta"><div class="pg-tag">2,670 Hospitals</div><div class="pg-tag">34 States</div></div>
   </div>
 </div>
+
 <div class="hosp-wrap">
-
-  <button class="btn btn-g" onclick="findNearMe()" style="width:100%;margin-bottom:16px;justify-content:center" id="nearMeBtn">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-    <span id="nearMeBtnText">Find Hospitals Near Me</span>
-  </button>
-
   <div class="filter-card anim-up">
-    <div style="font-size:.71rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Or search by state &amp; district</div>
-    <div class="filter-row">
-      <div class="fg"><label><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/></svg> State</label>
-        <select id="stateSelect" onchange="loadDistricts()">
-          <option value="">— Select your state —</option>
-          {% for s in states %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
-        </select>
-      </div>
-      <div class="fg"><label><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> District</label>
-        <select id="districtSelect" onchange="loadHospitals()" disabled>
-          <option value="">— Select district —</option>
-        </select>
+    <div class="hosp-type-row">
+      <button class="htype-btn on" id="btnAll" onclick="setType('all')">All</button>
+      <button class="htype-btn" id="btnNear" onclick="findNearby()">Near Me</button>
+    </div>
+
+    <div id="searchByLocation" style="display:none;text-align:center;padding:14px 0">
+      <div class="spinner" id="locSpinner" style="display:none;margin:0 auto 8px"></div>
+      <div id="locStatus" style="font-size:.8rem;color:var(--t3)">Getting your location…</div>
+    </div>
+
+    <div id="searchByState">
+      <div class="filter-row">
+        <div class="fg">
+          <label><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/></svg> STATE</label>
+          <select id="stateSelect" onchange="loadDistricts()">
+            <option value="">— Select your state —</option>
+            {% for s in states %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="fg">
+          <label><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg> DISTRICT</label>
+          <select id="districtSelect" onchange="loadHospitals()" disabled>
+            <option value="">— Select district —</option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
-  <div id="hospResults">
+
+  <div id="hospResult">
     <div class="state-box">
       <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
       <span>Tap "Find Hospitals Near Me" or select your state and district</span>
@@ -41,147 +50,135 @@
 {% endblock %}
 {% block scripts %}
 <script>
-let currentType = 'all';
+let userLat = null, userLon = null;
 
-async function loadDistricts(){
-  const state=document.getElementById('stateSelect').value;
-  const dsel=document.getElementById('districtSelect');
-  document.getElementById('hospResults').innerHTML=`<div class="state-box"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--bl)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><span>Now select your district</span></div>`;
-  if(!state){dsel.disabled=true;return;}
-  const r=await fetch('/api/districts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({state})});
-  const d=await r.json();
-  dsel.innerHTML='<option value="">— Select district —</option>';
-  d.districts.forEach(x=>dsel.innerHTML+=`<option value="${x}">${x}</option>`);
-  dsel.disabled=false;
+function setType(type) {
+  document.querySelectorAll('.htype-btn').forEach(b => b.classList.remove('on'));
+  if (type === 'all') {
+    document.getElementById('btnAll').classList.add('on');
+    document.getElementById('searchByLocation').style.display = 'none';
+    document.getElementById('searchByState').style.display = 'block';
+    document.getElementById('hospResult').innerHTML = `<div class="state-box"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg><span>Select your state and district</span></div>`;
+  }
 }
 
-async function loadHospitals(){
-  const state=document.getElementById('stateSelect').value;
-  const district=document.getElementById('districtSelect').value;
-  const box=document.getElementById('hospResults');
-  if(!district){return;}
-  box.innerHTML=`<div class="state-box"><div class="spinner"></div>Finding hospitals in ${district}…</div>`;
-  const r=await fetch('/api/hospitals',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({state,district})});
-  const d=await r.json();
-  if(!d.hospitals.length){
-    box.innerHTML=`<div class="state-box"><span>No hospitals found for ${district}. Try a nearby district.</span></div>`;
+async function loadDistricts() {
+  const state = document.getElementById('stateSelect').value;
+  const dsel = document.getElementById('districtSelect');
+  dsel.innerHTML = '<option value="">Loading…</option>';
+  dsel.disabled = true;
+  document.getElementById('hospResult').innerHTML = `<div class="state-box"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg><span>Select a district</span></div>`;
+  if (!state) return;
+  const r = await fetch('/api/districts', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({state})});
+  const d = await r.json();
+  dsel.innerHTML = '<option value="">— Select district —</option>';
+  d.districts.forEach(dist => {
+    const opt = document.createElement('option');
+    opt.value = dist; opt.textContent = dist;
+    dsel.appendChild(opt);
+  });
+  dsel.disabled = false;
+}
+
+async function loadHospitals() {
+  const state = document.getElementById('stateSelect').value;
+  const district = document.getElementById('districtSelect').value;
+  if (!state || !district) return;
+  const box = document.getElementById('hospResult');
+  box.innerHTML = `<div class="state-box"><div class="spinner"></div><span>Loading hospitals…</span></div>`;
+  const r = await fetch('/api/hospitals', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({state, district})});
+  const d = await r.json();
+  renderHospitals(d.hospitals, `Found <strong style="color:var(--bl)">${d.hospitals.length} hospitals</strong> in ${district}, ${state}`);
+}
+
+function findNearby() {
+  document.querySelectorAll('.htype-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('btnNear').classList.add('on');
+  document.getElementById('searchByState').style.display = 'none';
+  document.getElementById('searchByLocation').style.display = 'block';
+  document.getElementById('locSpinner').style.display = 'block';
+  document.getElementById('locStatus').textContent = 'Getting your location…';
+
+  if (!navigator.geolocation) {
+    document.getElementById('locStatus').textContent = 'Geolocation not supported on this device.';
     return;
   }
-  box.innerHTML=`
-    <div style="font-size:.78rem;color:var(--t3);margin-bottom:12px;padding:0 2px">
-      Found <strong style="color:var(--bl)">${d.hospitals.length} hospital${d.hospitals.length>1?'s':''}</strong> in ${district}, ${state}
-    </div>
-    <div class="hosp-grid">
-    ${d.hospitals.map((h,i)=>`
-      <div class="hcard" style="animation-delay:${i*60}ms">
-        <div class="hcard-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg></div>
+  navigator.geolocation.getCurrentPosition(async pos => {
+    userLat = pos.coords.latitude;
+    userLon = pos.coords.longitude;
+    document.getElementById('locStatus').textContent = `Location found. Searching within 20km…`;
+    const r = await fetch('/api/hospitals/nearby', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({lat: userLat, lon: userLon, radius: 20})
+    });
+    const d = await r.json();
+    document.getElementById('locSpinner').style.display = 'none';
+    if (d.hospitals && d.hospitals.length > 0) {
+      document.getElementById('locStatus').textContent = '';
+      renderHospitals(d.hospitals, `Found <strong style="color:var(--bl)">${d.hospitals.length} hospitals</strong> within 20km of you`, true);
+    } else {
+      document.getElementById('locStatus').textContent = 'No hospitals found within 20km. Try searching by state & district.';
+    }
+  }, err => {
+    document.getElementById('locSpinner').style.display = 'none';
+    document.getElementById('locStatus').textContent = 'Location access denied. Please search by state & district.';
+  }, {timeout: 10000});
+}
+
+function getMapsUrl(hosp) {
+  if (hosp.lat && hosp.lon) {
+    if (userLat && userLon) {
+      return `https://www.google.com/maps/dir/${userLat},${userLon}/${hosp.lat},${hosp.lon}`;
+    }
+    return `https://www.google.com/maps/search/?api=1&query=${hosp.lat},${hosp.lon}`;
+  }
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hosp.name + ' ' + hosp.district + ' ' + hosp.state)}`;
+}
+
+function renderHospitals(hospitals, headerText, showDist=false) {
+  const box = document.getElementById('hospResult');
+  if (!hospitals || hospitals.length === 0) {
+    box.innerHTML = `<div class="state-box"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--t4)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg><span>No hospitals found in this area.</span></div>`;
+    return;
+  }
+  let html = `<div style="font-size:.82rem;color:var(--t2);margin-bottom:12px;padding:0 2px">${headerText}</div><div class="hosp-grid">`;
+  hospitals.forEach((h, i) => {
+    const phone = h.phone || '';
+    const mapsUrl = getMapsUrl(h);
+    const careType = h.care_type && h.care_type !== 'Hospital' ? `<span class="htag">${h.care_type}</span>` : '';
+    const distBadge = showDist && h.distance_km ? `<span class="htag" style="background:var(--pri-t);color:var(--pri)">${h.distance_km} km</span>` : '';
+    html += `
+      <div class="hcard" style="animation-delay:${i*0.04}s">
+        <div class="hcard-ic">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
+        </div>
         <div class="hcard-body">
           <div class="hcard-name">${h.name}</div>
           <div class="hcard-meta">
-            <span>${h.address}</span>
-            <span><a href="tel:${h.phone}">${h.phone}</a></span>
+            ${h.address ? `<span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${h.address}</span>` : ''}
+            ${phone ? `<span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.36 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg><a href="tel:${phone.split(',')[0].trim()}" style="color:var(--bl);font-weight:700">${phone.split(',')[0].trim()}</a></span>` : ''}
           </div>
           <div class="hcard-tags">
-            <span class="htag">${h.type}</span>
+            <span class="htag free">Government</span>
             <span class="htag free">Free OPD</span>
-            ${h.emergency?'<span class="htag emg">Emergency</span>':''}
+            ${careType}
+            ${distBadge}
           </div>
         </div>
-        <div class="hcard-action"><a href="tel:${h.phone}" class="call-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.36 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg> Call</a></div>
-      </div>`).join('')}
-    </div>`;
-}
-
-async function findNearMe(){
-  const btn=document.getElementById('nearMeBtn');
-  const btnText=document.getElementById('nearMeBtnText');
-  const box=document.getElementById('hospResults');
-  if(!navigator.geolocation){
-    box.innerHTML=`<div class="state-box"><span>Location not supported on this device.</span></div>`;
-    return;
-  }
-  btn.disabled=true;
-  btnText.textContent='Getting your location…';
-  box.innerHTML=`<div class="state-box"><div class="spinner"></div><span>Getting your location…</span></div>`;
-
-  navigator.geolocation.getCurrentPosition(async (pos)=>{
-    const lat=pos.coords.latitude, lon=pos.coords.longitude;
-    btnText.textContent='Searching hospitals…';
-    box.innerHTML=`<div class="state-box"><div class="spinner"></div><span>Searching hospitals near you via OpenStreetMap…</span></div>`;
-    try{
-      const r=await fetch('/api/hospitals/nearby',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({lat,lon,type:currentType})
-      });
-      const d=await r.json();
-      renderNearbyResults(d.hospitals||[],lat,lon);
-    }catch(e){
-      box.innerHTML=`<div class="state-box"><span>Could not fetch. Try state/district search below.</span></div>`;
-    }
-    btn.disabled=false;
-    btnText.textContent='Find Hospitals Near Me';
-  },()=>{
-    box.innerHTML=`<div class="state-box"><span>Location access denied. Use state/district search below.</span></div>`;
-    btn.disabled=false;
-    btnText.textContent='Find Hospitals Near Me';
-  },{timeout:15000,enableHighAccuracy:true});
-}
-
-function renderNearbyResults(list,userLat,userLon){
-  const box=document.getElementById('hospResults');
-  const mapsSearchUrl=`https://www.google.com/maps/search/hospital/@${userLat},${userLon},14z`;
-  const gmapsBtn=`
-    <a href="${mapsSearchUrl}" target="_blank" rel="noopener"
-       style="display:flex;align-items:center;justify-content:center;gap:8px;background:var(--surf);border:1.5px solid var(--border);border-radius:var(--r12);padding:12px 16px;font-size:.82rem;font-weight:700;color:var(--t2);margin-bottom:14px;transition:all .2s">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 00-8 8c0 5.25 8 14 8 14s8-8.75 8-14a8 8 0 00-8-8z"/></svg>
-      View All Hospitals on Google Maps →
-    </a>`;
-
-  function distKm(h){
-    const R=6371,dLat=(h.lat-userLat)*Math.PI/180,dLon=(h.lon-userLon)*Math.PI/180;
-    const a=Math.sin(dLat/2)**2+Math.cos(userLat*Math.PI/180)*Math.cos(h.lat*Math.PI/180)*Math.sin(dLon/2)**2;
-    return (R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))).toFixed(1);
-  }
-
-  if(!list.length){
-    box.innerHTML=`${gmapsBtn}<div class="state-box"><span>No hospitals found nearby. Tap "View on Google Maps" above or use state/district search below.</span></div>`;
-    return;
-  }
-
-  box.innerHTML=`
-    ${gmapsBtn}
-    <div style="font-size:.78rem;color:var(--t3);margin-bottom:12px;padding:0 2px">
-      Found <strong style="color:var(--pri)">${list.length} place${list.length>1?'s':''}</strong> via OpenStreetMap
-    </div>
-    <div class="hosp-grid">
-    ${list.map((h,i)=>{
-      const km=distKm(h);
-      const navUrl=`https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lon}`;
-      const badge=h.facility_type?`<span class="htag">${h.facility_type.toUpperCase()}</span>`:'';
-      return `
-      <div class="hcard" style="animation-delay:${i*60}ms">
-        <div class="hcard-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg></div>
-        <div class="hcard-body" style="flex:1">
-          <div class="hcard-name">${h.name}</div>
-          <div class="hcard-meta">
-            <span>${h.address||''} · ${km} km away</span>
-            ${h.phone?`<span><a href="tel:${h.phone}">${h.phone}</a></span>`:''}
-          </div>
-          <div class="hcard-tags">
-            <span class="htag ${h.type==='Government'?'free':''}">${h.type}</span>
-            ${badge}
-            ${h.emergency?'<span class="htag emg">Emergency</span>':''}
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:7px;flex-shrink:0;align-self:center">
-          ${h.phone?`<a href="tel:${h.phone}" class="call-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.36 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg> Call</a>`:''}
-          <a href="${navUrl}" target="_blank" rel="noopener" class="call-btn" style="background:linear-gradient(135deg,#1565c0,#1d8de8)">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg> Navigate
+        <div style="display:flex;flex-direction:column;gap:8px;align-self:center;flex-shrink:0">
+          ${phone ? `<a href="tel:${phone.split(',')[0].trim()}" class="call-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.36 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>
+            Call
+          </a>` : ''}
+          <a href="${mapsUrl}" target="_blank" rel="noopener" class="call-btn" style="background:linear-gradient(135deg,#1565c0,#1976d2)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Map
           </a>
         </div>
       </div>`;
-    }).join('')}
-    </div>`;
+  });
+  html += '</div>';
+  box.innerHTML = html;
 }
 </script>
 {% endblock %}
