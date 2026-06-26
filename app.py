@@ -117,12 +117,18 @@ def offline():
 @app.route("/debug")
 def debug():
     path = os.path.join(os.path.dirname(__file__), 'hospitals.json')
+    error = None
+    data = []
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except Exception as e:
+        error = str(e)
     return jsonify({
         "file_exists": os.path.exists(path),
-        "hospitals_loaded": len(HOSPITALS_DATA),
-        "states_count": len(HOSPITALS_INDEX),
-        "states_sample": list(HOSPITALS_INDEX.keys())[:5],
-        "cwd": os.getcwd()
+        "parse_error": error,
+        "records_found": len(data),
+        "first_record": data[0] if data else None
     })
     
 @app.route("/api/chat", methods=["POST"])
