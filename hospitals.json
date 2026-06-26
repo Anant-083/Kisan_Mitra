@@ -29368,7 +29368,7 @@
     "care_type": "Hospital",
     "lat": null,
     "lon": null
-  }
+  },
 {"name": "AIIMS New Delhi", "state": "Delhi", "district": "New Delhi", "address": "Ansari Nagar, New Delhi", "phone": "011-26588500", "type": "Government", "care_type": "Medical College / Institute", "lat": 28.5672, "lon": 77.2100},
     {"name": "Safdarjung Hospital", "state": "Delhi", "district": "New Delhi", "address": "Ansari Nagar West, New Delhi", "phone": "011-26165060", "type": "Government", "care_type": "Hospital", "lat": 28.5679, "lon": 77.2090},
     {"name": "Ram Manohar Lohia Hospital", "state": "Delhi", "district": "New Delhi", "address": "Baba Kharak Singh Marg, New Delhi", "phone": "011-23404370", "type": "Government", "care_type": "Hospital", "lat": 28.6274, "lon": 77.2091},
