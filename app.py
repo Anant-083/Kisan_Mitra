@@ -114,6 +114,17 @@ def service_worker():
 def offline():
     return render_template("offline.html")
 
+@app.route("/debug")
+def debug():
+    path = os.path.join(os.path.dirname(__file__), 'hospitals.json')
+    return jsonify({
+        "file_exists": os.path.exists(path),
+        "hospitals_loaded": len(HOSPITALS_DATA),
+        "states_count": len(HOSPITALS_INDEX),
+        "states_sample": list(HOSPITALS_INDEX.keys())[:5],
+        "cwd": os.getcwd()
+    })
+    
 @app.route("/api/chat", methods=["POST"])
 def api_chat():
     data = request.get_json(silent=True) or {}
